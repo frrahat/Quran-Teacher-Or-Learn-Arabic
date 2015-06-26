@@ -1,0 +1,7 @@
+
+#1
+sura: 36  ayah: 129
+regWords: 4  infoSize: 3
+سَلَٰمٌ عَلَىٰٓ إِلْ يَاسِينَ
+il yāsīna ʿalā salāmun 
+
