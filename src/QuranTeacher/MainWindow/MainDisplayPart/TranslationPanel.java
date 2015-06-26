@@ -19,8 +19,9 @@ import QuranTeacher.FilePaths;
 import QuranTeacher.Basics.Ayah;
 import QuranTeacher.Dialogs.PreferencesDialog;
 import QuranTeacher.Preferences.TranslationPreferences;
+import QuranTeacher.RenderTexts.AllTextsContainer;
 import QuranTeacher.RenderTexts.QuranText;
-import QuranTeacher.RenderTexts.TranslationTextsContainer;
+import QuranTeacher.RenderTexts.TranslationTextInfoContainer;
 
 import java.awt.Font;
 import java.awt.Color;
@@ -47,7 +48,6 @@ public class TranslationPanel extends JPanel {
 	private static int primaryTextIndex;
 	private static int secondaryTextIndex;
 	
-	private static ArrayList<QuranText> texts;
 	
 	public TranslationPanel() {
 		setLayout(new BorderLayout(0, 0));
@@ -66,34 +66,6 @@ public class TranslationPanel extends JPanel {
 		
 		txtrTranslationtext.setText("TransLationText");
 		scrollPane.setViewportView(txtrTranslationtext);
-		
-		Runnable transLoader=new Runnable() {
-			
-			@Override
-			public void run() {
-				try
-				{
-					//Thread.sleep(3000);
-					texts=new ArrayList<>();
-					
-					for(int i=0;i<TranslationTextsContainer.getSize();i++){
-						texts.add(new QuranText(TranslationTextsContainer.getTransFile(i).getInputStream(), false));
-					}
-				}
-				catch(Exception e)
-				{
-					e.printStackTrace();
-				}				
-			}
-		};
-		
-		Thread t=new Thread(transLoader);
-		t.start();
-		try {
-			t.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 
 	}
 	
@@ -108,11 +80,11 @@ public class TranslationPanel extends JPanel {
 	{
 		String text;
 		text=ayah.toDetailedString()+"\n"+
-					texts.get(primaryTextIndex).getQuranText(ayah);
+					AllTextsContainer.translationtexts.get(primaryTextIndex).getQuranText(ayah);
 		
 		if(secondaryTextIndex!=-1){
 			text+="\n\n"+ayah.toDetailedString()+"\n"+
-					texts.get(secondaryTextIndex).getQuranText(ayah);
+					AllTextsContainer.translationtexts.get(secondaryTextIndex).getQuranText(ayah);
 		}
 		
 		txtrTranslationtext.setText(text);

@@ -41,7 +41,7 @@ public class SidePanel extends JPanel {
 		setPreferredSize(new Dimension(300, 300));
 		
 		//----my edition----
-		loadSuraInfo();
+		loadSuraInfo();//assumed use litte time to load
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{296, 0};
 		gridBagLayout.rowHeights = new int[] {98, 98, 98, 100};

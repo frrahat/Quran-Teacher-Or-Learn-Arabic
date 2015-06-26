@@ -39,6 +39,7 @@ import QuranTeacher.RenderAnimation.Animation;
 import QuranTeacher.RenderAnimation.FocusCheckRunnable;
 import QuranTeacher.RenderAudio.Reciter;
 import QuranTeacher.RenderImages.ImageLoader;
+import QuranTeacher.RenderTexts.AllTextsContainer;
 import QuranTeacher.RenderTexts.QuranText;
 import QuranTeacher.WordInformation.WordInfoLoader;
 import QuranTeacher.WordInformation.WordInformation;
@@ -53,7 +54,6 @@ public class AnimationPanel extends Animation {
 	/**
 	 * Create the panel.
 	 */
-	private QuranText quranText;
 	private Ayah runningAyah=new Ayah(0, 0);
 	private String bismillah="\u0628\u0650\u0633\u0652\u0645\u0650 "
 			+ "\u0627\u0644\u0644\u0651\u064e\u0647\u0650 \u0627\u0644"
@@ -73,27 +73,6 @@ public class AnimationPanel extends Animation {
 	public AnimationPanel() {
 		//System.out.println("DisplayPanel() called");
 		displayText="Failed to load Quran Text";
-		quranText=null;
-		
-		Runnable loader=new Runnable() {
-			
-			@Override
-			public void run() {
-				InputStream in=getClass().getResourceAsStream(FilePaths.ArabicTextFilePath);
-				quranText=new QuranText(in,true);
-				new WordInfoLoader().load();//initialize word infos
-				//java memory proble, so excluded
-				//new ImageLoader().load();//initialize images
-			}
-		};
-		
-		Thread t=new Thread(loader);
-		t.start();
-		try {
-			t.join();
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
 		
 		setFocusable(true);
 		focusCheckingThread=new Thread();
@@ -315,7 +294,7 @@ public class AnimationPanel extends Animation {
 		runningAyah=ayah;
 		SelectionPanel.setSelectionIndex(ayah);
 		
-		displayText=quranText.getQuranText(ayah);
+		displayText=AllTextsContainer.arabicText.getQuranText(ayah);
 		setInfoOfWords(ayah);
 		
 		TranslationPanel.setTranslationText(ayah);

@@ -8,7 +8,11 @@ import javax.naming.ldap.InitialLdapContext;
 
 import QuranTeacher.FilePaths;
 
-public class TranslationTextsContainer {
+/**
+ * @author Rahat
+ *@date 25-06-15
+ */
+public class TranslationTextInfoContainer {
 	private static ArrayList<TranslationTextFile>transFiles;
 	private static boolean initialized;
 	

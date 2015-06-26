@@ -18,8 +18,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
-import javax.swing.ProgressMonitor;
-import javax.swing.SwingWorker;
 
 import java.awt.Font;
 
@@ -31,33 +29,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.util.Random;
 
 import javax.swing.JSplitPane;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -81,7 +55,8 @@ public class MainFrame extends JFrame {
 	/**
 	 * Creates the full application frame
 	 */
-	public static String version="1.2.0";
+	public static final String AppName="Quran Teacher or Learn Arabic";
+	public static final String version="1.2.0";
 	private String[] args={"QT",version};
 	private static final long serialVersionUID = 1L;
 
@@ -100,11 +75,9 @@ public class MainFrame extends JFrame {
 	//private final TafsirPanel tafsirPanel;
 
 	private SidePanel sidePanel;
-	public ProgressMonitor progressMonitor;
-	protected Task task;
 	
 	public MainFrame() {
-		setTitle("Quran Teacher or Learn Arabic "+version);
+		setTitle(AppName+" "+version);
 		setIconImage(Toolkit.getDefaultToolkit()
 				.getImage(MainFrame.class.getResource("/QuranTeacher/images/icon128.png")));
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -112,31 +85,7 @@ public class MainFrame extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowOpened(WindowEvent e) {
-				progressMonitor = new ProgressMonitor(getParent(),
-						"Running a Long Task", "", 0, 100);
-				progressMonitor.setProgress(0);
-				task = new Task();
-				task.addPropertyChangeListener(new PropertyChangeListener() {
-					
-					@Override
-					public void propertyChange(PropertyChangeEvent evt) {
-						if ("progress" == evt.getPropertyName() ) {
-				            int progress = (Integer) evt.getNewValue();
-				            progressMonitor.setProgress(progress);
-				            String message =
-				                String.format("Completed %d%%.\n", progress);
-				            progressMonitor.setNote(message);
-				            if (progressMonitor.isCanceled() || task.isDone()) {
-				                Toolkit.getDefaultToolkit().beep();
-				                if (progressMonitor.isCanceled()) {
-				                    task.cancel(true);
-				                } 
-				            }
-				        }
-					}
-				});
-				
-				task.execute();
+				displayPanel.getStartUpLoaderPanel().startLoading();
 			};
 			
 			
@@ -462,31 +411,4 @@ public class MainFrame extends JFrame {
 		
 		translationPanel.updateTransPref();
 	}
-	
-	 class Task extends SwingWorker<Void, Void> {
-	        @Override
-	        public Void doInBackground() {
-	            Random random = new Random();
-	            int progress = 0;
-	            setProgress(0);
-	            try {
-	                Thread.sleep(1000);
-	                while (progress < 100 && !isCancelled()) {
-	                    //Sleep for up to one second.
-	                    Thread.sleep(random.nextInt(1000));
-	                    //Make random progress.
-	                    progress += random.nextInt(10);
-	                    setProgress(Math.min(progress, 100));
-	                }
-	            } catch (InterruptedException ignore) {}
-	            return null;
-	        }
-	 
-	        @Override
-	        public void done() {
-	            Toolkit.getDefaultToolkit().beep();
-	            //startButton.setEnabled(true);
-	            progressMonitor.close();
-	        }
-	    }
 }

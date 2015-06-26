@@ -34,11 +34,13 @@ public class DisplayPanel extends JPanel {
 	private TranslationPanel translationPanel;
 	private TafsirPanel tafsirPanel;
 	
-	public static enum DisplayPage{StartingPage,AnimationPage};
+	public static enum DisplayPage{StartUpLoadingPage,WelcomePage,AnimationPage};
 	private DisplayPage displayPage;
 	
 	private String mainDisplayName="mainDisplay";
-	private String startingDisplayName="startingDisplay";
+	private String welcomeDisplayName="welcomeDisplay";
+	private String startUpDisplayName="startUpDisplayName";
+	private StartUpLoaderPanel loaderPanel;
 	
 	public DisplayPanel() {
 		setLayout(new CardLayout(0, 0));
@@ -69,13 +71,14 @@ public class DisplayPanel extends JPanel {
 		add(splitPane, mainDisplayName);
 		
 		
+		loaderPanel=new StartUpLoaderPanel();
+		add(loaderPanel,startUpDisplayName);
+		
+		//WelcomeDisplayPanel welcomePanel = new WelcomeDisplayPanel();
+		//add(welcomePanel, welcomeDisplayName);
 		
 		
-		StartDisplayPanel startPanel = new StartDisplayPanel();
-		add(startPanel, startingDisplayName);
-		
-		
-		displayPage=DisplayPage.StartingPage;
+		displayPage=DisplayPage.StartUpLoadingPage;
 		setDisplayPage(displayPage);
 	}
 	
@@ -99,14 +102,20 @@ public class DisplayPanel extends JPanel {
 		return displayPage;
 	}
 	
+	public StartUpLoaderPanel getStartUpLoaderPanel(){
+		return loaderPanel;
+	}
+	
 	public void setDisplayPage(DisplayPage display)
 	{
 		CardLayout c=(CardLayout)getLayout();
 		
-		if(display==DisplayPage.StartingPage)
-			c.show(this, startingDisplayName);
+		if(display==DisplayPage.StartUpLoadingPage)
+			c.show(this, startUpDisplayName);
 		else if(display==DisplayPage.AnimationPage)
 			c.show(this, mainDisplayName);
+		else if(display==DisplayPage.WelcomePage)
+			c.show(this, welcomeDisplayName);
 		
 	}
 }

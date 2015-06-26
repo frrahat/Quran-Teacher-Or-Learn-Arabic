@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 
 import QuranTeacher.WordInformation.SegmentColors;
 
-public class StartDisplayPanel extends JPanel {
+public class WelcomeDisplayPanel extends JPanel {
 
 	/**
 	 * Panel that is displayed when the applicatio is started
@@ -39,7 +39,7 @@ public class StartDisplayPanel extends JPanel {
 			"Mouse Right Click-- Pause/Resume Display"
 		};
 	
-	public StartDisplayPanel() {
+	public WelcomeDisplayPanel() {
 		font=new Font("Serif",Font.BOLD,40);
 		startPoint=new Point(20,50);
 	}
@@ -52,7 +52,7 @@ public class StartDisplayPanel extends JPanel {
 		g.setColor(Color.ORANGE);
 		g.setFont(font);
 		//g.drawString("Assalamu Alaikum", startPoint.x,startPoint.y);
-		drawStringEffect(g,"Assalamu Alaikum", startPoint.x, startPoint.y);
+		drawStringEffect(g,"Assalamu 'Alaikum", startPoint.x, startPoint.y);
 		
 		g.setColor(SegmentColors.getColor("segSeagreen"));
 		drawStringEffect(g,"Welcome to Quran Teacher or Learn Arabic Application",

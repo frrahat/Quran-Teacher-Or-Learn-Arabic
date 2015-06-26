@@ -44,7 +44,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import QuranTeacher.FilePaths;
 import QuranTeacher.Preferences.TranslationPreferences;
-import QuranTeacher.RenderTexts.TranslationTextsContainer;
+import QuranTeacher.RenderTexts.TranslationTextInfoContainer;
 
 public class TranslationSetupPanel extends PreferencesSetupPanel {
 
@@ -65,9 +65,9 @@ public class TranslationSetupPanel extends PreferencesSetupPanel {
 	public TranslationSetupPanel(String name, final TranslationPreferences preferences) {
 		super(name, preferences);
 		
-		previewText=TranslationTextsContainer.getTransFile(preferences.getPrimaryTextIndex()).getPreviewText();
+		previewText=TranslationTextInfoContainer.getTransFile(preferences.getPrimaryTextIndex()).getPreviewText();
 		if(preferences.getSecondaryTextIndex()!=-1){
-			previewText+="\n\n"+TranslationTextsContainer.getTransFile(preferences.getSecondaryTextIndex()).getPreviewText();
+			previewText+="\n\n"+TranslationTextInfoContainer.getTransFile(preferences.getSecondaryTextIndex()).getPreviewText();
 		}
 		
 		fontPreviewPanel.setText(previewText);
@@ -85,7 +85,7 @@ public class TranslationSetupPanel extends PreferencesSetupPanel {
 		add(lblLangNamePrim, gbc_lblLangNamePrim);
 		
 		final JComboBox<String> PrimTextSelectComboBox = new JComboBox<String> ();
-		PrimTextSelectComboBox.setModel(new DefaultComboBoxModel<>(TranslationTextsContainer.getAllFileNames(false)));
+		PrimTextSelectComboBox.setModel(new DefaultComboBoxModel<>(TranslationTextInfoContainer.getAllFileNames(false)));
 		PrimTextSelectComboBox.setBackground(Color.LIGHT_GRAY);
 		PrimTextSelectComboBox.setSelectedIndex(preferences.getPrimaryTextIndex());
 		PrimTextSelectComboBox.addActionListener(new ActionListener() {
@@ -94,11 +94,11 @@ public class TranslationSetupPanel extends PreferencesSetupPanel {
 				int i=PrimTextSelectComboBox.getSelectedIndex();
 				preferences.setPrimaryTextIndex(i);
 				if(preferences.getSecondaryTextIndex()!=-1){
-					fontPreviewPanel.setText(TranslationTextsContainer.getTransFile(i).getPreviewText()
-							+"\n\n"+TranslationTextsContainer.getTransFile(preferences.getSecondaryTextIndex()).getPreviewText());
+					fontPreviewPanel.setText(TranslationTextInfoContainer.getTransFile(i).getPreviewText()
+							+"\n\n"+TranslationTextInfoContainer.getTransFile(preferences.getSecondaryTextIndex()).getPreviewText());
 				}
 				else{
-					fontPreviewPanel.setText(TranslationTextsContainer.getTransFile(i).getPreviewText());
+					fontPreviewPanel.setText(TranslationTextInfoContainer.getTransFile(i).getPreviewText());
 				}
 				fontPreviewPanel.updateTextArea();
 			}
@@ -128,10 +128,10 @@ public class TranslationSetupPanel extends PreferencesSetupPanel {
 		
 		
 		final JComboBox<String> SecondTextSelectComboBox = new JComboBox<String> ();
-		SecondTextSelectComboBox.setModel(new DefaultComboBoxModel<>(TranslationTextsContainer.getAllFileNames(true)));
+		SecondTextSelectComboBox.setModel(new DefaultComboBoxModel<>(TranslationTextInfoContainer.getAllFileNames(true)));
 		SecondTextSelectComboBox.setBackground(Color.LIGHT_GRAY);
 		if(preferences.getSecondaryTextIndex()==-1){
-			SecondTextSelectComboBox.setSelectedIndex(TranslationTextsContainer.getSize());
+			SecondTextSelectComboBox.setSelectedIndex(TranslationTextInfoContainer.getSize());
 		}
 		else{
 			SecondTextSelectComboBox.setSelectedIndex(preferences.getSecondaryTextIndex());
@@ -140,16 +140,16 @@ public class TranslationSetupPanel extends PreferencesSetupPanel {
 			public void actionPerformed(ActionEvent e) {
 				
 				int i=SecondTextSelectComboBox.getSelectedIndex();
-				if(i!=TranslationTextsContainer.getSize()){
+				if(i!=TranslationTextInfoContainer.getSize()){
 					preferences.setSecondaryTextIndex(i);
 					fontPreviewPanel.setText(
-							TranslationTextsContainer.getTransFile(preferences.getPrimaryTextIndex()).getPreviewText()
+							TranslationTextInfoContainer.getTransFile(preferences.getPrimaryTextIndex()).getPreviewText()
 							+"\n\n"+
-									TranslationTextsContainer.getTransFile(i).getPreviewText());
+									TranslationTextInfoContainer.getTransFile(i).getPreviewText());
 				}else{
 					preferences.setSecondaryTextIndex(-1);
 					fontPreviewPanel.setText(
-							TranslationTextsContainer.getTransFile(preferences.getPrimaryTextIndex()).getPreviewText());
+							TranslationTextInfoContainer.getTransFile(preferences.getPrimaryTextIndex()).getPreviewText());
 				}
 				
 				fontPreviewPanel.updateTextArea();
@@ -273,7 +273,7 @@ public class TranslationSetupPanel extends PreferencesSetupPanel {
 	            
 	            success=true;
 	            //Toast.makeText(this,"Saved Successfully :\n"+toFile.getName(), Toast.LENGTH_LONG).show();
-	            TranslationTextsContainer.addToTransFileList(writingFile);
+	            TranslationTextInfoContainer.addToTransFileList(writingFile);
 	            f.close();
             }else{
             	if(writingFile.exists())
