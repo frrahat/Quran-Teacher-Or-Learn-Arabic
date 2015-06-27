@@ -19,4 +19,6 @@ public class FilePaths {
 	public static final String additionalTextsDir= System.getProperty("user.dir")+ "/res/Additional Texts";
 	public static final String additionalFontsDir= System.getProperty("user.dir")+ "/res/Additional Fonts";
 	
+	public static final String updateInfoStorageFile= System.getProperty("user.dir")+ "/.preferences/updateInfo";
+	
 }

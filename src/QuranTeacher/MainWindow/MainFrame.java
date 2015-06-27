@@ -43,13 +43,21 @@ import javax.swing.JSplitPane;
 
 
 
+
+
+
+
+
 import QuranTeacher.Basics.Ayah;
 import QuranTeacher.Dialogs.AboutDialog;
 import QuranTeacher.Dialogs.HelpDialog;
 import QuranTeacher.Dialogs.PreferencesDialog;
+import QuranTeacher.Dialogs.ShowNewUpdateDialog;
+import QuranTeacher.Dialogs.UpdateSettingDialog;
 import QuranTeacher.Interfaces.AudioButtonListener;
 import QuranTeacher.Interfaces.PreferencesSaveListener;
 import QuranTeacher.Interfaces.AyahSelectionListener;
+import QuranTeacher.Interfaces.UpdateActivityReturnListener;
 import QuranTeacher.Interfaces.UserInputListener;
 import QuranTeacher.MainWindow.MainDisplayPart.AnimationPanel;
 import QuranTeacher.MainWindow.MainDisplayPart.DisplayPanel;
@@ -59,6 +67,8 @@ import QuranTeacher.MainWindow.MainDisplayPart.TranslationPanel;
 import QuranTeacher.MainWindow.MainDisplayPart.DisplayPanel.DisplayPage;
 import QuranTeacher.MainWindow.SidePart.SidePanel;
 import QuranTeacher.Preferences.deltaPixelProperty;
+import QuranTeacher.Utils.Updater;
+import QuranTeacher.Utils.VersionInfo;
 
 public class MainFrame extends JFrame {
 
@@ -119,6 +129,22 @@ public class MainFrame extends JFrame {
 				
 				
 				startUpLoaderPanel.startLoading();
+				
+				//updater
+				if(UpdateSettingDialog.isToCheckForUpdate()){
+					Updater updater=new Updater();
+					updater.setUpdateActivityReturnListener(new UpdateActivityReturnListener() {
+						
+						@Override
+						public void nextToDo(boolean wasDownloadSuccess, VersionInfo newVersionInfo) {
+							if(newVersionInfo!=null)
+								new ShowNewUpdateDialog(newVersionInfo).setVisible(true);
+						}
+					});
+					
+					updater.startUpdateActivity();
+				}
+				
 			};
 			
 			
@@ -197,6 +223,18 @@ public class MainFrame extends JFrame {
 		mntmPreferences.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		mnSetting.add(mntmPreferences);
 		
+		JMenuItem mntmUpdateSetting = new JMenuItem("Update Settings");
+		mntmUpdateSetting.setForeground(Color.ORANGE);
+		mntmUpdateSetting.setBackground(Color.DARK_GRAY);
+		mntmUpdateSetting.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new UpdateSettingDialog().setVisible(true);
+			}
+		});
+		mntmUpdateSetting.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		mnSetting.add(mntmUpdateSetting);
+		
+		
 		JMenu mnTools = new JMenu("Tools");
 		mnTools.setForeground(Color.ORANGE);
 		mnTools.setFont(new Font("Tahoma", Font.PLAIN, 18));
@@ -207,9 +245,33 @@ public class MainFrame extends JFrame {
 		mntmUpdate.setBackground(Color.DARK_GRAY);
 		mntmUpdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(getParent(),
-						"Updates not available.",
-						"Requires Manual Check",JOptionPane.ERROR_MESSAGE);
+				Updater updater=new Updater();
+				updater.setUpdateActivityReturnListener(new UpdateActivityReturnListener() {
+					
+					@Override
+					public void nextToDo(boolean wasDownloadSuccess,VersionInfo newVersionInfo) {
+						if(newVersionInfo==null){
+							if(!wasDownloadSuccess){
+								JOptionPane.showMessageDialog(getParent(), "Failed to connect to the server.\n"
+										+ "Please check your internet connection.","Failure",JOptionPane.ERROR_MESSAGE);
+							}else{
+								JOptionPane.showMessageDialog(getParent(), "Current version is "+version+", "
+										+ "And it is up to date.");
+							}
+						}
+						
+						else{
+							if(!wasDownloadSuccess){
+								JOptionPane.showMessageDialog(getParent(), "An upgraded version has been released earlier. "
+										+ "But failed to connect to the server.\n"
+										+ "Please check your internet connection for the latest update.");
+							}
+							new ShowNewUpdateDialog(newVersionInfo).setVisible(true);
+						}
+					}
+				});
+				
+				updater.startUpdateActivity();
 			}
 		});
 		mntmUpdate.setFont(new Font("Tahoma", Font.PLAIN, 18));
