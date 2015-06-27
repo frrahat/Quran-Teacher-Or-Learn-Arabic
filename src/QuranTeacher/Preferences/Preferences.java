@@ -44,8 +44,10 @@ public abstract class Preferences {
 		this.id=id;
 		
 		//System.out.println("preferences called from ="+ id);
-		
-		MyFonts.init();
+		loadNecessaryFonts();
+	}
+
+	private void loadNecessaryFonts() {
 		MyFonts.addFont(FilePaths.tahomaFontPath);
 		MyFonts.addFont(FilePaths.me_quranFontPath);
 		MyFonts.addFont(FilePaths.solaimanLipiFontPath);

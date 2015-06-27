@@ -33,11 +33,11 @@ import QuranTeacher.Preferences.AudioPreferences;
 import QuranTeacher.Preferences.Preferences;
 import QuranTeacher.Preferences.TranslationPreferences;
 import QuranTeacher.Preferences.WordByWordFontPref;
-import QuranTeacher.PreferencesPanels.AnimationSetupPanel;
-import QuranTeacher.PreferencesPanels.AudioPreferencesPanel;
-import QuranTeacher.PreferencesPanels.PreferencesSetupPanel;
-import QuranTeacher.PreferencesPanels.TranslationSetupPanel;
-import QuranTeacher.PreferencesPanels.WbWFontSetupPanel;
+import QuranTeacher.PreferencesSetupPanels.AnimationSetupPanel;
+import QuranTeacher.PreferencesSetupPanels.AudioPreferencesPanel;
+import QuranTeacher.PreferencesSetupPanels.PreferencesSetupPanel;
+import QuranTeacher.PreferencesSetupPanels.TranslationSetupPanel;
+import QuranTeacher.PreferencesSetupPanels.WbWFontSetupPanel;
 
 
 public class PreferencesDialog extends JDialog {
@@ -55,33 +55,35 @@ public class PreferencesDialog extends JDialog {
 	private WbWFontSetupPanel wbWFontSetupPanel;
 	private AudioPreferencesPanel recitationPanel;
 	
-	private static AnimationPreferences animationPreferences=
-			new AnimationPreferences("animation.preferences",true);
-	//all fonts have been initialized
+	private static AnimationPreferences animationPreferences;
+	private static TranslationPreferences translationPreferences;
 	
-	private static TranslationPreferences translationPreferences=
-			new TranslationPreferences("translation.preferences");
+	private static WordByWordFontPref wordByWordFontPref;
 	
-	private static WordByWordFontPref wordByWordFontPref=
-			new WordByWordFontPref("wbwFont.preferences");
+	private static AudioPreferences audioPreferences;
 	
-	private static AudioPreferences audioPreferences=
-			new AudioPreferences("audio.preferences");
+	private static Preferences[] allPreferences;
 	
-	private static Preferences[] allPreferences=//storing references
-		{
-			animationPreferences,
-			translationPreferences,
-			wordByWordFontPref,
-			audioPreferences
-		};
-	
-	PreferencesSetupPanel[] allSetupPanels=new PreferencesSetupPanel[3];
+	PreferencesSetupPanel[] allSetupPanels;
 	
 	public PreferencesDialog() {
 		
+		animationPreferences = new AnimationPreferences("animation.preferences",true);
+		//all fonts have been initialized
+		translationPreferences = new TranslationPreferences("translation.preferences");
+		wordByWordFontPref = new WordByWordFontPref("wbwFont.preferences");
+		audioPreferences = new AudioPreferences("audio.preferences");
 		
-		setAllPrefsFromFile();
+		allPreferences=new Preferences[4];//storing references
+		{
+			allPreferences[0] = animationPreferences;
+			allPreferences[1] = translationPreferences;
+			allPreferences[2] = wordByWordFontPref;
+			allPreferences[3] = audioPreferences;
+		}
+			
+		
+		setAllPrefsFromFile(allPreferences);
 		
 		setModal(true);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(PreferencesDialog.class.getResource("/QuranTeacher/images/icon64.png")));
@@ -117,6 +119,7 @@ public class PreferencesDialog extends JDialog {
 
 		}
 		
+		allSetupPanels=new PreferencesSetupPanel[3];
 		allSetupPanels[0]=animationSetupPanel;
 		allSetupPanels[1]=translationSetupPanel;
 		allSetupPanels[2]=wbWFontSetupPanel;
@@ -196,7 +199,7 @@ public class PreferencesDialog extends JDialog {
 		saveListener=listener;
 	}
 	
-	public void setAllPrefsFromFile()
+	public void setAllPrefsFromFile(Preferences[] allPreferences)
 	{
 		File directory=new File(Preferences.storageFolder);
 		if(directory.exists())

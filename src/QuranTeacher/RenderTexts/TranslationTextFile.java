@@ -19,10 +19,10 @@ public class TranslationTextFile {
 	
 	
 	
-	public TranslationTextFile(InputStream in,String fileName){
-		this.inputStream=in;
-		this.fileName=fileName;		
-		setPreviewText(in);
+	public TranslationTextFile(String ResourcePath,String fileName){
+		this.inputStream=TranslationTextFile.class.getResourceAsStream(ResourcePath);
+		this.fileName=fileName;	
+		setPreviewText(TranslationTextFile.class.getResourceAsStream(ResourcePath));
 	}
 	
 	
@@ -40,21 +40,16 @@ public class TranslationTextFile {
 			name=name.substring(0, k);
 		}
 		this.fileName=name;
-		
-		InputStream in=null;
-		
 		try {
-			in=new FileInputStream(file);
+			setPreviewText(new FileInputStream(file));
 		} catch (FileNotFoundException e) {
-			//unexpected if it occurs
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		setPreviewText(in);
-		
 	}
-	
-	
+	/*
+	*inputStream changes, so new instance of inputstream should be sent
+	*/
 	public void setPreviewText(InputStream in){
 		
 		this.previewText="No Preview Text Found";

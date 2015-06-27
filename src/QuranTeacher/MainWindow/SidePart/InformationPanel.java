@@ -50,6 +50,8 @@ public class InformationPanel extends JPanel {
 	private final String[] columnNames={"Name","Value"};
 	private JTextArea textArea;
 	
+	private boolean infoIsSet;
+	
 	public InformationPanel() {
 		setForeground(Color.WHITE);
 		setBackground(Color.DARK_GRAY);
@@ -80,7 +82,7 @@ public class InformationPanel extends JPanel {
 		table = new JTable(rowData,columnNames);
 		table.setBackground(Color.DARK_GRAY);
 		table.setForeground(Color.ORANGE);
-		setInfo(0);
+		//setInfo(0);
 		
 		table.setEnabled(false);
 		table.setRowSelectionAllowed(false);
@@ -94,6 +96,8 @@ public class InformationPanel extends JPanel {
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		themePanel.add(scrollPane, BorderLayout.CENTER);
 		scrollPane.setViewportView(textArea);
+		
+		infoIsSet=false;
 	}
 	
 	
@@ -120,6 +124,8 @@ public class InformationPanel extends JPanel {
 			textArea.append((i+1)+")"+info.mainTheme[i]+"\n\n");
 			i++;
 		}
+		
+		infoIsSet=true;
 	}
 	
 	private void setRowNames()
@@ -132,5 +138,9 @@ public class InformationPanel extends JPanel {
 			rowData[i][0]=rowNames[i];
 			rowData[i][1]=null;
 		}
+	}
+	
+	public boolean isInfoSet(){
+		return infoIsSet;
 	}
 }

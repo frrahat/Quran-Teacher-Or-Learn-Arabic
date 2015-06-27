@@ -86,7 +86,7 @@ public class QuranText {
 		}
 		else
 		{
-			System.out.println(" not found");
+			System.out.println("inpustStream is null.");
 		}
 	}
 	

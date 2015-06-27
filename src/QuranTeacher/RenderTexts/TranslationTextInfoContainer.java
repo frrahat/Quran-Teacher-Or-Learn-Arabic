@@ -16,35 +16,48 @@ public class TranslationTextInfoContainer {
 	private static ArrayList<TranslationTextFile>transFiles;
 	private static boolean initialized;
 	
-	public static void initializeTextsContainer(){
+	public static void initializeTextsInfoContainer(){
 		transFiles=new ArrayList<>();
-		
-		InputStream inB=TranslationTextFile.class.getResourceAsStream(FilePaths.BengaliTextFilePath);
-		InputStream inE=TranslationTextFile.class.getResourceAsStream(FilePaths.EnglishTextFilePath);
-		
-		transFiles.add(new TranslationTextFile(inE, "English"));
-		transFiles.add(new TranslationTextFile(inB,"Bengali"));
-		
 		initialized=true;
+		
+		transFiles.add(new TranslationTextFile(FilePaths.EnglishTextFilePath, "English"));
+		transFiles.add(new TranslationTextFile(FilePaths.BengaliTextFilePath, "Bengali"));
+		
+		File storageFolder=new File(FilePaths.additionalTextsDir);
+		if(!storageFolder.exists()){
+			storageFolder.mkdirs();
+		}
+		else{
+			File[] files=storageFolder.listFiles();
+			for(int i=0;i<files.length;i++){
+				transFiles.add(new TranslationTextFile(files[i]));
+			}
+		}
 	}
 	
 	public static ArrayList<TranslationTextFile> getAllTranslationTextFiles(){
 		if(!initialized){
-			initializeTextsContainer();
+			initializeTextsInfoContainer();
 		}
 		return transFiles;
 	}
 	
 	public static void addToTransFileList(File file){
 		if(!initialized){
-			initializeTextsContainer();
+			initializeTextsInfoContainer();
+		}
+		TranslationTextFile t=new TranslationTextFile(file);
+		for(int i=0;i<transFiles.size();i++){
+			if(transFiles.get(i).getFileName().equals(t.getFileName())){
+				return;
+			}
 		}
 		transFiles.add(new TranslationTextFile(file));
 	}
 	
 	public static TranslationTextFile getTransFile(int index){
 		if(!initialized){
-			initializeTextsContainer();
+			initializeTextsInfoContainer();
 		}
 		return transFiles.get(index);
 	}
@@ -73,6 +86,8 @@ public class TranslationTextInfoContainer {
 	}
 
 	public static int getSize() {
+		if(!initialized)
+			initializeTextsInfoContainer();
 		return transFiles.size();
 	}
 }

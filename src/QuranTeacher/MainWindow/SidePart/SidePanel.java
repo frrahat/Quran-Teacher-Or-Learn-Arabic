@@ -14,7 +14,7 @@ import javax.swing.border.BevelBorder;
 import QuranTeacher.Basics.Ayah;
 import QuranTeacher.Basics.SurahInformationContainer;
 import QuranTeacher.Interfaces.AudioButtonListener;
-import QuranTeacher.Interfaces.SelectionListener;
+import QuranTeacher.Interfaces.AyahSelectionListener;
 
 import java.awt.Dimension;
 import java.awt.Color;
@@ -31,24 +31,27 @@ public class SidePanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	private SelectionListener selectionListener;
+	private AyahSelectionListener ayahSelectionListener;
 	private final InformationPanel informationPanel;
 	private AudioNavigationPanel audioNavPanel;
 	private AudioButtonListener audioButtonListener;
+	private SelectionPanel selectionPanel;
 	
 	public SidePanel() {
 		setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		setPreferredSize(new Dimension(300, 300));
 		
 		//----my edition----
-		loadSuraInfo();//assumed use litte time to load
+		//loadSuraInfo();//assumed uses litte time to load
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{296, 0};
 		gridBagLayout.rowHeights = new int[] {98, 98, 98, 100};
 		gridBagLayout.columnWeights = new double[]{0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
-		SelectionPanel selectionPanel=new SelectionPanel();
+		
+
+		selectionPanel=new SelectionPanel();
 		selectionPanel.setBackground(Color.DARK_GRAY);
 		GridBagConstraints gbc_selectionPanel = new GridBagConstraints();
 		gbc_selectionPanel.fill = GridBagConstraints.BOTH;
@@ -57,15 +60,15 @@ public class SidePanel extends JPanel {
 		gbc_selectionPanel.gridy = 0;
 		add(selectionPanel, gbc_selectionPanel);
 		
-		selectionPanel.setSelectionListener(new SelectionListener() {
+		selectionPanel.setSelectionListener(new AyahSelectionListener() {
 			
 			@Override
 			public void ayahSelected(Ayah ayah) {
 				//System.out.println("In sidepanel :"+ayah.suraIndex+" "+ayah.ayahIndex);
 				if(ayah.ayahIndex==-1)//sura combobox changed
 					informationPanel.setInfo(ayah.suraIndex);
-				else if(selectionListener!=null)//go button clicked
-					selectionListener.ayahSelected(ayah);//going to main
+				else if(ayahSelectionListener!=null)//go button clicked
+					ayahSelectionListener.ayahSelected(ayah);//going to main
 					
 			}
 		});
@@ -98,9 +101,9 @@ public class SidePanel extends JPanel {
 	}
 
 	
-	public void setSelectionListener(SelectionListener listener) 
+	public void setSelectionListener(AyahSelectionListener listener) 
 	{
-		this.selectionListener=listener;
+		this.ayahSelectionListener=listener;
 	}
 	
 	public void setAudioButtonListener(AudioButtonListener listener)
@@ -108,14 +111,23 @@ public class SidePanel extends JPanel {
 		audioButtonListener=listener;
 	}
 	
-	private void loadSuraInfo()
+	/*private void loadSuraInfo()
 	{
 		//go to the sura area
 		SurahInformationContainer.loadAllSurahInfos();
-	}
+	}*/
 	
 	public AudioNavigationPanel getAudioNavPanel()
 	{
 		return audioNavPanel;
+	}
+
+
+	public SelectionPanel getSelectionPanel() {
+		return selectionPanel;
+	}
+	
+	public InformationPanel getInformationPanel(){
+		return informationPanel;
 	}
 }

@@ -34,7 +34,7 @@ import QuranTeacher.MainWindow.SidePart.SelectionPanel;
 import QuranTeacher.Preferences.AnimationPreferences;
 import QuranTeacher.Preferences.AudioPreferences;
 import QuranTeacher.Preferences.deltaPixelProperty;
-import QuranTeacher.PreferencesPanels.AudioPreferencesPanel;
+import QuranTeacher.PreferencesSetupPanels.AudioPreferencesPanel;
 import QuranTeacher.RenderAnimation.Animation;
 import QuranTeacher.RenderAnimation.FocusCheckRunnable;
 import QuranTeacher.RenderAudio.Reciter;

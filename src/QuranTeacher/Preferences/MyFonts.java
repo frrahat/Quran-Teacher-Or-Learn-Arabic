@@ -24,48 +24,46 @@ public class MyFonts {
 			Font.BOLD,
 			Font.ITALIC};
 	
+	private static boolean initialized=false;
+	
 	private static String[] fontStyleNames={
 		"PLAIN",
 		"BOLD",
 		"ITALIC"};
-		
 	
-	public MyFonts()
-	{
-		init();
-	}
-	
-	public static void init()
+	private static void init()
 	{
 		env=GraphicsEnvironment.getLocalGraphicsEnvironment();
 		fonts=env.getAllFonts();
-		fontNames=getFontNames(false);
+		initialized=true;
+		
+		fontNames=getFontNames();
 	}
 	
 	public static void refresh()
 	{
 		fonts=env.getAllFonts();
-		fontNames=getFontNames(false);
+		fontNames=null;
+		fontNames=getFontNames();
 	}
 
 	public static Font[] getFonts() {
+		if(!initialized)
+			init();
 		return fonts;
 	}
-
-
-	public static String[] getFontNames() 
-	{
-		return fontNames;
-	}
 	
-	public static String[] getFontNames(boolean fontNamesInitialized)
+	public static String[] getFontNames()
 	{
-		if(!fontNamesInitialized)
-		{
-			fontNames=new String[fonts.length];
-			for(int i=0;i<fonts.length;i++)
-				fontNames[i]=fonts[i].getName();
+		if(!initialized)
+			init();
+		
+		if(fontNames==null){
+			fontNames = new String[fonts.length];
+			for (int i = 0; i < fonts.length; i++)
+				fontNames[i] = fonts[i].getName();
 		}
+
 		return fontNames;
 	}
 
@@ -80,6 +78,8 @@ public class MyFonts {
 	
 	public static int getFontIndex(String fontName)
 	{
+		if(!initialized)
+			init();
 		//System.out.println(fontName);
 		for(int i=0;i<fontNames.length;i++)
 			if(fontName.equals(fontNames[i]))
@@ -97,6 +97,9 @@ public class MyFonts {
 	
 	public static void addFont(String path)
 	{
+		//int k=Integer.parseInt("foo");
+		if(!initialized)
+			init();
 		InputStream is=MyFonts.class.getResourceAsStream(path);
 		try {
 			Font font = Font.createFont(Font.TRUETYPE_FONT, is);

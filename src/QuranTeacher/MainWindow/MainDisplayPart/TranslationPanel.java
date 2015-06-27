@@ -79,15 +79,16 @@ public class TranslationPanel extends JPanel {
 	public static void setTranslationText(Ayah ayah)
 	{
 		String text;
-		text=ayah.toDetailedString()+"\n"+
+		text="["+ayah.toDetailedString()+"]\n\t"+
 					AllTextsContainer.translationtexts.get(primaryTextIndex).getQuranText(ayah);
 		
 		if(secondaryTextIndex!=-1){
-			text+="\n\n"+ayah.toDetailedString()+"\n"+
+			text+="\n\n["+ayah.toDetailedString()+"]\n\t"+
 					AllTextsContainer.translationtexts.get(secondaryTextIndex).getQuranText(ayah);
 		}
 		
 		txtrTranslationtext.setText(text);
+		txtrTranslationtext.setCaretPosition(0);
 		
 	}
 	

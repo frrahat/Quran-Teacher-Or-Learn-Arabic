@@ -13,6 +13,7 @@ package QuranTeacher.MainWindow.MainDisplayPart;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.JSplitPane;
@@ -20,8 +21,12 @@ import javax.swing.JSplitPane;
 import java.awt.Color;
 
 import javax.swing.border.BevelBorder;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import java.awt.CardLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 
 
 public class DisplayPanel extends JPanel {
@@ -45,22 +50,22 @@ public class DisplayPanel extends JPanel {
 	public DisplayPanel() {
 		setLayout(new CardLayout(0, 0));
 		
-		JSplitPane splitPane = new JSplitPane();
+		final JSplitPane splitPane = new JSplitPane();
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setBackground(Color.DARK_GRAY);
-		splitPane.setResizeWeight(0.8);
+		splitPane.setResizeWeight(1.0);
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		
 		animationPanel=new AnimationPanel();
 		animationPanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-		splitPane.setLeftComponent(animationPanel);
+		splitPane.setTopComponent(animationPanel);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.RED, null, null, null));
 		tabbedPane.setBackground(Color.LIGHT_GRAY);
 		tabbedPane.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		tabbedPane.setForeground(Color.BLUE);
-		splitPane.setRightComponent(tabbedPane);
+		splitPane.setBottomComponent(tabbedPane);
 		
 		translationPanel=new TranslationPanel();
 		tabbedPane.addTab("Translation", null, translationPanel, null);
@@ -80,6 +85,23 @@ public class DisplayPanel extends JPanel {
 		
 		displayPage=DisplayPage.StartUpLoadingPage;
 		setDisplayPage(displayPage);
+		
+		
+		
+		BasicSplitPaneUI l_ui = (BasicSplitPaneUI) splitPane.getUI();
+        BasicSplitPaneDivider l_divider = l_ui.getDivider();
+        l_divider.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                Dimension l_pane_size = splitPane.getSize();
+                
+                int l_new_loc = splitPane.getDividerLocation() + e.getY();
+                if (l_new_loc >= 0 && l_new_loc <= l_pane_size.height) {
+                    splitPane.setDividerLocation(l_new_loc);
+                }
+                
+            }
+        });
 	}
 	
 

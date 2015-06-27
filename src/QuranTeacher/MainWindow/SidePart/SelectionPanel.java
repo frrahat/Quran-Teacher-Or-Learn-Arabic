@@ -36,7 +36,7 @@ import javax.swing.JRadioButton;
 
 import QuranTeacher.Basics.Ayah;
 import QuranTeacher.Basics.SurahInformationContainer;
-import QuranTeacher.Interfaces.SelectionListener;
+import QuranTeacher.Interfaces.AyahSelectionListener;
 import QuranTeacher.Preferences.AnimationPreferences;
 
 import java.awt.event.ItemListener;
@@ -51,20 +51,20 @@ public class SelectionPanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	private Integer[][] totalAyahList=new Integer [114][];
-	private String[] suraNameList=new String[114];
-	private int[] totalAyah=new int[114];
 	
 	private DefaultComboBoxModel<String> suraNamesBox=new DefaultComboBoxModel<>();
 	@SuppressWarnings("unchecked")
 	private final ComboBoxModel<Integer>[] models=new ComboBoxModel[114];
 	
-	private SelectionListener selectionListener;
+	private AyahSelectionListener ayahSelectionListener;
 	private static JComboBox<Integer> ayahBox;
 	private static JComboBox<String> suraBox;
 	
 	private JRadioButton rdbtnSingleAyah;
 	private JRadioButton rdbtnContinuous;
+	private JButton btnNext;
+	private JButton buttonPrev;
+	private JButton btnGo;
 	
 	public SelectionPanel() {
 		setForeground(Color.WHITE);
@@ -126,8 +126,8 @@ public class SelectionPanel extends JPanel {
 		gbc_ayaBox.gridy = 1;
 		add(ayahBox, gbc_ayaBox);
 		
-		JButton button = new JButton("<<Prev");
-		button.addActionListener(new ActionListener() {
+		buttonPrev = new JButton("<<Prev");
+		buttonPrev.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int i=suraBox.getSelectedIndex();
 				int j=ayahBox.getSelectedIndex();
@@ -138,28 +138,28 @@ public class SelectionPanel extends JPanel {
 					{
 						//go to previous sura, last ayah
 						j=SurahInformationContainer.totalAyahs[i-1]-1;
-						selectionListener.ayahSelected(new Ayah(i-1,j));//listener is not null
+						ayahSelectionListener.ayahSelected(new Ayah(i-1,j));//listener is not null
 						suraBox.setSelectedIndex(i-1);
 						ayahBox.setSelectedIndex(j);
 					}
 				}
 				else
 				{
-					selectionListener.ayahSelected(new Ayah(i,j-1));//listener is not null
+					ayahSelectionListener.ayahSelected(new Ayah(i,j-1));//listener is not null
 					ayahBox.setSelectedIndex(j-1);
 				}
 			}
 		});
 		
-		button.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		buttonPrev.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		GridBagConstraints gbc_button = new GridBagConstraints();
 		gbc_button.anchor = GridBagConstraints.EAST;
 		gbc_button.insets = new Insets(0, 0, 5, 5);
 		gbc_button.gridx = 1;
 		gbc_button.gridy = 7;
-		add(button, gbc_button);
+		add(buttonPrev, gbc_button);
 		
-		JButton btnNext = new JButton("Next>>");
+		btnNext = new JButton("Next>>");
 		btnNext.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int i=suraBox.getSelectedIndex();
@@ -172,13 +172,13 @@ public class SelectionPanel extends JPanel {
 						//go to next sura, first ayah
 						suraBox.setSelectedIndex(i+1);
 						ayahBox.setSelectedIndex(0);
-						selectionListener.ayahSelected(new Ayah(i+1,0));//listener is not null
+						ayahSelectionListener.ayahSelected(new Ayah(i+1,0));//listener is not null
 					}
 				}
 				else
 				{
 					ayahBox.setSelectedIndex(j+1);
-					selectionListener.ayahSelected(new Ayah(i,j+1));//listener is not null
+					ayahSelectionListener.ayahSelected(new Ayah(i,j+1));//listener is not null
 				}
 			}
 		});
@@ -190,7 +190,7 @@ public class SelectionPanel extends JPanel {
 		gbc_btnNext.gridy = 7;
 		add(btnNext, gbc_btnNext);
 		
-		JButton btnGo = new JButton("Go");
+		btnGo = new JButton("Go");
 		btnGo.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		GridBagConstraints gbc_btnGo = new GridBagConstraints();
 		gbc_btnGo.insets = new Insets(0, 0, 5, 5);
@@ -199,33 +199,6 @@ public class SelectionPanel extends JPanel {
 		gbc_btnGo.gridy = 7;
 		add(btnGo, gbc_btnGo);
 		
-		
-		try
-		{
-			getSuraNames(suraNameList,totalAyah);
-			for(int i=0;i<114;i++)
-			{
-				suraNamesBox.addElement(Integer.toString(i+1)+"."+suraNameList[i]);
-				totalAyahList[i]=new Integer[totalAyah[i]];
-				for(int j=0;j<totalAyah[i];j++)
-				{
-					totalAyahList[i][j]=j+1;
-				}
-				models[i]=new DefaultComboBoxModel<>(totalAyahList[i]);
-			}
-			
-		}catch(Exception e)
-		{
-			System.err.println("ComboBox fails");
-			System.err.println(e);
-			e.printStackTrace();
-		}
-		
-		//setting initial values to suraBox and ayahBox
-		suraBox.setModel(suraNamesBox);
-		suraBox.setSelectedIndex(0);
-		ayahBox.setModel(models[0]);
-		ayahBox.setSelectedIndex(0);
 		
 		JLabel lblDisplay = new JLabel("Animation :");
 		lblDisplay.setForeground(Color.ORANGE);
@@ -276,8 +249,8 @@ public class SelectionPanel extends JPanel {
 				int j=ayahBox.getSelectedIndex();
 				
 				Ayah ayah=new Ayah(i, j);
-				if(selectionListener!=null)
-					selectionListener.ayahSelected(ayah);
+				if(ayahSelectionListener!=null)
+					ayahSelectionListener.ayahSelected(ayah);
 				else
 					System.out.println("No listener available");
 				
@@ -285,6 +258,7 @@ public class SelectionPanel extends JPanel {
 			}
 		});
 		
+		disableAllButtons();
 		//suraBox action listening
 		suraBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -292,30 +266,42 @@ public class SelectionPanel extends JPanel {
 				int i=suraBox.getSelectedIndex();
 				ayahBox.setModel(models[i]);
 				Ayah ayah=new Ayah(i, -1);
-				if(selectionListener!=null)
-					selectionListener.ayahSelected(ayah);//going to sidePanel
+				if(ayahSelectionListener!=null)
+					ayahSelectionListener.ayahSelected(ayah);//going to sidePanel
 				else
 					System.out.println("No listener available");
 			}
 		});
 	}
-	
-	
-	
-	private void getSuraNames(String[] nameList,int[] totalAyah)
-	{
-		for(int i=0;i<114;i++)
-		{
-			nameList[i]=SurahInformationContainer.getSuraInfo(i).title;
-			totalAyah[i]=SurahInformationContainer.getSuraInfo(i).ayahCount;
+
+
+
+	public void setComboboxModels() {
+		for (int i = 0; i < 114; i++) {
+			suraNamesBox.addElement(Integer.toString(i + 1) + "."
+					+ SurahInformationContainer.getSuraInfo(i).title);
+			
+			Integer[][] totalAyahList=new Integer[114][];
+			int totalAyah=SurahInformationContainer.totalAyahs[i];
+			totalAyahList[i] = new Integer[totalAyah];
+			for (int j = 0; j < totalAyah; j++) {
+				totalAyahList[i][j] = j + 1;
+			}
+			models[i] = new DefaultComboBoxModel<>(totalAyahList[i]);
 		}
+		
+		//setting initial values to suraBox and ayahBox
+		suraBox.setModel(suraNamesBox);
+		suraBox.setSelectedIndex(0);
+		ayahBox.setModel(models[0]);
+		ayahBox.setSelectedIndex(0);
+		
+		enableAllButtons();
 	}
 	
-	
-	
-	public void setSelectionListener(SelectionListener listener)
+	public void setSelectionListener(AyahSelectionListener listener)
 	{
-		this.selectionListener=listener;
+		this.ayahSelectionListener=listener;
 	}
 	
 	public static void setSelectionIndex(Ayah ayah)
@@ -330,5 +316,17 @@ public class SelectionPanel extends JPanel {
 			rdbtnContinuous.setSelected(true);
 		else
 			rdbtnSingleAyah.setSelected(true);
+	}
+	
+	private void disableAllButtons(){
+		buttonPrev.setEnabled(false);
+		btnNext.setEnabled(false);
+		btnGo.setEnabled(false);
+	}
+	
+	private void enableAllButtons(){
+		buttonPrev.setEnabled(true);
+		btnNext.setEnabled(true);
+		btnGo.setEnabled(true);
 	}
 }

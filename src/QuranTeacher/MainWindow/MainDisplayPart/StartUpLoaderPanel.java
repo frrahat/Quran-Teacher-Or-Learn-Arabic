@@ -19,6 +19,7 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingWorker;
 
 import QuranTeacher.FilePaths;
+import QuranTeacher.Basics.SurahInformationContainer;
 import QuranTeacher.Dialogs.AboutDialog;
 import QuranTeacher.Dialogs.HelpDialog;
 import QuranTeacher.MainWindow.MainFrame;
@@ -46,6 +47,8 @@ public class StartUpLoaderPanel extends JPanel {
 	private JLabel lblProgress;
 	private Task task;
 	private JButton btnStart;
+	private LoadingCompleted loadingCompleted;
+	private StartButtonActionListener startButtonListener;
 
 
 	/**
@@ -99,7 +102,7 @@ public class StartUpLoaderPanel extends JPanel {
 		btnStart = new JButton("Please Wait...");
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//TODO
+				startButtonListener.startButtonClicked();
 			}
 		});
 		
@@ -201,9 +204,11 @@ public class StartUpLoaderPanel extends JPanel {
             int progress = 0;
             //Initialize progress property.
             setProgress(0);
+            //load surahInfo
+            SurahInformationContainer.loadAllSurahInfos();
             
             int totalQuranFiles=TranslationTextInfoContainer.getSize()+1;
-            int step=(int)(100.0/(33+totalQuranFiles))*(totalQuranFiles);
+            int step=(int)((100.0/(33+totalQuranFiles*1.5))*(totalQuranFiles*1.5));
             //load arabic QuranText
             InputStream in=StartUpLoaderPanel.class.getResourceAsStream(FilePaths.ArabicTextFilePath);
             AllTextsContainer.arabicText=new QuranText(in, true);
@@ -235,6 +240,23 @@ public class StartUpLoaderPanel extends JPanel {
             btnStart.setEnabled(true);
             btnStart.setText("Start");
             lblProgress.setText("Done!\n");
+            loadingCompleted.startInitializingTask();
         }
     }
+	
+	public interface LoadingCompleted{
+		public void startInitializingTask();
+	}
+
+	public void setLoadingCompletionListener(LoadingCompleted completed) {
+		this.loadingCompleted=completed;
+	}
+	
+	public interface StartButtonActionListener{
+		public void startButtonClicked();
+	}
+	
+	public void setStartButtonActionListener(StartButtonActionListener actionListener){
+		this.startButtonListener=actionListener;
+	}
 }

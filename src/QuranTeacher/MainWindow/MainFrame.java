@@ -13,6 +13,8 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -24,14 +26,20 @@ import java.awt.Font;
 import javax.swing.JButton;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 import javax.swing.JSplitPane;
+
+
+
 
 
 
@@ -41,10 +49,12 @@ import QuranTeacher.Dialogs.HelpDialog;
 import QuranTeacher.Dialogs.PreferencesDialog;
 import QuranTeacher.Interfaces.AudioButtonListener;
 import QuranTeacher.Interfaces.PreferencesSaveListener;
-import QuranTeacher.Interfaces.SelectionListener;
+import QuranTeacher.Interfaces.AyahSelectionListener;
 import QuranTeacher.Interfaces.UserInputListener;
 import QuranTeacher.MainWindow.MainDisplayPart.AnimationPanel;
 import QuranTeacher.MainWindow.MainDisplayPart.DisplayPanel;
+import QuranTeacher.MainWindow.MainDisplayPart.StartUpLoaderPanel;
+import QuranTeacher.MainWindow.MainDisplayPart.StartUpLoaderPanel.StartButtonActionListener;
 import QuranTeacher.MainWindow.MainDisplayPart.TranslationPanel;
 import QuranTeacher.MainWindow.MainDisplayPart.DisplayPanel.DisplayPage;
 import QuranTeacher.MainWindow.SidePart.SidePanel;
@@ -85,7 +95,30 @@ public class MainFrame extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowOpened(WindowEvent e) {
-				displayPanel.getStartUpLoaderPanel().startLoading();
+				StartUpLoaderPanel startUpLoaderPanel=
+							displayPanel.getStartUpLoaderPanel();
+				
+				startUpLoaderPanel.setLoadingCompletionListener(new StartUpLoaderPanel.LoadingCompleted() {
+					
+					@Override
+					public void startInitializingTask() {
+						sidePanel.getSelectionPanel().setComboboxModels();
+						if(!sidePanel.getInformationPanel().isInfoSet()){
+							sidePanel.getInformationPanel().setInfo(0);
+						}
+					}
+				});
+				
+				startUpLoaderPanel.setStartButtonActionListener(new StartButtonActionListener() {
+					
+					@Override
+					public void startButtonClicked() {
+						startAnimation(new Ayah(0,0));
+					}
+				});
+				
+				
+				startUpLoaderPanel.startLoading();
 			};
 			
 			
@@ -278,6 +311,7 @@ public class MainFrame extends JFrame {
 		
 		
 		sidePanel=new SidePanel();
+		//sidePanel.setVisible(false);
 		sidePanel.setBackground(Color.RED);
 		//contentPane.add(sidePanel,BorderLayout.WEST);
 		
@@ -306,7 +340,7 @@ public class MainFrame extends JFrame {
 
 		
 		
-		JSplitPane splitPane = new JSplitPane();
+		final JSplitPane splitPane = new JSplitPane();
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setEnabled(false);
 		contentPane.add(splitPane,BorderLayout.CENTER);
@@ -315,35 +349,27 @@ public class MainFrame extends JFrame {
 		splitPane.setRightComponent(displayPanel);
 		
 		
-		
-		
+		BasicSplitPaneUI l_ui = (BasicSplitPaneUI) splitPane.getUI();
+        BasicSplitPaneDivider l_divider = l_ui.getDivider();
+        l_divider.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                Dimension l_pane_size = splitPane.getSize();
+                
+                int l_new_loc = splitPane.getDividerLocation() + e.getX();
+                if (l_new_loc >= 0 && l_new_loc <= l_pane_size.width) {
+                    splitPane.setDividerLocation(l_new_loc);
+                }
+        		
+                
+            }
+        });
 		//when go,prev,next button clicked
-		sidePanel.setSelectionListener(new SelectionListener() {
+		sidePanel.setSelectionListener(new AyahSelectionListener() {
 			
 			@Override
 			public void ayahSelected(Ayah ayah) {
-				//System.out.println("In main:"+ayah.suraIndex+" "+ayah.ayahIndex);
-				//animPanel.setAction("Showing Ayah no :"+(ayah.ayahIndex+1)+" from Sura "+
-				//SuraInformation.suraInformations[ayah.suraIndex].title);
-				
-				if(displayPanel.getDisplayPage()!=DisplayPage.AnimationPage)
-				{
-					displayPanel.setDisplayPage(DisplayPage.AnimationPage);
-					animPanel.startAnimationTimer();
-				}
-					
-				animPanel.setAyah(ayah);
-				
-				btnPauseDisplay.setEnabled(true);
-				btnPauseDisplay.setText("Pause Display");
-				btnRestartDisplay.setEnabled(true);
-				
-				int deltaPixel=animPanel.getDeltaPixel();
-				
-				if(deltaPixel<deltaPixelProperty.maxDeltaPixel)
-					btnSpeedUp.setEnabled(true);//increase deltaPixel
-				if(deltaPixel>deltaPixelProperty.minDeltaPixel)
-					btnSpeedDown.setEnabled(true);//decrease deltaPixel
+				startAnimation(ayah);
 			}
 		});
 		
@@ -365,6 +391,32 @@ public class MainFrame extends JFrame {
 				updateAllPrefs();
 			}
 		});
+	}
+	
+	
+	private void startAnimation(Ayah ayah) {
+		//System.out.println("In main:"+ayah.suraIndex+" "+ayah.ayahIndex);
+		//animPanel.setAction("Showing Ayah no :"+(ayah.ayahIndex+1)+" from Sura "+
+		//SuraInformation.suraInformations[ayah.suraIndex].title);
+		
+		if(displayPanel.getDisplayPage()!=DisplayPage.AnimationPage)
+		{
+			displayPanel.setDisplayPage(DisplayPage.AnimationPage);
+			animPanel.startAnimationTimer();
+		}
+			
+		animPanel.setAyah(ayah);
+		
+		btnPauseDisplay.setEnabled(true);
+		btnPauseDisplay.setText("Pause Display");
+		btnRestartDisplay.setEnabled(true);
+		
+		int deltaPixel=animPanel.getDeltaPixel();
+		
+		if(deltaPixel<deltaPixelProperty.maxDeltaPixel)
+			btnSpeedUp.setEnabled(true);//increase deltaPixel
+		if(deltaPixel>deltaPixelProperty.minDeltaPixel)
+			btnSpeedDown.setEnabled(true);//decrease deltaPixel
 	}
 
 	private void updateSpeedButton(boolean upCalled)
