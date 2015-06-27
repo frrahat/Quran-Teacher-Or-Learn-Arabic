@@ -16,6 +16,7 @@ import java.awt.GridBagLayout;
 
 import javax.swing.JLabel;
 
+import java.awt.Desktop;
 import java.awt.GridBagConstraints;
 import java.awt.Font;
 import java.awt.Insets;
@@ -31,6 +32,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.net.URL;
 
 import javax.swing.border.TitledBorder;
 import javax.swing.UIManager;
@@ -182,7 +184,14 @@ public class ShowNewUpdateDialog extends JDialog {
 				JButton btnGo = new JButton("Go");
 				btnGo.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						//TODO
+						try {
+						    Desktop.getDesktop().browse(new URL(versionInfo.getDownloadLink()).toURI());
+						} catch (Exception i) {
+							JOptionPane.showMessageDialog(getParent(), "Failed to open browser."
+									+ "\nPlease manually open your browser and"
+									+ " then enter the link in the addressbar of the browser.","Failure",
+									JOptionPane.ERROR_MESSAGE);
+						}
 					}
 				});
 				btnGo.setFont(new Font("Tahoma", Font.PLAIN, 14));

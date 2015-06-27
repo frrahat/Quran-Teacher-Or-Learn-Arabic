@@ -1,31 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-  <meta charset="utf-8">
-  <meta name="robots" content="noindex">
-  <title>Sign in - Google Accounts</title>
-  <meta http-equiv="refresh" content="1; url=https://www.google.com/accounts/AccountChooser?hd=ugrad.cse.buet.ac.bd&amp;continue=https%3A%2F%2Fsites.google.com%2Fa%2Fugrad.cse.buet.ac.bd%2Ffrrahat%2Fhome%2Fqt-updates%2FQT_new_version_info.txt%3Fattredirects%3D0%26d%3D1&amp;followup=https%3A%2F%2Fsites.google.com%2Fa%2Fugrad.cse.buet.ac.bd%2Ffrrahat%2Fhome%2Fqt-updates%2FQT_new_version_info.txt%3Fattredirects%3D0%26d%3D1&amp;service=jotspot&amp;ul=1"></meta>
-  </head>
-  <body >
-  <form id="hiddenget" action="https://www.google.com/accounts/AccountChooser?hd=ugrad.cse.buet.ac.bd&amp;continue=https%3A%2F%2Fsites.google.com%2Fa%2Fugrad.cse.buet.ac.bd%2Ffrrahat%2Fhome%2Fqt-updates%2FQT_new_version_info.txt%3Fattredirects%3D0%26d%3D1&amp;followup=https%3A%2F%2Fsites.google.com%2Fa%2Fugrad.cse.buet.ac.bd%2Ffrrahat%2Fhome%2Fqt-updates%2FQT_new_version_info.txt%3Fattredirects%3D0%26d%3D1&amp;service=jotspot&amp;ul=1" method="get">
-  <noscript>
-  You should turn on Javascript support.
-  <input type="submit" id="nojssubmit" value="Continue">
-  </noscript>
-</form>
-  <script>
-window.onload = function() {
-  var redirectUrl = 'https:\x2F\x2Fwww.google.com\x2Faccounts\x2FAccountChooser?hd=ugrad.cse.buet.ac.bd\x26continue=https%3A%2F%2Fsites.google.com%2Fa%2Fugrad.cse.buet.ac.bd%2Ffrrahat%2Fhome%2Fqt-updates%2FQT_new_version_info.txt%3Fattredirects%3D0%26d%3D1\x26followup=https%3A%2F%2Fsites.google.com%2Fa%2Fugrad.cse.buet.ac.bd%2Ffrrahat%2Fhome%2Fqt-updates%2FQT_new_version_info.txt%3Fattredirects%3D0%26d%3D1\x26service=jotspot\x26ul=1';
-  var domain = 'ugrad.cse.buet.ac.bd';
-  var hash = window.location.hash;
-  if (hash) {
-  var match = hash.match(/[#&]Email=([^&]+)/);
-  if (match) {
-  redirectUrl += "&Email=" + match[1] + "@" + domain;
-  }
-  }
-  window.location.replace(redirectUrl);
-};
-</script>
-  </body>
-</html>
+1.2.1
+27-07-2015-08-11-pm
+www.facebook.com
+An important update.
+Download quickly.
