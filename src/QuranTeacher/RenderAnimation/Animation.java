@@ -45,7 +45,7 @@ public class Animation extends JPanel {
 	private final int maxSentences=30;
 	
 	protected Point currentDisplayPoint, startPoint;
-	private AnimationPreferences animPreferences;
+	protected AnimationPreferences animPreferences;//protected : to know from animPanel if download image is enabled
 	private WordByWordFontPref wordByWordFontPref;
 	protected int deltaPixel=deltaPixelProperty.initialDeltaPixel;
 	
@@ -61,8 +61,9 @@ public class Animation extends JPanel {
 	private int currentLine;//current displaying line
 	public static int mouseFocusedOn;//focused by mouse
 	
-	int lineHeight;//difference between lines
-	private int extraHeight;//fontmetrics extraHeight
+	private static int lineHeight;//difference between lines
+	private static int extraHeight;//fontmetrics extraHeight
+	
 	private int spaceWidth;
 	
 	protected int scrollY;//how much scrolled
@@ -98,7 +99,7 @@ public class Animation extends JPanel {
 			
 	protected String displayText="Go.";//not set to null,to avoid null pointer exception
 	protected List<WordInformation> infoOfWord;
-	protected List<Image>wordImages;
+	protected Image[] wordImages;
 
 	private boolean ayahDisplayFinished;
 	
@@ -106,6 +107,10 @@ public class Animation extends JPanel {
 	private Color wbwTrnslitrtionColor;
 	private Font wbwFont;//word meaning font
 	private FontMetrics wbwFontMetrics;//for word meaning font
+
+	private boolean downloadImagesEnabled;
+
+	private static boolean animatePartialWord;
 
 	
 	public Animation() {
@@ -120,6 +125,7 @@ public class Animation extends JPanel {
 		
 		animationRunning=false;
 		ayahDisplayFinished=false;
+		animatePartialWord=true;
 		
 		animPreferences=PreferencesDialog.getAnimPreferences();
 		wordByWordFontPref=PreferencesDialog.getWbWFontPref();
@@ -132,7 +138,7 @@ public class Animation extends JPanel {
 		
 		rectangles=new ArrayList<>();
 		infoOfWord=new ArrayList<>();
-		wordImages=new ArrayList<>();
+		//wordImages=new ArrayList<>();
 		
 		mouseFocusedOn=-1;
 		
@@ -281,14 +287,8 @@ public class Animation extends JPanel {
 		g.fillRect(startPoint.x+5, scrollbarPosY, 5, 30);
 		
 		//WORD HIDING under a rectangle
-		g.setColor(bgColor);
-		//g.setColor(new Color(240, 240, 200));
-		//startX -5 and width +5 added for TWA effect--> displaying of the letter TWA
-		//height+=extraHeight for displaying ZER
-		//all is the fontmetrics problem, unsolved
-		g.fillRect(startPoint.x-width-5, 
-				currentDisplayPoint.y-height-scrollY, 
-				width-distanceCovered+5, height+extraHeight);
+		if(animatePartialWord)
+			HidePartial(g);
 		
 		drawMeaningOfWord(g);
 		
@@ -322,6 +322,17 @@ public class Animation extends JPanel {
 	}
 	
 	
+	private void HidePartial(Graphics g) {
+		g.setColor(bgColor);
+		//g.setColor(new Color(240, 240, 200));
+		//startX -5 and width +5 added for TWA effect--> displaying of the letter TWA
+		//height+=extraHeight for displaying ZER
+		//all is the fontmetrics problem, unsolved
+		g.fillRect(startPoint.x-width-10, 
+				currentDisplayPoint.y-height-scrollY, 
+				width-distanceCovered+10, height+extraHeight);
+	}
+
 	private void drawFixedDisplay(Graphics g) 
 	{
 		g.setFont(animFont);
@@ -340,15 +351,9 @@ public class Animation extends JPanel {
 			
 		g.fillRect(startPoint.x+5, scrollingPosY, 5, 30);
 		
-		//Hiding word
-		g.setColor(bgColor);
-		//g.setColor(new Color(240, 240, 200));
-		//startX -5 and width +5 added for TWA effect--> displaying of the letter TWA
-		//height+=15 for displaying ZER
-		//all is the fontmetrics problem, unsolved
-		g.fillRect(startPoint.x-width-5, 
-				currentDisplayPoint.y-height-scrollY, 
-				width-distanceCovered+5, height+extraHeight);
+		//WORD HIDING under a rectangle
+		if(animatePartialWord)
+			HidePartial(g);
 		
 		drawMeaningOfWord(g);
 		
@@ -418,7 +423,7 @@ public class Animation extends JPanel {
 			g.setColor(Color.BLACK);
 			int writeY=y+30-scrollY;
 			
-			Image img=wordImages.get(index);
+			Image img=wordImages[index];
 			if(img!=null)
 			{
 				g.drawImage(img, x+10, writeY, this);
@@ -426,7 +431,7 @@ public class Animation extends JPanel {
 			}
 			else
 			{
-				writeY=drawFixedString(g, "<image not available>",
+				writeY=drawFixedString(g, "<image not found. See help for more info.>",
 						boxWidth-10, x+10,writeY);	
 			}
 
@@ -607,6 +612,7 @@ public class Animation extends JPanel {
 		fgColor=animPreferences.getForeGroundColor();
 		restingTimeGap=animPreferences.getRestingTime();
 		showPopUpInfoBox=animPreferences.isShowPopUpBox();
+		downloadImagesEnabled=animPreferences.isDownloadImageEnabled();
 		
 		fontMetrics=getFontMetrics(animFont);
 		lineHeight=fontMetrics.getHeight()+20;
@@ -629,13 +635,61 @@ public class Animation extends JPanel {
 	public AnimationPreferences getAnimationPref()
 	{
 		return new AnimationPreferences(
-				"animation.preferences",bgColor,fgColor,animFont,restingTimeGap,showPopUpInfoBox);
+				"animation.preferences",bgColor,fgColor,animFont,restingTimeGap,showPopUpInfoBox,
+				downloadImagesEnabled);
 	}
 	
 	public WordByWordFontPref getWbWFontPref()
 	{
 		return new WordByWordFontPref(
 				"wbwFont.preferences",wbwTrnslitrtionColor,wbwMeaningColor,wbwFont);
+	}
+	
+	
+	public static void setHidePartialWord(boolean value){
+		animatePartialWord=value;
+	}
+	
+	public static boolean isAnimatePartialWord(){
+		return animatePartialWord;
+	}
+	//for font changing problem 
+	public static boolean changeExtraHeight(boolean increase){
+		if(increase){
+			if(extraHeight<200){
+				extraHeight++;
+				return true;
+			}
+		}
+		else{
+			if(extraHeight>20){
+				extraHeight--;
+				return true;
+			}
+		}
+		return false;
+	}
+	public static boolean changeLineHeight(boolean increase){
+		if(increase){
+			if(lineHeight<200){
+				lineHeight++;
+				return true;
+			}
+		}
+		else{
+			if(lineHeight>20){
+				lineHeight--;
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static int getExtraHeight(){
+		return extraHeight;
+	}
+	public static int getLineHeight(){
+		return lineHeight;
 	}
 	
 	private void problemOccured(int i) {

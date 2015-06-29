@@ -81,20 +81,20 @@ public class CheckMismatch {
 	private static void setInfoOfWords(Ayah ayah)
 	{
 		//index of first ayah of the sura in all ayah sets
-		int indexOfFirstAyah=SurahInformationContainer.totalAyahsUpto(ayah.suraIndex);
+		int indexOfFirstAyah=SurahInformationContainer.totalAyahsUpto[ayah.suraIndex];
 		int indexOfSelectedAyah=indexOfFirstAyah+ayah.ayahIndex;
 		//address in the info list of that selected ayah
 		//index of the first word of this ayah
-		int indxOfFirstWord=WordInfoLoader.startIndexOfAyah.get(indexOfSelectedAyah);
+		int indxOfFirstWord=WordInfoLoader.getStartIndexOfAyahRTWholeText(indexOfSelectedAyah);
 		//index of the first word of the next ayah
-		int indxOfFWNextA=WordInfoLoader.startIndexOfAyah.get(indexOfSelectedAyah+1);
+		int indxOfFWNextA=WordInfoLoader.getStartIndexOfAyahRTWholeText(indexOfSelectedAyah+1);
 		
 		//now listing all the word informations
 		List<WordInformation>wordsOfAyah=new ArrayList<>();
 		
 		for(int i=indxOfFirstWord;i<indxOfFWNextA;i++)
 		{
-			wordsOfAyah.add(WordInfoLoader.infoWords.get(i));
+			wordsOfAyah.add(WordInfoLoader.getWordInfo(i));
 		}
 		
 		//saving this to infoWord of animation.java

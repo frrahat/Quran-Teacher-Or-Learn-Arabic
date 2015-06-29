@@ -8,24 +8,32 @@
  */
 package QuranTeacher.Preferences;
 
+import QuranTeacher.Basics.Ayah;
+
 public class AudioPreferences extends Preferences{
 		
 	private boolean isAudioON=true;
 	private int audioSourceIndex;
+	private Ayah currentAyah;//not a property of this pref actually
 	
-	private static final String[] prefStrings={"isAudioOn=","AudioSI="};
+	private static final String[] prefStrings={"isAudioOn=","AudioSI=","cur.ayah="};
 
 	public AudioPreferences(String id) {
 		super(id);
+		currentAyah=new Ayah(0,0);
 	}
 	
 	
 	
 	public AudioPreferences(String id, boolean isAnimAudioOn,
-			int audioSIndex) {
+			int audioSIndex, Ayah currentAyah) {
 		super(id);
 		isAudioON=isAnimAudioOn;
 		audioSourceIndex=audioSIndex;
+		if(currentAyah!=null)
+			this.currentAyah=currentAyah;
+		else
+			this.currentAyah=new Ayah(0,0);
 	}
 
 
@@ -37,7 +45,8 @@ public class AudioPreferences extends Preferences{
 		if(isAudioON)k=1;
 		else k=0;
 		return prefStrings[0]+k
-				+"\n"+prefStrings[1]+audioSourceIndex;
+				+"\n"+prefStrings[1]+audioSourceIndex
+				+"\n"+prefStrings[2]+currentAyah.toString();
 	}
 
 
@@ -53,7 +62,14 @@ public class AudioPreferences extends Preferences{
 
 		else if(text.startsWith(prefStrings[1]))
 			setAudioSourceIndex(Integer.parseInt(text.substring(text.indexOf("=")+1)));
-		
+		else if(text.startsWith(prefStrings[2])){
+			try{
+				String[] elements=(text.substring(text.indexOf("=")+1)).split(":");
+				int ayahNo=Integer.parseInt(elements[1]);
+				int surahNo=Integer.parseInt(elements[0]);
+				currentAyah=new Ayah(surahNo-1,ayahNo-1);
+			}catch(NumberFormatException | IndexOutOfBoundsException e){}
+		}
 	}
 
 
@@ -80,7 +96,9 @@ public class AudioPreferences extends Preferences{
 		this.audioSourceIndex=audioSourceIndex;
 	}
 
-
+	public Ayah getCurrentAyah(){
+		return currentAyah;
+	}
 
 	@Override
 	public void resetToDefault() {

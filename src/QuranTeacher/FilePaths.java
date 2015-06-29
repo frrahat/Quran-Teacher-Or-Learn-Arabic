@@ -1,5 +1,10 @@
 package QuranTeacher;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class FilePaths {
 	public static final String ArabicTextFilePath="/QuranTeacher/files/texts/quran-uthmani.txt";
 	public static final String EnglishTextFilePath="/QuranTeacher/files/texts/en.yusufali.txt";
@@ -21,4 +26,18 @@ public class FilePaths {
 	
 	public static final String updateInfoStorageFile= System.getProperty("user.dir")+ "/.preferences/updateInfo";
 	
+	
+	public static boolean move(File srcFile,File destFile){
+		//moving the file
+		Path src=srcFile.toPath();
+		Path dest=destFile.toPath();
+		
+		try {
+			Files.move(src, dest);
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 }

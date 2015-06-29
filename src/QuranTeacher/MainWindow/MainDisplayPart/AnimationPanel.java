@@ -8,7 +8,6 @@
  */
 package QuranTeacher.MainWindow.MainDisplayPart;
 
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -17,15 +16,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
-import QuranTeacher.FilePaths;
 import QuranTeacher.Basics.Ayah;
 import QuranTeacher.Basics.SurahInformationContainer;
 import QuranTeacher.Dialogs.PreferencesDialog;
@@ -40,9 +31,7 @@ import QuranTeacher.RenderAnimation.FocusCheckRunnable;
 import QuranTeacher.RenderAudio.Reciter;
 import QuranTeacher.RenderImages.ImageLoader;
 import QuranTeacher.RenderTexts.AllTextsContainer;
-import QuranTeacher.RenderTexts.QuranText;
 import QuranTeacher.WordInformation.WordInfoLoader;
-import QuranTeacher.WordInformation.WordInformation;
 
 
 public class AnimationPanel extends Animation {
@@ -79,8 +68,6 @@ public class AnimationPanel extends Animation {
 		
 		audioPrefs=PreferencesDialog.getAudioPref();
 		updateAudioPref();
-		
-		manageDirForStorage();
 		//for getting info box
 		addMouseMotionListener(new MouseMotionListener() {
 			
@@ -344,27 +331,18 @@ public class AnimationPanel extends Animation {
 	private void setInfoOfWords(Ayah ayah)
 	{
 		//index of first ayah of the sura in all ayah sets
-		int indexOfFirstAyah=SurahInformationContainer.totalAyahsUpto(ayah.suraIndex);
+		int indexOfFirstAyah=SurahInformationContainer.totalAyahsUpto[ayah.suraIndex];
 		int indexOfSelectedAyah=indexOfFirstAyah+ayah.ayahIndex;
 		//address in the info list of that selected ayah
 		//index of the first word of this ayah
-		int indxOfFirstWord=WordInfoLoader.startIndexOfAyah.get(indexOfSelectedAyah);
+		int indxOfFirstWord=WordInfoLoader.getStartIndexOfAyahRTWholeText(indexOfSelectedAyah);
 		//index of the first word of the next ayah
-		int indxOfFWNextA=WordInfoLoader.startIndexOfAyah.get(indexOfSelectedAyah+1);
+		int indxOfFWNextA=WordInfoLoader.getStartIndexOfAyahRTWholeText(indexOfSelectedAyah+1);
 		
-		//now listing all the word informations
-		List<WordInformation>wordsOfAyah=new ArrayList<>();
-		List<Image>images=new ArrayList<>();
-		
-		for(int i=indxOfFirstWord;i<indxOfFWNextA;i++)
-		{
-			wordsOfAyah.add(WordInfoLoader.infoWords.get(i));
-			images.add(ImageLoader.getImageFromFile(i));
-		}
-		
-		//saving this to infoWord of animation.java
-		infoOfWord=wordsOfAyah;
-		wordImages=images;
+		infoOfWord = WordInfoLoader.getWordInfos(indxOfFirstWord,indxOfFWNextA-1);
+		wordImages = new ImageLoader(false).getImagesSameSurah(indxOfFirstWord, indxOfFWNextA-1, 
+				animPreferences.isDownloadImageEnabled());		
+
 	}
 	
 	
@@ -380,7 +358,7 @@ public class AnimationPanel extends Animation {
 	
 	public AudioPreferences getAudioPref()
 	{
-		return new AudioPreferences("audio.preferences",isAnimAudioOn,audioSIndex);
+		return new AudioPreferences("audio.preferences",isAnimAudioOn,audioSIndex,runningAyah);
 	}
 	
 	public void updateAudioPref()
@@ -395,57 +373,5 @@ public class AnimationPanel extends Animation {
 			Reciter.setDefaultUrl(url);
 			//System.out.println("new reciter url set");
 		}
-	}
-	
-	private void manageDirForStorage() {
-		//for image storage
-		ImageLoader.createDir();
-		
-		
-		//for audio
-		for(int surahIndex=0;surahIndex<114;surahIndex++){
-			Reciter.createDirectoryFor(surahIndex);
-		}
-		
-		//organizing mp3 files if they exists out of the respective folders
-		File[] files=new File(FilePaths.audioStorageDir).listFiles();
-		
-		if(files.length<=114)
-			return;
-		
-		for(int i=0;i<files.length;i++){
-			if(files[i].isFile()){
-				String fileName= files[i].getName();
-				if(fileName.endsWith(".mp3")){
-					String nameOnly=fileName.substring(0, fileName.length()-4);
-					if(nameOnly.length()!=6)
-						continue;
-					
-					int id=0;
-					try{
-						id=Integer.parseInt(nameOnly);//check if it contains all integer digits					
-						id/=1000;
-						
-					}catch(NumberFormatException ne){ne.printStackTrace();}
-					
-					if(id>0){
-
-						//moving the file
-						File destFile=new File(FilePaths.audioStorageDir+"/"+
-								Integer.toString(id)+"/"+fileName);
-						
-						Path src=files[i].toPath();
-						Path dest=destFile.toPath();
-						
-						try {
-							Files.move(src, dest);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-		}
-		
 	}
 }

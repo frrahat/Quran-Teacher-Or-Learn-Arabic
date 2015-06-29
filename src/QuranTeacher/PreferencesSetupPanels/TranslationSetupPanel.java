@@ -196,7 +196,7 @@ public class TranslationSetupPanel extends PreferencesSetupPanel {
 		add(addAdditionalTextFiles, gbc_btnAdditText);
 		
 		
-		totalAyahs=QuranTeacher.Basics.SurahInformationContainer.getTotalAyahsUptoSurah114();
+		totalAyahs=QuranTeacher.Basics.SurahInformationContainer.totalAyahsUpto[114];
 		addAdditionalTextFiles.addActionListener(new ActionListener() {
 			
 			@Override

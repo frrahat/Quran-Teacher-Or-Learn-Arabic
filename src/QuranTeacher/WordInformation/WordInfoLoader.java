@@ -23,9 +23,12 @@ public class WordInfoLoader {
 	/*
 	 * loads word informations such as meaning, grammar etc.
 	 */
-	public static List<WordInformation>infoWords=new ArrayList<>(77430);
-	public static List<Integer>startIndexOfSura=new ArrayList<>(115);
-	public static List<Integer>startIndexOfAyah=new ArrayList<>(6240);
+	private static WordInformation[] infoWords=new WordInformation[77430];//+1
+	private static int totalWbWInfos;
+	private static int[] startIndexOfSurah=new int[114];
+	private static int[] startIndexOfAyahRTWholeText=new int[6238];//+1 (important)
+	
+	public static boolean isLoaded=false;
 	
 	public WordInfoLoader()
 	{
@@ -38,13 +41,19 @@ public class WordInfoLoader {
 		InputStream inStream=this.getClass().getResourceAsStream(url);
 		BufferedReader reader=null;
 		System.out.println("Loading starts: "+url);
+		
+		totalWbWInfos=0;
 		try
 		{
 			reader=new BufferedReader(new InputStreamReader(inStream,"utf-8"));
 			String text;
 			WordInformation tempInfo=null;
+			
 			while((text=reader.readLine())!=null)
 			{
+				if(text.startsWith("cell"))
+					continue;
+				
 				if(text.startsWith("index"))
 				{
 					tempInfo=new WordInformation();
@@ -84,11 +93,12 @@ public class WordInfoLoader {
 					tempInfo.partsOfSpeechDetails=
 							text.substring(text.indexOf('=')+1).split(",");
 					
-					infoWords.add(tempInfo);
+					infoWords[totalWbWInfos]=tempInfo;
+					totalWbWInfos++;
 				}
 				
 			}
-			
+			isLoaded=true;
 			reader.close();
 			System.out.println(url+" loading success");
 		}catch(IOException ie)
@@ -99,27 +109,29 @@ public class WordInfoLoader {
 		
 		
 		organizeWordInfo();
-		System.out.println("total: "+infoWords.size());
-		System.out.println("sura: "+startIndexOfSura.size());
-		System.out.println("ayah: "+startIndexOfAyah.size());
+		System.out.println("total: "+totalWbWInfos);
 	}
 	
 	private void organizeWordInfo()
 	{	
 		int i;
-		for(i=0;i<infoWords.size();i++)
+		int totalSurahs=0;
+		int totalAyahs=0;
+		for(i=0;i<totalWbWInfos;i++)
 		{
-			WordId tempId=formatWordId(infoWords.get(i).wordId);
+			WordId tempId=formatWordId(infoWords[i].wordId);
 			if(tempId.ayahNo==1 && tempId.wordNo==1)
 			{
-				startIndexOfSura.add(i);
+				startIndexOfSurah[totalSurahs]=i;
+				totalSurahs++;
 			}
 			if(tempId.wordNo==1)
 			{
-				startIndexOfAyah.add(i);
+				startIndexOfAyahRTWholeText[totalAyahs]=i;
+				totalAyahs++;
 			}
 		}
-		startIndexOfAyah.add(i);//for advantage, otherwise invalid ayahIndex
+		startIndexOfAyahRTWholeText[totalAyahs]=i;//for advantage, otherwise invalid ayahIndex
 	}
 	
 	private WordId formatWordId(String wordId)
@@ -136,6 +148,28 @@ public class WordInfoLoader {
 		return new WordId(suraNo, ayahNo, wordNo);
 	}
 	
+	public static WordInformation getWordInfo(int index){
+		return infoWords[index];
+	}
+	
+	public static int getStartIndexOfSurah(int surahIndex){
+		return startIndexOfSurah[surahIndex];
+	}
+	public static int[] getStartIndicesOfSurahs(){
+		return startIndexOfSurah;
+	}
+	
+	public static int getStartIndexOfAyahRTWholeText(int ayahIndexRTwholeText){
+		return startIndexOfAyahRTWholeText[ayahIndexRTwholeText];
+	}
+
+	public static List<WordInformation> getWordInfos(int startIndex, int endIndex) {
+		ArrayList<WordInformation>wordInfos=new ArrayList<>();
+		for(int i=startIndex;i<=endIndex;i++){
+			wordInfos.add(getWordInfo(i));
+		}
+		return wordInfos;
+	}
 }
 
 class WordId

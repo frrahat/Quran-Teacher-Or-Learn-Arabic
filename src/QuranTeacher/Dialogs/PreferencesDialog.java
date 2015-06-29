@@ -82,8 +82,10 @@ public class PreferencesDialog extends JDialog {
 			allPreferences[3] = audioPreferences;
 		}
 			
-		
+		//very important part
 		setAllPrefsFromFile(allPreferences);
+		//---------------------
+		
 		
 		setModal(true);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(PreferencesDialog.class.getResource("/QuranTeacher/images/icon64.png")));

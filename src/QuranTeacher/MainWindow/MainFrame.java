@@ -48,8 +48,14 @@ import javax.swing.JSplitPane;
 
 
 
+
+
+
+
+
 import QuranTeacher.Basics.Ayah;
 import QuranTeacher.Dialogs.AboutDialog;
+import QuranTeacher.Dialogs.AdvancedSettingsDialog;
 import QuranTeacher.Dialogs.HelpDialog;
 import QuranTeacher.Dialogs.PreferencesDialog;
 import QuranTeacher.Dialogs.ShowNewUpdateDialog;
@@ -65,10 +71,14 @@ import QuranTeacher.MainWindow.MainDisplayPart.StartUpLoaderPanel;
 import QuranTeacher.MainWindow.MainDisplayPart.StartUpLoaderPanel.StartButtonActionListener;
 import QuranTeacher.MainWindow.MainDisplayPart.TranslationPanel;
 import QuranTeacher.MainWindow.MainDisplayPart.DisplayPanel.DisplayPage;
+import QuranTeacher.MainWindow.SidePart.SelectionPanel;
 import QuranTeacher.MainWindow.SidePart.SidePanel;
 import QuranTeacher.Preferences.deltaPixelProperty;
+import QuranTeacher.RenderAudio.Reciter;
+import QuranTeacher.RenderImages.ImageLoader;
 import QuranTeacher.Utils.Updater;
 import QuranTeacher.Utils.VersionInfo;
+import QuranTeacher.WordInformation.WordInfoLoader;
 
 public class MainFrame extends JFrame {
 
@@ -113,8 +123,14 @@ public class MainFrame extends JFrame {
 					@Override
 					public void startInitializingTask() {
 						sidePanel.getSelectionPanel().setComboboxModels();
+						//preferences dialog initializes and gets all prefs 
+						//from file before window opens
+						SelectionPanel.setSelectionIndex(
+								PreferencesDialog.getAudioPref().getCurrentAyah());
+						
 						if(!sidePanel.getInformationPanel().isInfoSet()){
-							sidePanel.getInformationPanel().setInfo(0);
+							sidePanel.getInformationPanel().setInfo(sidePanel.getSelectionPanel().
+									getSelectedAyah().suraIndex);
 						}
 					}
 				});
@@ -123,7 +139,7 @@ public class MainFrame extends JFrame {
 					
 					@Override
 					public void startButtonClicked() {
-						startAnimation(new Ayah(0,0));
+						startAnimation(sidePanel.getSelectionPanel().getSelectedAyah());
 					}
 				});
 				
@@ -137,8 +153,10 @@ public class MainFrame extends JFrame {
 						
 						@Override
 						public void nextToDo(boolean wasDownloadSuccess, VersionInfo newVersionInfo) {
-							if(newVersionInfo!=null)
+							if(newVersionInfo!=null){
+					            Toolkit.getDefaultToolkit().beep();
 								new ShowNewUpdateDialog(newVersionInfo).setVisible(true);
+							}
 						}
 					});
 					
@@ -234,13 +252,24 @@ public class MainFrame extends JFrame {
 		mntmUpdateSetting.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		mnSetting.add(mntmUpdateSetting);
 		
+		JMenuItem mntmadvancedSetting = new JMenuItem("Advanced Settings");
+		mntmadvancedSetting.setForeground(Color.ORANGE);
+		mntmadvancedSetting.setBackground(Color.DARK_GRAY);
+		mntmadvancedSetting.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new AdvancedSettingsDialog().setVisible(true);
+			}
+		});
+		mntmadvancedSetting.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		mnSetting.add(mntmadvancedSetting);
+		
 		
 		JMenu mnTools = new JMenu("Tools");
 		mnTools.setForeground(Color.ORANGE);
 		mnTools.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		menuBar.add(mnTools);
 		
-		JMenuItem mntmUpdate = new JMenuItem("Update");
+		JMenuItem mntmUpdate = new JMenuItem("Check For Update");
 		mntmUpdate.setForeground(Color.ORANGE);
 		mntmUpdate.setBackground(Color.DARK_GRAY);
 		mntmUpdate.addActionListener(new ActionListener() {
@@ -266,6 +295,7 @@ public class MainFrame extends JFrame {
 										+ "But failed to connect to the server.\n"
 										+ "Please check your internet connection for the latest update.");
 							}
+				            Toolkit.getDefaultToolkit().beep();
 							new ShowNewUpdateDialog(newVersionInfo).setVisible(true);
 						}
 					}
@@ -282,13 +312,14 @@ public class MainFrame extends JFrame {
 		mntmDownload.setBackground(Color.DARK_GRAY);
 		mntmDownload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String filePath=System.getProperty("user.dir")+"/tools/Downloader.jar";
+				String filePath=System.getProperty("user.dir")+"/tools/Resource Downloader.jar";
 				filePath="\""+filePath+"\"";
+				
 				try {
 					Runtime.getRuntime().exec("java -jar "+filePath+" "+args[0]+" "+args[1]);
 				} catch (IOException e1) {
 					JOptionPane.showMessageDialog(getParent(),
-							"Downloader couldn't be started. Try Downloader.jar",
+							"Something went wrong. IOException Occured.",
 							"Oops",JOptionPane.ERROR_MESSAGE);
 				}
 			}
@@ -453,6 +484,7 @@ public class MainFrame extends JFrame {
 				updateAllPrefs();
 			}
 		});
+		
 	}
 	
 	
@@ -525,4 +557,5 @@ public class MainFrame extends JFrame {
 		
 		translationPanel.updateTransPref();
 	}
+
 }

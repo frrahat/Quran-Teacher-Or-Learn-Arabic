@@ -24,6 +24,9 @@ import java.nio.channels.ReadableByteChannel;
 
 
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import QuranTeacher.FilePaths;
 import QuranTeacher.Basics.Ayah;
 import QuranTeacher.MainWindow.SidePart.AudioNavigationPanel;
@@ -141,7 +144,7 @@ public class Reciter implements Runnable {
 		} 
 		catch (MalformedURLException e) 
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		
 		ReadableByteChannel rbc = null;
@@ -154,13 +157,13 @@ public class Reciter implements Runnable {
 			foStream.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 			
 			foStream.close();
+			return true;
 		} 
 		catch (IOException e) 
 		{
-			e.printStackTrace();
-			return false;
+			//e.printStackTrace();
 		}
-		return true;
+		return false;
 	}
 	
 	public static void setDefaultUrl(String url)
@@ -168,9 +171,9 @@ public class Reciter implements Runnable {
 		DefaultURL=url;
 	}
 	
-	public static void createDirectoryFor(int surahIndex)
+	public static void createSuraWiseDirectoryFor(int surahIndex, String atDirName)
 	{
-		File directory=new File(FilePaths.audioStorageDir+"/"+
+		File directory=new File(atDirName+"/"+
 	Integer.toString(surahIndex+1));
 		if(!directory.exists())
 		{
@@ -190,6 +193,50 @@ public class Reciter implements Runnable {
     public void stop(){
         
         zplayer.stop();   
+    }
+    
+	private static int getSuraNumFromFileName(String audioFileName){
+		int id=0;
+		String nameOnly=audioFileName.substring(0, audioFileName.length()-4);
+		if(nameOnly.length()!=6)
+			return 0;
+		
+		try{
+			id=Integer.parseInt(nameOnly);//check if it contains all integer digits					
+			id/=1000;
+			return id;
+		}catch(NumberFormatException ne){ne.printStackTrace();}
+		
+		return 0;
+	}
+    
+    public static void manageStorageDirForAudios(){
+    	for(int surahIndex=0;surahIndex<114;surahIndex++){
+			createSuraWiseDirectoryFor(surahIndex,FilePaths.audioStorageDir);
+		}
+		
+		//organizing mp3 files if they exists out of the respective folders
+		File[] files=new File(FilePaths.audioStorageDir).listFiles();
+		
+		if(files.length<=114)
+			return;
+		
+		for(int i=0;i<files.length;i++){
+			if(files[i].isFile()){
+				String fileName= files[i].getName();
+				if(fileName.endsWith(".mp3")){
+					int id=getSuraNumFromFileName(fileName);
+					if(id>0){
+
+						//moving the file
+						File destFile=new File(FilePaths.audioStorageDir+"/"+
+								Integer.toString(id)+"/"+fileName);
+						
+						FilePaths.move(files[i], destFile);
+					}
+				}
+			}
+		}
     }
 	
 }

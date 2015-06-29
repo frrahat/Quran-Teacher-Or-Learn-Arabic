@@ -19,8 +19,10 @@ public class AnimationPreferences extends Preferences
 	private int restingTime=0;
 	private boolean showPopUpBox=true;
 	
+	private boolean downloadImagesEnabled=false;
+	
 	private static final String[] prefStrings={
-		"BgColor=","FgColor=","Font=","RestingTime=","ShowPopUpBox="};
+		"BgColor=","FgColor=","Font=","RestingTime=","ShowPopUpBox=","DwnldImgsEnbld="};
 	
 	public AnimationPreferences(String id) 
 	{
@@ -35,13 +37,15 @@ public class AnimationPreferences extends Preferences
 	}	
 	
 	public AnimationPreferences(String id, Color bgColor, Color fgColor,
-			Font animFont, int restingTimeGap, boolean showPopUpInfoBox) {
+			Font animFont, int restingTimeGap, boolean showPopUpInfoBox,
+			boolean dwnldImagesEnbld) {
 		super(id);
 		backGroundColor=bgColor;
 		foreGroundColor=fgColor;
 		font=animFont;
 		restingTime=restingTimeGap;
 		showPopUpBox=showPopUpInfoBox;
+		downloadImagesEnabled=dwnldImagesEnbld;
 	}
 
 	public int getRestingTime()
@@ -64,16 +68,25 @@ public class AnimationPreferences extends Preferences
 		this.showPopUpBox = showPopUpBox;
 	}
 
+
+	public void setDownloadImageEnabled(boolean b) {
+		this.downloadImagesEnabled=b;
+	}
+	public boolean isDownloadImageEnabled() {
+		return downloadImagesEnabled;
+	}
+	
+	private int getIntValue(boolean b){
+		return b?1:0;
+	}
+	
+	private boolean getBoolValue(int k){
+		return k==1?true:false;
+	}
 	
 	@Override
 	public String toString()
-	{
-		int k;
-		if(isShowPopUpBox())
-			k=1;
-		else
-			k=0;
-		
+	{	
 		return
 				prefStrings[0]+getBackGroundColor().getRGB()
 				+ "\n"+prefStrings[1]+getForeGroundColor().getRGB()
@@ -81,7 +94,8 @@ public class AnimationPreferences extends Preferences
 				+ fontPartsSeparator+getFont().getStyle()
 				+ fontPartsSeparator+getFont().getSize()
 				+ "\n"+prefStrings[3]+getRestingTime()
-				+ "\n"+prefStrings[4]+k;
+				+ "\n"+prefStrings[4]+Integer.toString(getIntValue(isShowPopUpBox()))
+				+ "\n"+prefStrings[5]+Integer.toString(getIntValue(isDownloadImageEnabled()));
 	}
 
 	@Override
@@ -102,13 +116,10 @@ public class AnimationPreferences extends Preferences
 			setRestingTime(Integer.parseInt(text.substring(text.indexOf("=")+1)));
 
 		else if(text.startsWith(prefStrings[4]))
-		{
-			int k=Integer.parseInt(text.substring(text.indexOf("=")+1));
-			if(k==0)
-				setShowPopUpBox(false);
-			else
-				setShowPopUpBox(true);
-		}
+			setShowPopUpBox(getBoolValue(Integer.parseInt(text.substring(text.indexOf("=")+1))));
+		
+		else if(text.startsWith(prefStrings[5]))
+			setDownloadImageEnabled(getBoolValue(Integer.parseInt(text.substring(text.indexOf("=")+1))));
 	}
 
 	@Override
@@ -116,6 +127,10 @@ public class AnimationPreferences extends Preferences
 		font=defaultFont;
 		backGroundColor=Color.DARK_GRAY;
 		foreGroundColor=Color.CYAN;
+		
+		restingTime=0;
+		showPopUpBox=true;
+		downloadImagesEnabled=false;
 	}
 	
 }

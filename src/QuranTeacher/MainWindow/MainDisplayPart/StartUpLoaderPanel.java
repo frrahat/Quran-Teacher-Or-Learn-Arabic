@@ -8,7 +8,6 @@ import javax.swing.JLabel;
 
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
-import java.awt.Toolkit;
 
 import javax.swing.JProgressBar;
 
@@ -23,6 +22,9 @@ import QuranTeacher.Basics.SurahInformationContainer;
 import QuranTeacher.Dialogs.AboutDialog;
 import QuranTeacher.Dialogs.HelpDialog;
 import QuranTeacher.MainWindow.MainFrame;
+import QuranTeacher.Preferences.MyFonts;
+import QuranTeacher.RenderAudio.Reciter;
+import QuranTeacher.RenderImages.ImageLoader;
 import QuranTeacher.RenderTexts.AllTextsContainer;
 import QuranTeacher.RenderTexts.QuranText;
 import QuranTeacher.RenderTexts.TranslationTextInfoContainer;
@@ -36,8 +38,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -187,7 +187,7 @@ public class StartUpLoaderPanel extends JPanel {
 		            progressBar.setIndeterminate(false);
 		            progressBar.setValue(progress);
 		            lblProgress.setText(String.format(
-		                        "Completed %d%% of task.\n", progress));
+		                        "Lodaing necessary files : %d%% completed.\n", progress));
 		        }
 			}
 		});
@@ -227,6 +227,13 @@ public class StartUpLoaderPanel extends JPanel {
             
             //load wordInfoFile
             new WordInfoLoader().load();
+            setProgress(90);
+            
+            //loadAdditional fonts
+            MyFonts.loadAdditionalFonts();
+            setProgress(95);
+            
+            manageDirForStorage();
             setProgress(100);
             
             return null;
@@ -236,10 +243,9 @@ public class StartUpLoaderPanel extends JPanel {
          * Executed in event dispatch thread
          */
         public void done() {
-            Toolkit.getDefaultToolkit().beep();
             btnStart.setEnabled(true);
             btnStart.setText("Start");
-            lblProgress.setText("Done!\n");
+            lblProgress.setText("Finished!\n");
             loadingCompleted.startInitializingTask();
         }
     }
@@ -258,5 +264,16 @@ public class StartUpLoaderPanel extends JPanel {
 	
 	public void setStartButtonActionListener(StartButtonActionListener actionListener){
 		this.startButtonListener=actionListener;
+	}
+	
+	
+	private void manageDirForStorage() {
+		//for image storage
+		//TODO
+		new ImageLoader(true).manageStorageDirForImages();;
+		
+		//for audio
+		Reciter.manageStorageDirForAudios();
+		
 	}
 }

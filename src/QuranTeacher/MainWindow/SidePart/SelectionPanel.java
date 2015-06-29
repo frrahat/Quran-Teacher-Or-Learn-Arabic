@@ -65,6 +65,7 @@ public class SelectionPanel extends JPanel {
 	private JButton btnNext;
 	private JButton buttonPrev;
 	private JButton btnGo;
+	//private static JLabel lblStatus;
 	
 	public SelectionPanel() {
 		setForeground(Color.WHITE);
@@ -132,21 +133,10 @@ public class SelectionPanel extends JPanel {
 				int i=suraBox.getSelectedIndex();
 				int j=ayahBox.getSelectedIndex();
 				
-				if(j==0)
-				{
-					if(i!=0)
-					{
-						//go to previous sura, last ayah
-						j=SurahInformationContainer.totalAyahs[i-1]-1;
-						ayahSelectionListener.ayahSelected(new Ayah(i-1,j));//listener is not null
-						suraBox.setSelectedIndex(i-1);
-						ayahBox.setSelectedIndex(j);
-					}
-				}
-				else
-				{
-					ayahSelectionListener.ayahSelected(new Ayah(i,j-1));//listener is not null
-					ayahBox.setSelectedIndex(j-1);
+				Ayah ayah=new Ayah(i,j).getPrevAyah();
+				if(ayah!=null){
+					setSelectionIndex(ayah);
+					ayahSelectionListener.ayahSelected(ayah);
 				}
 			}
 		});
@@ -165,20 +155,10 @@ public class SelectionPanel extends JPanel {
 				int i=suraBox.getSelectedIndex();
 				int j=ayahBox.getSelectedIndex();
 				
-				if(j==SurahInformationContainer.totalAyahs[i]-1)
-				{
-					if(i!=113)
-					{
-						//go to next sura, first ayah
-						suraBox.setSelectedIndex(i+1);
-						ayahBox.setSelectedIndex(0);
-						ayahSelectionListener.ayahSelected(new Ayah(i+1,0));//listener is not null
-					}
-				}
-				else
-				{
-					ayahBox.setSelectedIndex(j+1);
-					ayahSelectionListener.ayahSelected(new Ayah(i,j+1));//listener is not null
+				Ayah ayah=new Ayah(i,j).getNextAyah();
+				if(ayah!=null){
+					setSelectionIndex(ayah);
+					ayahSelectionListener.ayahSelected(ayah);
 				}
 			}
 		});
@@ -272,6 +252,17 @@ public class SelectionPanel extends JPanel {
 					System.out.println("No listener available");
 			}
 		});
+		
+		/*lblStatus = new JLabel();
+		resetStatusLabel();
+		lblStatus.setForeground(Color.WHITE);
+		GridBagConstraints gbc_lblStatus = new GridBagConstraints();
+		gbc_lblStatus.insets = new Insets(0, 0, 0, 5);
+		gbc_lblStatus.anchor = GridBagConstraints.CENTER;
+		gbc_lblStatus.gridwidth=0;
+		gbc_lblStatus.gridx = 0;
+		gbc_lblStatus.gridy = 9;
+		add(lblStatus, gbc_lblStatus);*/
 	}
 
 
@@ -329,4 +320,24 @@ public class SelectionPanel extends JPanel {
 		btnNext.setEnabled(true);
 		btnGo.setEnabled(true);
 	}
+
+
+
+	public Ayah getSelectedAyah() {
+		return new Ayah(suraBox.getSelectedIndex(),ayahBox.getSelectedIndex());
+	}
+	
+/*	public static void setStatusLabel(String statusText){
+		lblStatus.setText(statusText);
+	}
+
+
+
+	public static void resetStatusLabel() {
+		lblStatus.setText("---");
+	}
+	
+	public static JLabel getStatusLabel(){
+		return lblStatus;
+	}*/
 }

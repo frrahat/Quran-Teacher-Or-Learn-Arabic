@@ -11,8 +11,11 @@ package QuranTeacher.Preferences;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+
+import QuranTeacher.FilePaths;
 
 public class MyFonts {
 	
@@ -95,12 +98,12 @@ public class MyFonts {
 		return 0;
 	}
 	
-	public static void addFont(String path)
+	public static void addFont(String internalPath)
 	{
 		//int k=Integer.parseInt("foo");
 		if(!initialized)
 			init();
-		InputStream is=MyFonts.class.getResourceAsStream(path);
+		InputStream is=MyFonts.class.getResourceAsStream(internalPath);
 		try {
 			Font font = Font.createFont(Font.TRUETYPE_FONT, is);
 			env.registerFont(font);
@@ -108,6 +111,34 @@ public class MyFonts {
 			
 		} catch (FontFormatException | IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private static void addFontFile(File fontFile){
+		try {
+			Font font = Font.createFont(Font.TRUETYPE_FONT, fontFile);
+			env.registerFont(font);
+			System.out.println("Font created :"+font.getName());
+			
+		} catch (FontFormatException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void loadAdditionalFonts(){
+		if(!initialized)
+			init();
+		File storageFolder=new File(FilePaths.additionalFontsDir);
+		if(!storageFolder.exists()){
+			storageFolder.mkdirs();
+		}
+		else{
+			File[] files=storageFolder.listFiles();
+			for(int i=0;i<files.length;i++){
+				if(files[i].getName().endsWith(".ttf")){
+					addFontFile(files[i]);
+				}
+			}
 		}
 	}
 }

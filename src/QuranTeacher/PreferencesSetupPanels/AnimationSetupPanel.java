@@ -118,6 +118,47 @@ public class AnimationSetupPanel extends PreferencesSetupPanel {
 		gbc_chckbxShowInfoBox.gridx = 1;
 		gbc_chckbxShowInfoBox.gridy = 8;
 		add(chckbxShowInfoBox, gbc_chckbxShowInfoBox);
+		
+		
+		JLabel lblImageDownloading = new JLabel("Image Download :");
+		lblImageDownloading.setToolTipText("If ticken on, word images will be downloaded "
+				+ "automatically before animating an ayah.");
+		lblImageDownloading.setForeground(Color.ORANGE);
+		lblImageDownloading.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		GridBagConstraints gbc_lblImageDownloading = new GridBagConstraints();
+		gbc_lblImageDownloading.anchor = GridBagConstraints.WEST;
+		gbc_lblImageDownloading.insets = new Insets(0, 0, 5, 5);
+		gbc_lblImageDownloading.gridx = 0;
+		gbc_lblImageDownloading.gridy = 9;
+		add(lblImageDownloading, gbc_lblImageDownloading);
+		
+		JCheckBox chckbxEnableDownloadImages = new JCheckBox("Download Images Automatically");
+		chckbxEnableDownloadImages.setBackground(Color.DARK_GRAY);
+		chckbxEnableDownloadImages.setForeground(Color.GREEN);
+		chckbxEnableDownloadImages.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		chckbxEnableDownloadImages.setSelected(preferences.isDownloadImageEnabled());
+		chckbxEnableDownloadImages.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange()==ItemEvent.SELECTED)
+				{
+					preferences.setDownloadImageEnabled(true);
+				}
+				else
+				{
+					preferences.setDownloadImageEnabled(false);
+				}
+			}
+		});
+		
+		GridBagConstraints gbc_chckbxEnableDownloadImages = new GridBagConstraints();
+		gbc_chckbxEnableDownloadImages.insets = new Insets(0, 0, 5, 0);
+		gbc_chckbxEnableDownloadImages.gridwidth = 3;
+		gbc_chckbxEnableDownloadImages.weightx = 0.5;
+		gbc_chckbxEnableDownloadImages.gridx = 1;
+		gbc_chckbxEnableDownloadImages.gridy = 9;
+		add(chckbxEnableDownloadImages, gbc_chckbxEnableDownloadImages);
 	}
 
 }
