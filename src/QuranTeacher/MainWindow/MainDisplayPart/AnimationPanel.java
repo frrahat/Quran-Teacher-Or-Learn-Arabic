@@ -358,7 +358,8 @@ public class AnimationPanel extends Animation {
 	
 	public AudioPreferences getAudioPref()
 	{
-		return new AudioPreferences("audio.preferences",isAnimAudioOn,audioSIndex,runningAyah);
+		return new AudioPreferences("audio.preferences",isAnimAudioOn,audioSIndex,
+				SelectionPanel.getSelectedAyah());
 	}
 	
 	public void updateAudioPref()

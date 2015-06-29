@@ -414,10 +414,6 @@ public class Animation extends JPanel {
 		{
 			//images
 			
-			//partsOf speeches
-			String[] details=infoOfWord.get(index).partsOfSpeechDetails;
-			String[] segColors=infoOfWord.get(index).segmentColors;
-			
 			//image
 			g.setFont(wbwFont.deriveFont(Font.BOLD));
 			g.setColor(Color.BLACK);
@@ -433,8 +429,14 @@ public class Animation extends JPanel {
 			{
 				writeY=drawFixedString(g, "<image not found. See help for more info.>",
 						boxWidth-10, x+10,writeY);	
+				
+				return;
 			}
 
+			//partsOf speeches
+			String[] details=infoOfWord.get(index).partsOfSpeechDetails;
+			String[] segColors=infoOfWord.get(index).segmentColors;
+			
 			writeY+=wbwFontMetrics.getHeight()*2;
 			for(int i=0;i<segColors.length;i++)
 			{

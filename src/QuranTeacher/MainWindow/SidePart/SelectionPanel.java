@@ -323,7 +323,7 @@ public class SelectionPanel extends JPanel {
 
 
 
-	public Ayah getSelectedAyah() {
+	public static Ayah getSelectedAyah() {
 		return new Ayah(suraBox.getSelectedIndex(),ayahBox.getSelectedIndex());
 	}
 	
