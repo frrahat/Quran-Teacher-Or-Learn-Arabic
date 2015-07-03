@@ -125,8 +125,8 @@ public class AnimationPreferences extends Preferences
 	@Override
 	public void resetToDefault() {
 		font=defaultFont;
-		backGroundColor=Color.DARK_GRAY;
-		foreGroundColor=Color.CYAN;
+		backGroundColor=Color.BLACK;
+		foreGroundColor=Color.PINK;
 		
 		restingTime=0;
 		showPopUpBox=true;

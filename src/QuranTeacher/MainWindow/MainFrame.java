@@ -346,6 +346,7 @@ public class MainFrame extends JFrame {
 					animPanel.updateWordStartPoint();
 				}
 				animPanel.setAnimationStateSimple();
+				enableActionButtons();
 				
 			}
 		});

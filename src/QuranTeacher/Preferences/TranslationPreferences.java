@@ -16,7 +16,7 @@ import java.awt.Font;
 public class TranslationPreferences extends Preferences {
 	
 	private int primaryTextIndex = 0;
-	private int secondaryTextIndex = 1;
+	private int secondaryTextIndex = -1;
 	
 	private static final String[] prefStrings={
 		"BgColor=","FgColor=","Font=","PrimaryTextIndex=","SecondaryTextIndex="};
@@ -97,6 +97,6 @@ public class TranslationPreferences extends Preferences {
 		font=defaultFont;
 		
 		primaryTextIndex=0;
-		secondaryTextIndex=1;
+		secondaryTextIndex=-1;
 	}
 }

@@ -89,7 +89,6 @@ public class AnimationPanel extends Animation {
 	
 	public AnimationPanel() {
 		//System.out.println("DisplayPanel() called");
-		displayText="Failed to load Quran Text";
 		
 		setFocusable(true);
 		focusCheckingThread=new Thread();
@@ -131,6 +130,8 @@ public class AnimationPanel extends Animation {
 					
 					hitFileEditorDialog.updateList();
 					SelectionPanel.setSelectionIndex(timedAyahs.get(index).getAyah());
+					
+					requestFocus();
 				}
 				else if("new".equals(actionCommand)){
 					editTimedAyahIndex=0;
@@ -146,6 +147,8 @@ public class AnimationPanel extends Animation {
 					hitFileEditorDialog.updateComboBox();
 					
 					SelectionPanel.setSelectionIndex(ayah);
+					
+					requestFocus();
 				}
 			}
 		});
@@ -373,7 +376,7 @@ public class AnimationPanel extends Animation {
 	protected void goToNextStep()//TODO
 	{
 		//System.out.println("goToNextStep()");
-		if(Reciter.isAlive()){
+		if(Reciter.isAlive() || paused){
 			return;
 		}
 		if(animationType==Animation_type.Timed_Animation_Continuous){
