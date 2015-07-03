@@ -32,14 +32,9 @@ public class Reciter implements Runnable {
 	private static ZPlayer zplayer;
 	private static int connectionTimeout=5000;
 	
-	private Thread t;
-	
 	
 	public Reciter(Ayah ayah) {		
 		Reciter.ayah = ayah;
-		
-		t=new Thread(this,"reciterThread");
-		t.start();
 	}
 
 	public void reciteAyat(Ayah ayah) throws JavaLayerException,

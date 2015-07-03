@@ -220,11 +220,11 @@ public class StartUpLoaderPanel extends JPanel {
             
             int totalQuranFiles=TranslationTextInfoContainer.getSize()+1;
             //each file assumed to be of size 1.5MB in average
-            int step=(int)((100.0/(33+totalQuranFiles*1.5))*1.5);
+            double step=100.0/(33+totalQuranFiles*1.5);
             //load arabic QuranText
             InputStream in=StartUpLoaderPanel.class.getResourceAsStream(FilePaths.ArabicTextFilePath);
             AllTextsContainer.arabicText=new QuranText(in, true);
-            progress+=step;
+            progress+=(int)step*1.5;
             setProgress(progress);
             
             AllTextsContainer.translationtexts=new ArrayList<>();
@@ -246,18 +246,19 @@ public class StartUpLoaderPanel extends JPanel {
             	if(invalidFileFound){
             		TranslationSetupPanel.updateTextSelectionCBox();
             	}
-            	progress+=step;
+            	progress+=(int)step*1.5;
             	//System.out.println(i+","+progress+","+step);
             	setProgress(progress);
             }
             
             //load wordInfoFile
             new WordInfoLoader().load();
-            setProgress(90);
+            progress+=(int)step*33;
+            setProgress(progress);
             
             //loadAdditional fonts
             MyFonts.loadAdditionalFonts();
-            setProgress(95);
+            setProgress(Math.max(progress, 83));
             
             manageDirForStorage();
             setProgress(100);

@@ -1,5 +1,5 @@
 # QuranTeacher or Learn Arabic
-Quran Teacher or Learn Arabic is a computer program that shows animation of every word of an ayah with its translation and grammatical information.
+Quran Teacher or Learn Arabic is a computer program that shows animation of every word of an ayah with its translation and grammatical information. Also there is a feature of playing recitation audio at the same time, where the times of appearances of the words of an ayah can be set manually. 
 
 This was intended to be used for learning the translations of 'Quranic words' And thus understanding the Quran and at the same time accelerating learning arabic.
 

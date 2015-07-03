@@ -427,8 +427,10 @@ public class AnimationPanel extends Animation {
 			animationType=Animation_type.Simple_Animation;
 			resetDisplay();
 			paused=false;
-			if(audioPrefs.isAudioON())
-				new Reciter(runningAyah);
+			if(audioPrefs.isAudioON()){
+				reciter=new Reciter(runningAyah);
+				new Thread(reciter).start();;
+			}
 		}
 		
 		else if(action.equals("speedUp"))
@@ -479,17 +481,27 @@ public class AnimationPanel extends Animation {
 		if(audioPrefs.isAudioON())
 		{
 			setAudioAction("stop");
+			reciter=new Reciter(ayah);
+			//freeze but don't lag
+			//if simple animation, then if it is continuous
+			//or it is hitFile editing or playing stage
+			if(AnimationPreferences.continuous || animationType!=Animation_type.Simple_Animation){
+				reciter.run();
+			}else{
+				new Thread(reciter).start();;
+			}
 		}
 		
 		runningAyah=ayah;
 		SelectionPanel.setSelectionIndex(ayah);
 		
 		displayText=AllTextsContainer.arabicText.getQuranText(ayah);
+
 		//System.out.println(displayText.length());
 		setInfoOfWords(ayah);
-		
 		TranslationPanel.setTranslationText(ayah);
 		//TafsirPanel.setTafsirText(ayah);
+		
 		
 		resetDisplay();
 		
@@ -499,16 +511,11 @@ public class AnimationPanel extends Animation {
 			userInputListener.pauseStateChanged(paused);
 		}
 		
-		if(ayah.ayahIndex==0 && !(ayah.suraIndex==0 || ayah.suraIndex==8))
+		if(ayah.ayahIndex==0 && !(ayah.suraIndex==0 || ayah.suraIndex==8)){
 			//not sura fatiha and sura atTawba
 			setFirstSentence(bismillah);
-		
-		//repaint();
-		
-		if(audioPrefs.isAudioON())
-		{
-			reciter=new Reciter(ayah);
 		}
+		//repaint();
 	}
 	
 	//declared in Animation.java

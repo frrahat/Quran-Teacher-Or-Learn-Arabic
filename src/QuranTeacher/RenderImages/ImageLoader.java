@@ -34,6 +34,7 @@ public class ImageLoader
 	private static int[] startIndicesOfSurahs=new int[114];
 	private static final int connectionTimeout=3000;
 	private static final String parentSource="http://corpus.quran.com/wordimage?";
+	private Image[] images;
 	//private final int lastImageId=77429;
 	
 	public ImageLoader(boolean initialize) {
@@ -102,54 +103,44 @@ public class ImageLoader
 	
 	public Image[] getImagesSameSurah(int startIndex,
 			int endIndex,boolean downloadEnabled){
-		
+		//System.out.println("Entered "+System.currentTimeMillis());
 		int totalTobeLoaded=endIndex-startIndex+1;
-		Image[] images=new Image[totalTobeLoaded];
-		File[] imageFiles=new File[totalTobeLoaded];
+		
+		images=new Image[totalTobeLoaded];
+		//File[] imageFiles=new File[totalTobeLoaded];
 		
 		//boolean stillDownloadable=downloadEnabled;
-		Thread[] imageDownloaderThreads=new Thread[totalTobeLoaded];
+		int totalThreads=Math.max(1,totalTobeLoaded/3);
+		Thread[] imageLoaderThreads=new Thread[totalThreads];
 		//getImageFiles
 		String surahDirString=FilePaths.wbwImageStorageDir+"/"+
 				Integer.toString(getSuraNumFromImageIndex(startIndex));
 		
-		for(int i=0,imageIndex=startIndex;i<totalTobeLoaded;imageIndex++,i++)
+		for(int i=0,imageIndex=startIndex;i<totalThreads;imageIndex++,i++)
 		{
-			imageFiles[i]=new File(surahDirString+"/"+
-					Integer.toString(imageIndex+1)+ImageFileType);
-			
-			/*if(!imageFiles[i].exists() && stillDownloadable){
-				stillDownloadable=download(parentSource+"id="+Integer.toString(imageIndex+1),
-						imageFiles[i]);
-			}*/
-			if(!imageFiles[i].exists() && downloadEnabled){
-				
-				File outputFile=imageFiles[i];
-				imageDownloaderThreads[i]=new Thread(
-						new ImageDownloader(parentSource+"id="+Integer.toString(imageIndex+1),
-								outputFile));
-				imageDownloaderThreads[i].start();
-				//System.out.println("satrted for : "+outputFile.getName());
-			}
+			imageLoaderThreads[i]=new Thread(new ImageFileLoader(
+					surahDirString,imageIndex,endIndex,totalThreads,i,downloadEnabled));
+			imageLoaderThreads[i].start();
+			//System.out.println("satrted for : "+outputFile.getName());
 		}
 		
 		//wait for finish()
-		for(int i=0;i<totalTobeLoaded;i++){
-			if(imageDownloaderThreads[i]!=null){
+		for(int i=0;i<totalThreads;i++){
+			if(imageLoaderThreads[i]!=null){
 				try {
-					imageDownloaderThreads[i].join();
+					imageLoaderThreads[i].join();
 				} catch (InterruptedException e) {
 				}
 			}
 		}
-		
-		//set images
-		for(int i=0;i<totalTobeLoaded;i++){
-			images[i]=getImageFromFile(imageFiles[i]);
-		}
+		//System.out.println("Exited  "+System.currentTimeMillis());
 		return images;
 	}
 
+	public synchronized void setImage(int index,File file){
+		images[index]=getImageFromFile(file);
+		notifyAll();
+	}
 	
 	public static boolean download(String imageUrl, File outputFile)
 	{	
@@ -253,15 +244,40 @@ public class ImageLoader
 	}
 	
 	
-	class ImageDownloader implements Runnable{
-		File outputFile;
-		String imgUrl;
-		public ImageDownloader(String imgUrl,File outputFile){
-			this.imgUrl=imgUrl;
-			this.outputFile=outputFile;
+	private class ImageFileLoader implements Runnable{
+		private String surahDirString;
+		private int startIndex;
+		private int boundaryIndex;
+		private int gap;
+		private int imageFileIndex;
+		private boolean stillDownloadable;
+	
+		
+		public ImageFileLoader(String surahDirString,int startIndex,
+				int boundaryIndex,int gap,int imageFileIndex, boolean downloadable){
+			this.surahDirString=surahDirString;
+			this.startIndex=startIndex;
+			this.boundaryIndex=boundaryIndex;
+			this.gap=gap;
+			this.imageFileIndex=imageFileIndex;
+			this.stillDownloadable=downloadable;
+			
 		}
 		public void run() {
-			download(imgUrl, outputFile);
+			for(int i=startIndex,j=imageFileIndex;i<=boundaryIndex;i+=gap,j+=gap){
+				File outputFile=new File(surahDirString+"/"+
+						Integer.toString(i+1)+ImageFileType);
+				
+				if(outputFile.exists()){
+					setImage(j,outputFile);
+				}
+				else if(stillDownloadable && download(parentSource+"id="+Integer.toString(i+1), 
+						outputFile)){
+					setImage(j,outputFile);
+				}else if(stillDownloadable){
+					stillDownloadable=false;
+				}
+			}
 		}
 	}
 	
