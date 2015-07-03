@@ -96,9 +96,14 @@ public class AboutDialog extends JDialog {
 				txtrAboutText.setFont(new Font("Tahoma", Font.PLAIN, 18));
 				txtrAboutText.setText("Quran Teacher or Learn Arabic "+MainFrame.version
 						+ "\r\n=======================\r\n"
-						+ "was built as a term project\r\n"
+						+ "Quran Teacher or Learn Arabic is a computer program that shows animation of every word of an ayah with its translation and grammatical information."
+						+ "\r\nThis was intended to be used for "
+						+ "learning the translations of 'Quranic words' "
+						+ "And thus understanding the Quran and at the "
+						+ "same time accelerating learning arabic.\r\n\r\n"
+						+ "\r\n\r\nInitially it was built as a term project\r\n"
 						+ "by Abdullah Al Zishan and "
-						+ "Fazle Rabbi Rahat students of Department of Computer Science & Engineering"
+						+ "Fazle Rabbi Rahat, students of Department of Computer Science & Engineering"
 						+ " (CSE),"
 						+ "Bangladesh University "
 						+ "of\r\nEngineering And Technology (BUET)."
@@ -109,11 +114,8 @@ public class AboutDialog extends JDialog {
 						+ " (CSE),"
 						+" Bangladesh University of Engineering & Technology (BUET),"
 						+" Dhaka, Bangladesh."
-						+ "\r\n\r\nThis was intended to be used for "
-						+ "learning the translations of 'Quranic words' "
-						+ "And thus understanding the Quran and at the "
-						+ "same time accelerating learning arabic.\r\n\r\n"
-						+ "All word by word transliteration, meaning, images "
+						+ "\r\nLater, it have been upgraded with some extra features."
+						+ "\r\n\r\nAll word by word transliteration, meaning, images "
 						+ "and grammatical descriptions were collected "
 						+ "from \"http://corpus.quran.com/wordbyword.jsp\" which "
 						+ "is \"an annotated linguistic resource which shows the "
@@ -153,8 +155,13 @@ public class AboutDialog extends JDialog {
 						+ "problems of this type may arise, but user will "
 						+ "be able to mark those as a problem for sure as "
 						+ "there is transliteration given below of each "
-						+ "word. \r\n\r\nThe source code of this program "
-						+ "will soon be available insha Allah.\r\n");
+						+ "word. \r\n\r\nFor the source code of this program "
+						+ "visit :"
+						+ "\r\nhttps://github.com/frrahat/Quran-Teacher-Or-Learn-Arabic/\r\n"
+						+ "\r\nFor more information you can contact this email address:\r\n"
+						+ "fr.rahat@gmail.com"
+						+ "\r\nOr you may visit our facebook page:"
+						+ "\r\nhttps://www.facebook.com/QuranTeacherOrLearnArabic");
 				txtrAboutText.setCaretPosition(0);
 				scrollPane.setViewportView(txtrAboutText);
 			}

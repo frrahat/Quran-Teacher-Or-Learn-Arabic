@@ -23,10 +23,6 @@ import QuranTeacher.FilePaths;
  */
 public class SurahInformationContainer {
 	
-	/*
-	 * Loads information of all the surahs for informationPanel
-	 */
-	private static int totalAyahsUptoSurah114=0;
 	private static ArrayList<SurahInformation>surahInformations;
 	
 	public static int[] totalAyahs = { 7, 286, 200, 176, 120, 165, 206, 75,

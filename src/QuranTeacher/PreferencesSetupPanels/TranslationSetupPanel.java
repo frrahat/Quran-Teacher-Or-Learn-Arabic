@@ -36,7 +36,6 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.ProgressMonitor;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -46,7 +45,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 
+
 import QuranTeacher.FilePaths;
+import QuranTeacher.Basics.SurahInformationContainer;
 import QuranTeacher.Preferences.TranslationPreferences;
 import QuranTeacher.RenderTexts.TranslationTextInfoContainer;
 
@@ -66,12 +67,16 @@ public class TranslationSetupPanel extends PreferencesSetupPanel {
 
 	private int totalAyahs;
 
-	private JComboBox<String> SecondTextSelectComboBox;
+	private static JComboBox<String> SecondTextSelectComboBox;
 
-	private JComboBox<String> PrimTextSelectComboBox;
+	private static JComboBox<String> PrimTextSelectComboBox;
+	
+	private static TranslationPreferences pref;
 	
 	public TranslationSetupPanel(String name, final TranslationPreferences preferences) {
 		super(name, preferences);
+		
+		TranslationSetupPanel.pref=preferences;
 		
 		int primTransFileIndex=preferences.getPrimaryTextIndex();
 		if(primTransFileIndex>=TranslationTextInfoContainer.getSize()){
@@ -196,7 +201,7 @@ public class TranslationSetupPanel extends PreferencesSetupPanel {
 		add(addAdditionalTextFiles, gbc_btnAdditText);
 		
 		
-		totalAyahs=QuranTeacher.Basics.SurahInformationContainer.totalAyahsUpto[114];
+		totalAyahs=SurahInformationContainer.totalAyahsUpto[114];
 		addAdditionalTextFiles.addActionListener(new ActionListener() {
 			
 			@Override
@@ -220,7 +225,7 @@ public class TranslationSetupPanel extends PreferencesSetupPanel {
 			       File file=fileChooser.getSelectedFile();
 			       if(addNewFile(file)){
 			    	   JOptionPane.showMessageDialog(getParent(),"File Added Successfully.","Success",JOptionPane.INFORMATION_MESSAGE);
-			    	   updateTextSelectionCBox(preferences);
+			    	   updateTextSelectionCBox();
 			       }else{
 			    	   JOptionPane.showMessageDialog(getParent(),"Invalid or Corrupted File.","Failure",JOptionPane.ERROR_MESSAGE);
 			       }
@@ -229,19 +234,19 @@ public class TranslationSetupPanel extends PreferencesSetupPanel {
 		});
 	}
 	
-	private void updateTextSelectionCBox(TranslationPreferences preferences){
+	public static void updateTextSelectionCBox(){
 		PrimTextSelectComboBox.setModel(
 				new DefaultComboBoxModel<>(TranslationTextInfoContainer.getAllFileNames(false)));
-		PrimTextSelectComboBox.setSelectedIndex(preferences.getPrimaryTextIndex());
+		PrimTextSelectComboBox.setSelectedIndex(pref.getPrimaryTextIndex());
 		
 		
 		SecondTextSelectComboBox.setModel(
 				new DefaultComboBoxModel<>(TranslationTextInfoContainer.getAllFileNames(true)));
 		
-		if(preferences.getSecondaryTextIndex()==-1){
+		if(pref.getSecondaryTextIndex()==-1){
 			SecondTextSelectComboBox.setSelectedIndex(TranslationTextInfoContainer.getSize());
 		}else{
-			SecondTextSelectComboBox.setSelectedIndex(preferences.getSecondaryTextIndex());
+			SecondTextSelectComboBox.setSelectedIndex(pref.getSecondaryTextIndex());
 		}
 	}
 	public void setFileChooserFont(Component[] comp, Font font) {
@@ -313,8 +318,7 @@ public class TranslationSetupPanel extends PreferencesSetupPanel {
 	            //Toast.makeText(this,"Saved Successfully :\n"+toFile.getName(), Toast.LENGTH_LONG).show();
 	            TranslationTextInfoContainer.addToTransFileList(writingFile);
 	            f.close();
-            }else{
-            	if(writingFile.exists())
+            }else if(writingFile.exists()){//file has been saved
             		writingFile.delete();
             }
 
@@ -333,7 +337,7 @@ public class TranslationSetupPanel extends PreferencesSetupPanel {
 		try {
 	        @SuppressWarnings("resource")
 			ZipFile zipFile = new ZipFile(file);
-	        for (Enumeration e = zipFile.entries(); e.hasMoreElements(); ) {
+	        for (Enumeration<? extends ZipEntry> e = zipFile.entries(); e.hasMoreElements(); ) {
 	            ZipEntry entry = (ZipEntry) e.nextElement();
 
 	            if (!entry.isDirectory() && entry.getName().endsWith(".txt")){

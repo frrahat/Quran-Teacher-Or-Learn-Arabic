@@ -74,8 +74,7 @@ import QuranTeacher.MainWindow.MainDisplayPart.DisplayPanel.DisplayPage;
 import QuranTeacher.MainWindow.SidePart.SelectionPanel;
 import QuranTeacher.MainWindow.SidePart.SidePanel;
 import QuranTeacher.Preferences.deltaPixelProperty;
-import QuranTeacher.RenderAudio.Reciter;
-import QuranTeacher.RenderImages.ImageLoader;
+
 import QuranTeacher.Utils.Updater;
 import QuranTeacher.Utils.VersionInfo;
 import QuranTeacher.WordInformation.WordInfoLoader;
@@ -105,6 +104,7 @@ public class MainFrame extends JFrame {
 	//private final TafsirPanel tafsirPanel;
 
 	private SidePanel sidePanel;
+	private boolean isActionButtonEnabled;
 	
 	public MainFrame() {
 		setTitle(AppName+" "+version);
@@ -129,7 +129,7 @@ public class MainFrame extends JFrame {
 								PreferencesDialog.getAudioPref().getCurrentAyah());
 						
 						if(!sidePanel.getInformationPanel().isInfoSet()){
-							sidePanel.getInformationPanel().setInfo(sidePanel.getSelectionPanel().
+							sidePanel.getInformationPanel().setInfo(SelectionPanel.
 									getSelectedAyah().suraIndex);
 						}
 					}
@@ -139,7 +139,7 @@ public class MainFrame extends JFrame {
 					
 					@Override
 					public void startButtonClicked() {
-						startAnimation(sidePanel.getSelectionPanel().getSelectedAyah());
+						startAnimation(SelectionPanel.getSelectedAyah());
 					}
 				});
 				
@@ -327,6 +327,31 @@ public class MainFrame extends JFrame {
 		mntmDownload.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		mnTools.add(mntmDownload);
 		
+		JMenuItem mntmHitEditor = new JMenuItem("Edit or Play Hits");
+		mntmHitEditor.setForeground(Color.ORANGE);
+		mntmHitEditor.setBackground(Color.DARK_GRAY);
+		mntmHitEditor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(!WordInfoLoader.isLoaded){
+					JOptionPane.showMessageDialog(getParent(), 
+							"Word Information is not loaded yet. Wait a little "
+							+ "and try again.");
+					return;
+				}
+				animPanel.showHitFileEditorDialog();
+				if(displayPanel.getDisplayPage()!=DisplayPage.AnimationPage)
+				{
+					displayPanel.setDisplayPage(DisplayPage.AnimationPage);
+					animPanel.startAnimationTimer();
+					animPanel.updateWordStartPoint();
+				}
+				animPanel.setAnimationStateSimple();
+				
+			}
+		});
+		mntmHitEditor.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		mnTools.add(mntmHitEditor);
+		
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.ORANGE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -497,20 +522,12 @@ public class MainFrame extends JFrame {
 		{
 			displayPanel.setDisplayPage(DisplayPage.AnimationPage);
 			animPanel.startAnimationTimer();
+			animPanel.updateWordStartPoint();
 		}
-			
+		animPanel.setAnimationStateSimple();	
 		animPanel.setAyah(ayah);
 		
-		btnPauseDisplay.setEnabled(true);
-		btnPauseDisplay.setText("Pause Display");
-		btnRestartDisplay.setEnabled(true);
-		
-		int deltaPixel=animPanel.getDeltaPixel();
-		
-		if(deltaPixel<deltaPixelProperty.maxDeltaPixel)
-			btnSpeedUp.setEnabled(true);//increase deltaPixel
-		if(deltaPixel>deltaPixelProperty.minDeltaPixel)
-			btnSpeedDown.setEnabled(true);//decrease deltaPixel
+		enableActionButtons();
 	}
 
 	private void updateSpeedButton(boolean upCalled)
@@ -556,6 +573,25 @@ public class MainFrame extends JFrame {
 		sidePanel.getAudioNavPanel().updateAudioPref();
 		
 		translationPanel.updateTransPref();
+	}
+
+
+	private void enableActionButtons() {
+		if(!isActionButtonEnabled){
+
+			btnPauseDisplay.setEnabled(true);
+			btnPauseDisplay.setText("Pause Display");
+			btnRestartDisplay.setEnabled(true);
+			
+			int deltaPixel=animPanel.getDeltaPixel();
+			
+			if(deltaPixel<deltaPixelProperty.maxDeltaPixel)
+				btnSpeedUp.setEnabled(true);//increase deltaPixel
+			if(deltaPixel>deltaPixelProperty.minDeltaPixel)
+				btnSpeedDown.setEnabled(true);//decrease deltaPixel
+			
+			isActionButtonEnabled=true;
+		}
 	}
 
 }

@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
 import QuranTeacher.Basics.Ayah;
-import QuranTeacher.Basics.SurahInformationContainer;
 import QuranTeacher.Interfaces.AudioButtonListener;
 import QuranTeacher.Interfaces.AyahSelectionListener;
 

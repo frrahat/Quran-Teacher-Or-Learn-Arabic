@@ -90,6 +90,12 @@ public class QuranText {
 		}
 	}
 	
+	public boolean isValid(){
+		if(quranText==null || quranText[113]==null || quranText[113][5].length()==0)
+			return false;
+		return true;
+	}
+	
 	/**
 	 * @return the quranText
 	 */

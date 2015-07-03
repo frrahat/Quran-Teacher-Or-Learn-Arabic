@@ -32,7 +32,7 @@ import QuranTeacher.WordInformation.WordInformation;
 import QuranTeacher.Preferences.deltaPixelProperty;
 
 
-public class Animation extends JPanel {
+public abstract class Animation extends JPanel {
 
 	/**
 	 * The main animation is created here
@@ -49,7 +49,7 @@ public class Animation extends JPanel {
 	private WordByWordFontPref wordByWordFontPref;
 	protected int deltaPixel=deltaPixelProperty.initialDeltaPixel;
 	
-	protected int width;//sentence width
+	protected int sentenceWidth;//sentence width
 	protected int height;
 	
 	private String ExtraSpaceString="    ";//initial extra spacing is 4 spaces
@@ -88,7 +88,7 @@ public class Animation extends JPanel {
 	protected int timeGapElapsed;//time total slept after one ayah display finished
 	int restingTimeGap;
 	
-	private boolean isWaqf=false;
+	//private boolean isWaqf=false;
 	private int totalWaqfFound;
 	
 	private boolean showPopUpInfoBox;
@@ -97,11 +97,11 @@ public class Animation extends JPanel {
 			+ "\u0631\u0651\u064e\u062d\u0652\u0645\u064e\u0670\u0646"
 			+ "\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0650\u064a\u0645\u0650";*/
 			
-	protected String displayText="Go.";//not set to null,to avoid null pointer exception
+	protected String displayText="";//not set to null,to avoid null pointer exception
 	protected List<WordInformation> infoOfWord;
 	protected Image[] wordImages;
 
-	private boolean ayahDisplayFinished;
+	protected boolean ayahDisplayFinished;
 	
 	private Color wbwMeaningColor;//word meaning font color
 	private Color wbwTrnslitrtionColor;
@@ -109,8 +109,11 @@ public class Animation extends JPanel {
 	private FontMetrics wbwFontMetrics;//for word meaning font
 
 	private boolean downloadImagesEnabled;
-
 	private static boolean animatePartialWord;
+	public enum Animation_type{Simple_Animation,Timed_Animation, Timed_Animation_Continuous,
+		Edit_Timed_Ayah};
+	
+	protected Animation_type animationType;
 
 	
 	public Animation() {
@@ -125,7 +128,6 @@ public class Animation extends JPanel {
 		
 		animationRunning=false;
 		ayahDisplayFinished=false;
-		animatePartialWord=true;
 		
 		animPreferences=PreferencesDialog.getAnimPreferences();
 		wordByWordFontPref=PreferencesDialog.getWbWFontPref();
@@ -150,6 +152,8 @@ public class Animation extends JPanel {
 			}
 		});
 		//timer.start();
+		//timer is started from mainFrame()
+		animatePartialWord=true;
 	}
 	
 	protected void paintComponent(Graphics g)
@@ -164,114 +168,138 @@ public class Animation extends JPanel {
 			drawFixedDisplay(g);
 	}
 
+	//############################################################################
 	protected void step() {
-		
 		if(!animationRunning)//paused or ayah Display Finished
 		{
 			repaint();
-			timeGapElapsed++;
-			if(timeGapElapsed>=restingTimeGap)
-				goToNextStep();
+			if(ayahDisplayFinished){
+				if(timeGapElapsed>=restingTimeGap)
+					goToNextStep();
+				else
+					timeGapElapsed++;
+			}
+			return;
+		}else if(ayahDisplayFinished){//animation running but ayah display finished
+			
+			if(distanceCovered<sentenceWidth+50)//pass times to last red boundary disappears
+				distanceCovered+=deltaPixel;//others wise last red boundary can't be seen
+			else
+			{
+				animationRunning=false;
+				timeGapElapsed=0;
+			}
+			
+			repaint();
 			return;
 		}
-		if(distanceCovered<width)
+		
+		if(distanceCovered<sentenceWidth)
 		{
 			distanceCovered+=deltaPixel;
 		}
-		
-		else//a word animation finished
-		{
-			if(!ayahDisplayFinished)//not all words yet been displayed
-			{
-				if(!isWaqf)
-				{
-					rectangles.add(new Rectangle
-							(startPoint.x-width,currentDisplayPoint.y-height,
-						fontMetrics.stringWidth(words[wordIndexToDisplay]),height+15));
-					//System.out.println("Rectangles added for"+ words[wordIndexToDisplay]);
-				}
-			
-				if(wordIndexToDisplay<words.length-1)//more words to display
-				{
-					wordIndexToDisplay++;
-					//System.out.println(wordIndexToDisplay);
-					String wordNextToDisplay=words[wordIndexToDisplay];
-					
-					//checking if waqf occured
-					isWaqf=false;
-					if(wordNextToDisplay.length()==1)
-					{	
-						//chrecters unicode achieved from: http://jrgraphix.net/research/unicode_blocks.php?block=12
-						int k=wordNextToDisplay.charAt(0);
-						if((k>='\u0610' && k<='\u0615') || (k>='\u06D6' && k<='\u06ED'))
-						{
-							isWaqf=true;
-							totalWaqfFound++;
-							//System.out.println(wordNextToDisplay);
-						}
-					}
-					
-					if(!isWaqf)//this word is not an waqf
-					{
-						calculateExtraSpace();
-						//System.out.println("Extra space for :"+wordNextToDisplay);
-					}
-					
-					int checkWidth=fontMetrics.stringWidth
-							(spaceBetweenWords+ExtraSpaceString+wordNextToDisplay);
-					
-					if(distanceCovered+checkWidth>=getBounds().width-30)//word may cross display area bound
-					{
-						totalLinesDisplayed++;//lines to avoid animating
-						
-						//distanceCovered=0;//return to start mode
-						distanceCovered=
-								(spaceBetweenWords.length()-1+ExtraSpaceString.length())*spaceWidth;
-						
-						currentDisplayPoint.y+=lineHeight*2;//go to next line
-						
-						currentLine=totalLinesDisplayed;//new sentence index
-						
-						sentences[currentLine]=
-								spaceBetweenWords+ExtraSpaceString+wordNextToDisplay;//new sentence at next line
-					}
-					
-					else//word can be printed simply in display area
-					{
-						sentences[currentLine]+=spaceBetweenWords+ExtraSpaceString+wordNextToDisplay;//in the same line, next word
-						distanceCovered+=(spaceBetweenWords.length()-1)*spaceWidth;
-					}
-		
-				}
-				else
-					ayahDisplayFinished=true;//all words has been displayed
-			}
-			else//no more words to display, ayahDisplayFinished is true
-			{
-				
-				if(distanceCovered<width+50)//pass times to last red boundary disappears
-					distanceCovered+=deltaPixel;//others wise last red boundary can't be seen
-				else
-				{
-					animationRunning=false;
-					timeGapElapsed=0;
-				}
+		else{//a word animation finished as distance covered last word width
+			if(animationType==Animation_type.Simple_Animation){//not in autoDisplayMode
+				addNextWordToSentence();
 			}
 		}
 		repaint();
 	}
-	
-	
-	protected void goToNextStep() {
-		//do nothing
+	//###########################################################################
+		
+	public void addNextWordToSentence()// TODO
+	{
+		if (ayahDisplayFinished) {
+			return;
+		}
+		// if(!isWaqf)//waqf will not occur
+
+		if (wordIndexToDisplay < words.length)// more words to display
+		{
+			// System.out.println(wordIndexToDisplay);
+			String wordNextToDisplay = words[wordIndexToDisplay];
+			calculateExtraSpace();// sets extraspace string
+			int wordWidth=fontMetrics.stringWidth(wordNextToDisplay);
+			int waqfWidth=0;
+			// check if newt word to wordNextToDisplay ia a waqf
+			while (wordIndexToDisplay < words.length - 1
+					&& (isWaqf(words[wordIndexToDisplay + 1]))) {
+
+				// add this waqf to the next word to display
+				wordIndexToDisplay++;
+				wordNextToDisplay += spaceBetweenWords + words[wordIndexToDisplay];
+				waqfWidth+=fontMetrics.stringWidth(spaceBetweenWords+words[wordIndexToDisplay]);
+
+				totalWaqfFound++;
+				// System.out.println(wordNextToDisplay);
+			}
+
+			int checkWidth = fontMetrics.stringWidth(spaceBetweenWords
+					+ ExtraSpaceString + wordNextToDisplay);
+
+			// word may cross display area bound
+			if (sentenceWidth + checkWidth >= getBounds().width - 30)
+			{
+				totalLinesDisplayed++;// lines to avoid animating
+
+				// new line
+
+				// the extraspace + a space been covered
+				// distanceCovered=
+				// (spaceBetweenWords.length()-1+ExtraSpaceString.length())*spaceWidth;
+
+				currentDisplayPoint.y += lineHeight * 2;// go to next line
+
+				currentLine = totalLinesDisplayed;// new sentence index
+
+				sentences[currentLine] = spaceBetweenWords + ExtraSpaceString
+						+ wordNextToDisplay;// new sentence at next line
+			}
+
+			else// word can be printed simply in display area
+			{
+				sentences[currentLine] += spaceBetweenWords + ExtraSpaceString
+						+ wordNextToDisplay;// in the same line, next word
+				// distanceCovered+=(spaceBetweenWords.length()-1)*spaceWidth;
+			}
+
+			sentenceWidth = fontMetrics.stringWidth(sentences[currentLine]);
+
+			// System.out.println("width= "+width);
+			rectangles.add(new Rectangle(startPoint.x - sentenceWidth + waqfWidth,
+					currentDisplayPoint.y - height, wordWidth,
+					height + 15));
+			// System.out.println("Rectangles added for"+
+			// words[wordIndexToDisplay]);
+
+			distanceCovered = sentenceWidth - wordWidth;
+			// word that has just been added
+			wordIndexToDisplay++;
+		}
+
+		if (wordIndexToDisplay == words.length) {
+			// System.out.println("Ayah display finished");
+			ayahDisplayFinished = true;// all words has been displayed
+			// animationRunning=false;
+		}
+
 	}
+
+	private boolean isWaqf(String word) {
+		int k=word.charAt(0);
+		if((k>='\u0610' && k<='\u0615') || (k>='\u06D6' && k<='\u06ED'))
+			return true;
+		return false;
+	}
+		
+	protected abstract void goToNextStep();
 
 	private void drawAnimation(Graphics g)
 	{
-		startPoint.x=this.getBounds().width-10;
+		updateWordStartPoint();
 		g.setFont(animFont);
 		
-		width=fontMetrics.stringWidth(sentences[currentLine]);
+		sentenceWidth=fontMetrics.stringWidth(sentences[currentLine]);
 				
 		for(int i=0;i<totalLinesDisplayed;i++)
 		{
@@ -279,7 +307,7 @@ public class Animation extends JPanel {
 					startPoint.y+2*lineHeight*i-scrollY);
 		}
 		g.drawString(sentences[currentLine],
-				startPoint.x-width,currentDisplayPoint.y-scrollY);
+				startPoint.x-sentenceWidth,currentDisplayPoint.y-scrollY);
 		
 		//draw scrollbar in right position
 		scrollbarPosY=(int) ((getBounds().getHeight()*scrollY)/currentDisplayPoint.y);
@@ -320,6 +348,10 @@ public class Animation extends JPanel {
 			scrollY+=scrollDelta;
 		}
 	}
+
+	public void updateWordStartPoint() {
+		startPoint.x=this.getBounds().width-10;
+	}
 	
 	
 	private void HidePartial(Graphics g) {
@@ -328,9 +360,9 @@ public class Animation extends JPanel {
 		//startX -5 and width +5 added for TWA effect--> displaying of the letter TWA
 		//height+=extraHeight for displaying ZER
 		//all is the fontmetrics problem, unsolved
-		g.fillRect(startPoint.x-width-10, 
+		g.fillRect(startPoint.x-sentenceWidth-10, 
 				currentDisplayPoint.y-height-scrollY, 
-				width-distanceCovered+10, height+extraHeight);
+				sentenceWidth-distanceCovered+10, height+extraHeight);
 	}
 
 	private void drawFixedDisplay(Graphics g) 
@@ -343,7 +375,7 @@ public class Animation extends JPanel {
 					startPoint.y+2*lineHeight*i-scrollY);
 		}
 		g.drawString(sentences[currentLine],
-				startPoint.x-width,currentDisplayPoint.y-scrollY);
+				startPoint.x-sentenceWidth,currentDisplayPoint.y-scrollY);
 		
 		//draw scrollbar
 
@@ -531,6 +563,8 @@ public class Animation extends JPanel {
 	protected void resetDisplay()
 	{
 		distanceCovered=0;
+		sentenceWidth=0;
+		
 		wordIndexToDisplay=0;
 		
 		totalLinesDisplayed=0;
@@ -544,8 +578,7 @@ public class Animation extends JPanel {
 		
 		fontMetrics=getFontMetrics(animFont);
 		
-		calculateExtraSpace();
-		sentences[currentLine]=ExtraSpaceString+words[0];
+		sentences[currentLine]="";
 		
 		//lineHeight=getFontMetrics(animFont).getHeight()+20;
 		scrollY=0;

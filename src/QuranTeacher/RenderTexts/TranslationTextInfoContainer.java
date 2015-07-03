@@ -1,10 +1,8 @@
 package QuranTeacher.RenderTexts;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 
-import javax.naming.ldap.InitialLdapContext;
 
 import QuranTeacher.FilePaths;
 
@@ -20,8 +18,9 @@ public class TranslationTextInfoContainer {
 		transFiles=new ArrayList<>();
 		initialized=true;
 		
-		transFiles.add(new TranslationTextFile(FilePaths.EnglishTextFilePath, "English"));
-		transFiles.add(new TranslationTextFile(FilePaths.BengaliTextFilePath, "Bengali"));
+		transFiles.add(new TranslationTextFile(FilePaths.EnglishTextFilePathYusuf, "English - Yusuf Ali"));
+		transFiles.add(new TranslationTextFile(FilePaths.EnglishTextFilePathSahih, "English - Sahih International"));
+		//transFiles.add(new TranslationTextFile(FilePaths.BengaliTextFilePath, "Bengali"));
 		
 		File storageFolder=new File(FilePaths.additionalTextsDir);
 		if(!storageFolder.exists()){
@@ -30,7 +29,9 @@ public class TranslationTextInfoContainer {
 		else{
 			File[] files=storageFolder.listFiles();
 			for(int i=0;i<files.length;i++){
-				transFiles.add(new TranslationTextFile(files[i]));
+				if(files[i].getName().endsWith(".txt")){
+					transFiles.add(new TranslationTextFile(files[i]));
+				}
 			}
 		}
 	}

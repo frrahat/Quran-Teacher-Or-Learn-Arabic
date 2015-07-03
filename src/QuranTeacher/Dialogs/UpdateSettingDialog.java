@@ -32,6 +32,10 @@ import java.util.Calendar;
 
 public class UpdateSettingDialog extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	private JRadioButton rdbtnNeverCheckForUpdate;
 	private JRadioButton rdbtnCheckForUpdatePerWeek;
@@ -90,7 +94,7 @@ public class UpdateSettingDialog extends JDialog {
 			contentPanel.add(rdbtnCheckForUpdateAlways, gbc_rdbtnCheckForUpdate);
 		}
 		{
-			rdbtnCheckForUpdatePerWeek = new JRadioButton("Check For Update Once In A Week");
+			rdbtnCheckForUpdatePerWeek = new JRadioButton("Check For Update Every Friday");
 			rdbtnCheckForUpdatePerWeek.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					optionIndex=1;
@@ -219,7 +223,7 @@ public class UpdateSettingDialog extends JDialog {
 			return true;
 		else if(optionIndex==1){
 			Calendar cal= Calendar.getInstance();
-			int dayOfWeek=cal.get(cal.DAY_OF_WEEK);
+			int dayOfWeek=cal.get(Calendar.DAY_OF_WEEK);
 			
 			if(dayOfWeek==Calendar.FRIDAY){
 				return true;

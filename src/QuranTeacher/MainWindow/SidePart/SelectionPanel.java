@@ -78,7 +78,7 @@ public class SelectionPanel extends JPanel {
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
-		JLabel lblSura = new JLabel("Sura :");
+		JLabel lblSura = new JLabel("Surah :");
 		lblSura.setForeground(Color.ORANGE);
 		lblSura.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		GridBagConstraints gbc_lblSura = new GridBagConstraints();
@@ -102,7 +102,7 @@ public class SelectionPanel extends JPanel {
 		gbc_suraBox.gridy = 0;
 		add(suraBox, gbc_suraBox);
 		
-		JLabel lblAya = new JLabel("Aya :");
+		JLabel lblAya = new JLabel("Ayah :");
 		lblAya.setForeground(Color.ORANGE);
 		lblAya.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		GridBagConstraints gbc_lblAya = new GridBagConstraints();
@@ -229,10 +229,7 @@ public class SelectionPanel extends JPanel {
 				int j=ayahBox.getSelectedIndex();
 				
 				Ayah ayah=new Ayah(i, j);
-				if(ayahSelectionListener!=null)
-					ayahSelectionListener.ayahSelected(ayah);
-				else
-					System.out.println("No listener available");
+				ayahSelectionListener.ayahSelected(ayah);
 				
 				//System.out.println("Going to "+suraNameList[i]+" Ayah "+(j+1));
 			}
@@ -246,10 +243,7 @@ public class SelectionPanel extends JPanel {
 				int i=suraBox.getSelectedIndex();
 				ayahBox.setModel(models[i]);
 				Ayah ayah=new Ayah(i, -1);
-				if(ayahSelectionListener!=null)
-					ayahSelectionListener.ayahSelected(ayah);//going to sidePanel
-				else
-					System.out.println("No listener available");
+				ayahSelectionListener.ayahSelected(ayah);//going to sidePanel
 			}
 		});
 		

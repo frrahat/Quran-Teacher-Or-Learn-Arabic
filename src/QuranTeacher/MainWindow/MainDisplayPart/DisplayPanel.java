@@ -53,7 +53,7 @@ public class DisplayPanel extends JPanel {
 		final JSplitPane splitPane = new JSplitPane();
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setBackground(Color.DARK_GRAY);
-		splitPane.setResizeWeight(1.0);
+		splitPane.setResizeWeight(0.8);
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		
 		animationPanel=new AnimationPanel();
@@ -70,8 +70,8 @@ public class DisplayPanel extends JPanel {
 		translationPanel=new TranslationPanel();
 		tabbedPane.addTab("Translation", null, translationPanel, null);
 		
-		tafsirPanel=new TafsirPanel();
-		tabbedPane.addTab("Tafsir", null, tafsirPanel, null);
+		//tafsirPanel=new TafsirPanel();
+		//tabbedPane.addTab("Tafsir", null, tafsirPanel, null);
 		
 		add(splitPane, mainDisplayName);
 		

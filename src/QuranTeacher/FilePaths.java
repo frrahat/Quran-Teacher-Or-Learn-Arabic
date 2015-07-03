@@ -7,8 +7,10 @@ import java.nio.file.Path;
 
 public class FilePaths {
 	public static final String ArabicTextFilePath="/QuranTeacher/files/texts/quran-uthmani.txt";
-	public static final String EnglishTextFilePath="/QuranTeacher/files/texts/en.yusufali.txt";
+	public static final String EnglishTextFilePathYusuf="/QuranTeacher/files/texts/en.yusufali.txt";
+	public static final String EnglishTextFilePathSahih="/QuranTeacher/files/texts/en.sahih.txt";
 	public static final String BengaliTextFilePath="/QuranTeacher/files/texts/bn.bengali.txt";
+	
 	
 	public static final String surahInfoFilePath="/QuranTeacher/files/texts/sura-information.txt";
 	public static final String wordByWordFilePath="/QuranTeacher/files/texts/WbWInfo.txt";
@@ -26,6 +28,7 @@ public class FilePaths {
 	
 	public static final String updateInfoStorageFile= System.getProperty("user.dir")+ "/.preferences/updateInfo";
 	
+	public static final String hitFileDirName= System.getProperty("user.dir")+"/res/hitFiles";
 	
 	public static boolean move(File srcFile,File destFile){
 		//moving the file

@@ -2,17 +2,12 @@ package QuranTeacher.Utils;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.UnknownHostException;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
@@ -26,7 +21,7 @@ import QuranTeacher.MainWindow.MainFrame;
  */
 public class Updater {
 	public final String DefaultURLString = "https://raw.githubusercontent.com/frrahat/"
-			+ "Quran-Teacher-Or-Learn-Arabic/master/QT_new_version_info.txt";
+			+ "Quran-Teacher-Or-Learn-Arabic/master/src/QuranTeacher/QT_new_update_info.txt";
 	private int connectionTimeout=5000;
 	private UpdateActivityReturnListener updateActivityReturnListener;
 	

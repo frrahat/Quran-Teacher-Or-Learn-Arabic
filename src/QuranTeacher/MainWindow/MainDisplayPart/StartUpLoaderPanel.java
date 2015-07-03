@@ -23,6 +23,7 @@ import QuranTeacher.Dialogs.AboutDialog;
 import QuranTeacher.Dialogs.HelpDialog;
 import QuranTeacher.MainWindow.MainFrame;
 import QuranTeacher.Preferences.MyFonts;
+import QuranTeacher.PreferencesSetupPanels.TranslationSetupPanel;
 import QuranTeacher.RenderAudio.Reciter;
 import QuranTeacher.RenderImages.ImageLoader;
 import QuranTeacher.RenderTexts.AllTextsContainer;
@@ -38,11 +39,21 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
+/**
+ * @author Rahat
+ *
+ */
 public class StartUpLoaderPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JProgressBar progressBar;
 	private JLabel lblProgress;
 	private Task task;
@@ -208,7 +219,8 @@ public class StartUpLoaderPanel extends JPanel {
             SurahInformationContainer.loadAllSurahInfos();
             
             int totalQuranFiles=TranslationTextInfoContainer.getSize()+1;
-            int step=(int)((100.0/(33+totalQuranFiles*1.5))*(totalQuranFiles*1.5));
+            //each file assumed to be of size 1.5MB in average
+            int step=(int)((100.0/(33+totalQuranFiles*1.5))*1.5);
             //load arabic QuranText
             InputStream in=StartUpLoaderPanel.class.getResourceAsStream(FilePaths.ArabicTextFilePath);
             AllTextsContainer.arabicText=new QuranText(in, true);
@@ -216,12 +228,26 @@ public class StartUpLoaderPanel extends JPanel {
             setProgress(progress);
             
             AllTextsContainer.translationtexts=new ArrayList<>();
+            boolean invalidFileFound=false;
             for(int i=0;i<TranslationTextInfoContainer.getSize();i++){
-            	AllTextsContainer.translationtexts.add(new QuranText(
+            	//System.out.println("fileName "+TranslationTextInfoContainer.getTransFile(i).getFileName());
+            	QuranText quranText=new QuranText(
             			TranslationTextInfoContainer.getTransFile(i).getInputStream(),
-            			false));
-            	
+            			false);
+            	if(quranText.isValid()){
+            		System.out.println(TranslationTextInfoContainer.getTransFile(i).getFileName());
+            		AllTextsContainer.translationtexts.add(quranText);
+            	}else{
+            		invalidFileFound=true;
+            		System.err.println("Invalid file Found ,"+TranslationTextInfoContainer.getTransFile(i).getFileName());
+            		TranslationTextInfoContainer.getAllTranslationTextFiles().remove(i);
+            		i--;
+            	}
+            	if(invalidFileFound){
+            		TranslationSetupPanel.updateTextSelectionCBox();
+            	}
             	progress+=step;
+            	//System.out.println(i+","+progress+","+step);
             	setProgress(progress);
             }
             
@@ -243,6 +269,15 @@ public class StartUpLoaderPanel extends JPanel {
          * Executed in event dispatch thread
          */
         public void done() {
+        	//for showing exception
+        	try {
+				get();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+        	
             btnStart.setEnabled(true);
             btnStart.setText("Start");
             lblProgress.setText("Finished!\n");
@@ -275,5 +310,10 @@ public class StartUpLoaderPanel extends JPanel {
 		//for audio
 		Reciter.manageStorageDirForAudios();
 		
+		//for hitFiles
+		File hitFilesDir=new File(FilePaths.hitFileDirName);
+		if(!hitFilesDir.exists()){
+			hitFilesDir.mkdirs();
+		}
 	}
 }

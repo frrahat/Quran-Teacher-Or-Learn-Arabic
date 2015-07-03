@@ -17,12 +17,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
 import QuranTeacher.FilePaths;
-import QuranTeacher.MainWindow.SidePart.SelectionPanel;
 import QuranTeacher.RenderAudio.Reciter;
 import QuranTeacher.WordInformation.WordInfoLoader;
 

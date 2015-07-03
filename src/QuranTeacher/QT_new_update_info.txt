@@ -1,0 +1,11 @@
+1.2.0
+03-07-2015, 11:30 am
+https://github.com/frrahat/Quran-Teacher-Or-Learn-Arabic/releases/download/1.2.0/QuranTeacherOrLearnArabic_v1.2.0.zip
+Fixed some bugs and added a new feature : Hit File Editing and Playing.
+Hit file is just a text file containing the times of appearances of the words of an ayah according to the recited audio, which is expected to be a great tool for learning Quran, as it enables the perfect visulaization of the words and meanings with listening to the pronounciation. People who can read Quran can make various 'Hit Files' and share them with the ones who can't read Quran and thus can be work as a Quran Teacher.
+
+There is also some other features like adding more translations and fonts and changing gap in the texts for the well rendering of texts for different fonts.
+
+There is a lot of changes in the source code and the codes have been reorganized such that developer will find it easier to reuse the code to develop the app.
+
+May Allah, accept this work as an Ibadah.

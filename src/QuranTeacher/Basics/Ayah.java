@@ -9,10 +9,6 @@ import QuranTeacher.Basics.SurahInformationContainer;
  *
  */
 public class Ayah{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public int suraIndex;
 	public int ayahIndex;
 	
@@ -23,6 +19,12 @@ public class Ayah{
 	}
 	public Ayah(int suraIndex,int ayahIndex)
 	{
+		if(suraIndex>113){
+			suraIndex=113;
+		}
+		if(ayahIndex>=SurahInformationContainer.totalAyahs[suraIndex]){
+			ayahIndex=SurahInformationContainer.totalAyahs[suraIndex]-1;
+		}
 		this.suraIndex=suraIndex;
 		this.ayahIndex=ayahIndex;
 	}

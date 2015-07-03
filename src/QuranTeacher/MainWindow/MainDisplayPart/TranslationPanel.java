@@ -15,19 +15,13 @@ import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import QuranTeacher.FilePaths;
 import QuranTeacher.Basics.Ayah;
 import QuranTeacher.Dialogs.PreferencesDialog;
 import QuranTeacher.Preferences.TranslationPreferences;
 import QuranTeacher.RenderTexts.AllTextsContainer;
-import QuranTeacher.RenderTexts.QuranText;
-import QuranTeacher.RenderTexts.TranslationTextInfoContainer;
 
 import java.awt.Font;
 import java.awt.Color;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
 
 public class TranslationPanel extends JPanel {
 
@@ -64,7 +58,7 @@ public class TranslationPanel extends JPanel {
 		
 		updateTransPref();
 		
-		txtrTranslationtext.setText("TransLationText");
+		txtrTranslationtext.setText("");
 		scrollPane.setViewportView(txtrTranslationtext);
 
 	}
