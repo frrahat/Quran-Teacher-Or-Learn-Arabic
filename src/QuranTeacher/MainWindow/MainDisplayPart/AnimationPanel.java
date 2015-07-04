@@ -20,6 +20,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class AnimationPanel extends Animation {
 			+ "\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0650\u064a\u0645\u0650";
 	//private String displayText;
 	
-	private Reciter reciter;
+	//private Reciter reciter;
 	private boolean paused=false;
 	private UserInputListener userInputListener;
 	private Thread focusCheckingThread;
@@ -75,7 +76,8 @@ public class AnimationPanel extends Animation {
 	private long startTime;
 	private int displayedHitWords;
 	
-	//private FileInputStream audioFileInputStream;
+	
+	private FileInputStream audioFileInputStream;
 	
 	//private long injuryTime;//for the lagging of reciter
 	private static ArrayList<TimedAyah> timedAyahs;
@@ -425,11 +427,25 @@ public class AnimationPanel extends Animation {
 		else if(action.equals("restart"))
 		{
 			animationType=Animation_type.Simple_Animation;
-			resetDisplay();
-			paused=false;
-			if(audioPrefs.isAudioON()){
-				reciter=new Reciter(runningAyah);
-				new Thread(reciter).start();;
+			if(runningAyah!=null){
+				
+				resetDisplay();
+				paused=false;
+				if(audioPrefs.isAudioON()){
+					
+					if(Reciter.isAlive()){
+						Reciter.stop();
+					}
+					Thread fstreamLoader=new Thread(new Runnable() {
+						
+						@Override
+						public void run() {
+							audioFileInputStream=Reciter.getPlayFileInputStream(runningAyah);
+							new Reciter(audioFileInputStream).reciteAyah();
+						}
+					});
+					fstreamLoader.start();				
+				}
 			}
 		}
 		
@@ -453,43 +469,37 @@ public class AnimationPanel extends Animation {
 	
 	public void setAudioAction(String actionCommand)
 	{
-		/*if(actionCommand.equals("play"))
-		{
-			if(reciter!=null && !reciter.isAlive())
-				reciter=new Reciter(runningAyah);
+		if(!Reciter.isAlive()){
+			return;
 		}
-		else*/ if(actionCommand.equals("stop"))
-		{
-			if(reciter!=null && Reciter.isAlive())
-				reciter.stop();
+		
+		if(actionCommand.equals("stop")){
+			Reciter.stop();
 		}
-		else if(actionCommand.equals("pause"))
-		{
-			if(reciter!=null && Reciter.isAlive())
-				reciter.pause();
+		else if(actionCommand.equals("pause")){
+			Reciter.pause();
 		}
-		else if(actionCommand.equals("resume"))
-		{
-			if(reciter!=null && Reciter.isAlive())
-				reciter.resume();
+		else if(actionCommand.equals("resume")){
+			Reciter.resume();
 		}
 	}
 	
 	//TODO
 	public void setAyah(Ayah ayah)//go button,next,previous,restart clicked
 	{
+		Thread fstreamLoader=null;
+		
 		if(audioPrefs.isAudioON())
 		{
 			setAudioAction("stop");
-			reciter=new Reciter(ayah);
-			//freeze but don't lag
-			//if simple animation, then if it is continuous
-			//or it is hitFile editing or playing stage
-			if(AnimationPreferences.continuous || animationType!=Animation_type.Simple_Animation){
-				reciter.run();
-			}else{
-				new Thread(reciter).start();;
-			}
+			fstreamLoader=new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					audioFileInputStream=Reciter.getPlayFileInputStream(runningAyah);
+				}
+			});
+			fstreamLoader.start();
 		}
 		
 		runningAyah=ayah;
@@ -502,7 +512,6 @@ public class AnimationPanel extends Animation {
 		TranslationPanel.setTranslationText(ayah);
 		//TafsirPanel.setTafsirText(ayah);
 		
-		
 		resetDisplay();
 		
 		if(paused)
@@ -514,6 +523,18 @@ public class AnimationPanel extends Animation {
 		if(ayah.ayahIndex==0 && !(ayah.suraIndex==0 || ayah.suraIndex==8)){
 			//not sura fatiha and sura atTawba
 			setFirstSentence(bismillah);
+		}
+		
+		if(fstreamLoader!=null){
+			//freeze but don't lag
+			//if simple animation, then if it is continuous
+			//or it is hitFile editing or playing stage
+			//if(AnimationPreferences.continuous || animationType!=Animation_type.Simple_Animation){	
+			//}
+			try{
+				fstreamLoader.join();
+				new Reciter(audioFileInputStream).reciteAyah();
+			}catch(InterruptedException ie){};
 		}
 		//repaint();
 	}

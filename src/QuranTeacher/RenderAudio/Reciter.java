@@ -19,72 +19,36 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
 
+
+
+import javazoom.jl.decoder.JavaLayerException;
 import QuranTeacher.FilePaths;
 import QuranTeacher.Basics.Ayah;
 import QuranTeacher.MainWindow.SidePart.AudioNavigationPanel;
-import javazoom.jl.decoder.JavaLayerException;
 
-public class Reciter implements Runnable {
+public class Reciter{
 
 	public static String DefaultURL = "http://www.everyayah.com/data/Alafasy_64kbps";
 
-	private static Ayah ayah;
+	//private static Ayah ayah;
 	private static ZPlayer zplayer;
-	private static int connectionTimeout=5000;
+	private static final int connectionTimeout=5000;
+	private FileInputStream Fstream;
 	
 	
-	public Reciter(Ayah ayah) {		
-		Reciter.ayah = ayah;
+	public Reciter(FileInputStream Fstream) {		
+		this.Fstream=Fstream;
 	}
 
-	public void reciteAyat(Ayah ayah) throws JavaLayerException,
-			IOException {
-
-		FileInputStream Fstream = null;
-
-		String name = getAyatmp3Name(ayah);
-		File playFile = new File(FilePaths.audioStorageDir +"/"+ 
-				Integer.toString(ayah.suraIndex+1)+"/"+name);
-
-		if (playFile.exists()) 
-		{
-			try 
-			{
-				Fstream = new FileInputStream(playFile);
-				AudioNavigationPanel.setProgressText("Playing...");
-
-			} catch (Exception e) {e.printStackTrace();}
-		}
-		else
-		{
-
-			AudioNavigationPanel.setProgressText("DownLoading from internet...");
-			try {
-
-				if(download(DefaultURL+"/"+name, playFile))
-				{
-					AudioNavigationPanel.setProgressText("Downloading completed. Playing...");
-				}
-				else
-				{
-					AudioNavigationPanel.setProgressText("Downloading Failed.");
-					return;
-				}
-				Fstream = new FileInputStream(playFile);
-
-			}
-			catch (Exception ex) 
-			{
-				ex.printStackTrace();
-				AudioNavigationPanel.setProgressText("Downloading Failed.");
-				return;
-			}
-		}
-
-		zplayer = new ZPlayer(Fstream);
+	public void reciteAyah() {
+		if(Fstream==null)
+			return;
+		try {
+			zplayer = new ZPlayer(Fstream);
+		} catch (JavaLayerException e) {}
 	}
 
-	public String getAyatmp3Name(Ayah ayah) {
+	public static String getAyatmp3Name(Ayah ayah) {
 		String a = "";
 		String b = "";
 
@@ -105,24 +69,13 @@ public class Reciter implements Runnable {
 		return mp3Name;
 	}
 
-	@Override
-	public void run() {
-		try {
-			//System.out.println("Running Thread :"+Thread.currentThread().getName());
-			reciteAyat(Reciter.ayah);
-		} catch (Exception e) {// e.printStackTrace();
-			AudioNavigationPanel.setProgressText("Player failed");
-		}
-
-	}
-
 	public static boolean isAlive() {
 		if(zplayer==null)
 			return false;
 		return !zplayer.isComplete();
 	}
 
-	public boolean download(String audioUrl, File outputFile)
+	public static boolean download(String audioUrl, File outputFile)
 	{
 		URL url = null;
 		try 
@@ -168,16 +121,16 @@ public class Reciter implements Runnable {
 		}
 	}
    
-   public void pause(){
+   public static void pause(){
         zplayer.pause();
     }
     
-    public void resume(){
+    public static void resume(){
         
         zplayer.resume();
     }
     
-    public void stop(){
+    public static void stop(){
         
         zplayer.stop();   
     }
@@ -226,4 +179,45 @@ public class Reciter implements Runnable {
 		}
     }
 	
+	
+    public static FileInputStream getPlayFileInputStream(Ayah ayah){
+    	FileInputStream Fstream = null;
+
+		String name = getAyatmp3Name(ayah);
+		File playFile = new File(FilePaths.audioStorageDir +"/"+ 
+				Integer.toString(ayah.suraIndex+1)+"/"+name);
+
+		if (playFile.exists()) 
+		{
+			try 
+			{
+				Fstream = new FileInputStream(playFile);
+				AudioNavigationPanel.setProgressText("Playing...");
+
+			} catch (Exception e) {e.printStackTrace();}
+		}
+		else
+		{
+
+			//AudioNavigationPanel.setProgressText("DownLoading from internet...");
+			try {
+
+				if(download(DefaultURL+"/"+name, playFile)){
+					AudioNavigationPanel.setProgressText("Downloading completed. Playing...");
+					Fstream = new FileInputStream(playFile);
+				}
+				else{
+					AudioNavigationPanel.setProgressText("Downloading Failed.");
+				}
+
+			}
+			catch (IOException ex) 
+			{
+				ex.printStackTrace();
+				AudioNavigationPanel.setProgressText("Downloading Failed.");
+			}
+		}
+		
+		return Fstream;
+    }
 }
