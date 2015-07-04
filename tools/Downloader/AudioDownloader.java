@@ -58,8 +58,8 @@ public class AudioDownloader extends Downloader{
 		storageFolder=System.getProperty("user.dir")+"/res/QuranAudio";
 		itemId="Audio";
 		
-		totalFilesToDownload=totalAyas[startSurahIndex];
-		for(int i=startSurahIndex+1;i<endSurahIndex;i++){
+		totalFilesToDownload=0;
+		for(int i=startSurahIndex;i<=endSurahIndex;i++){
 			totalFilesToDownload+=totalAyas[i];
 		}
 		maxValString=Integer.toString(totalFilesToDownload);
@@ -151,7 +151,7 @@ public class AudioDownloader extends Downloader{
 				
 				String audioUrl=sourceUrl+"/"+name;
 				
-				if(!overwrite && outFile.exists())
+				if(!overwrite && outFile.exists() && outFile.length()!=0)
 				{
 					//publish(name+" already exists.");
 					increaseAyaRead();
@@ -161,7 +161,9 @@ public class AudioDownloader extends Downloader{
 					if(download(audioUrl, outFile))
 					{
 						//publish(name+" downloaded");
-						increaseAyaRead();
+						if(outFile.length()!=0){
+							increaseAyaRead();
+						}
 					}
 					else{
 						//publish(name +" failed ");

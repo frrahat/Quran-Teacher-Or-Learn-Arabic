@@ -268,7 +268,7 @@ public class ImageLoader
 				File outputFile=new File(surahDirString+"/"+
 						Integer.toString(i+1)+ImageFileType);
 				
-				if(outputFile.exists()){
+				if(outputFile.exists() && outputFile.length()!=0){
 					setImage(j,outputFile);
 				}
 				else if(stillDownloadable && download(parentSource+"id="+Integer.toString(i+1), 

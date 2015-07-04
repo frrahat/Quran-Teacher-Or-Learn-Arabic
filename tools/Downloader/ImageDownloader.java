@@ -149,7 +149,7 @@ public class ImageDownloader extends Downloader{
 						Integer.toString(getSuraNumFromImageIndex(imageIndex))+"/"+
 						outName);
 				//System.out.println(outFile.getName()+" "+parentSource+"id="+outId);
-				if(!overwrite && outFile.exists())
+				if(!overwrite && outFile.exists() && outFile.length()!=0)
 				{
 					//publish(outName+" already exists.");
 					incrreaseCompleted();
@@ -159,7 +159,9 @@ public class ImageDownloader extends Downloader{
 					if(download(parentSource+"id="+outId, outFile))
 					{
 						//publish(outName+" downloaded");
-						incrreaseCompleted();
+						if(outFile.length()!=0){
+							incrreaseCompleted();
+						}
 					}
 					else
 						return;
