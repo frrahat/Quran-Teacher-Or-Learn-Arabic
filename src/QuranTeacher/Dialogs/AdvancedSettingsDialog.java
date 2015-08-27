@@ -39,6 +39,10 @@ public class AdvancedSettingsDialog extends JDialog {
 	private JButton btnDecreaselineheight;
 	private JButton btnIncreaseLineHeight;
 	private JLabel lblLineheight;
+	private JLabel lblWordgap;
+	private JButton btnIncreasewordgap;
+	private JButton btnDecreasewordgap;
+	private JLabel lblWordGapValue;
 
 	/**
 	 * Create the dialog.
@@ -52,9 +56,9 @@ public class AdvancedSettingsDialog extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		GridBagLayout gbl_contentPanel = new GridBagLayout();
 		gbl_contentPanel.columnWidths = new int[]{0, 0, 0, 0, 0};
-		gbl_contentPanel.rowHeights = new int[]{0, 0, 0, 0};
+		gbl_contentPanel.rowHeights = new int[]{0, 0, 0, 0, 0};
 		gbl_contentPanel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		contentPanel.setLayout(gbl_contentPanel);
 		{
 			JLabel lblLineheightlabel = new JLabel("Line Gap :");
@@ -108,7 +112,7 @@ public class AdvancedSettingsDialog extends JDialog {
 			});
 			btnDecreaselineheight.setFont(new Font("Tahoma", Font.BOLD, 18));
 			GridBagConstraints gbc_btnDecreaselineheight = new GridBagConstraints();
-			gbc_btnDecreaselineheight.insets = new Insets(0, 0, 5, 0);
+			gbc_btnDecreaselineheight.insets = new Insets(0, 0, 5, 5);
 			gbc_btnDecreaselineheight.gridx = 3;
 			gbc_btnDecreaselineheight.gridy = 0;
 			contentPanel.add(btnDecreaselineheight, gbc_btnDecreaselineheight);
@@ -165,10 +169,66 @@ public class AdvancedSettingsDialog extends JDialog {
 			});
 			btnDecreaseextra.setFont(new Font("Tahoma", Font.BOLD, 18));
 			GridBagConstraints gbc_btnDecreaseextra = new GridBagConstraints();
-			gbc_btnDecreaseextra.insets = new Insets(0, 0, 5, 0);
+			gbc_btnDecreaseextra.insets = new Insets(0, 0, 5, 5);
 			gbc_btnDecreaseextra.gridx = 3;
 			gbc_btnDecreaseextra.gridy = 1;
 			contentPanel.add(btnDecreaseextra, gbc_btnDecreaseextra);
+		}
+		{
+			lblWordgap = new JLabel("Word Gap :");
+			lblWordgap.setToolTipText("Increase or decrease space between two consequtive words");
+			lblWordgap.setFont(new Font("Tahoma", Font.PLAIN, 18));
+			lblWordgap.setForeground(Color.ORANGE);
+			lblWordgap.setBackground(Color.BLACK);
+			GridBagConstraints gbc_lblWordgap = new GridBagConstraints();
+			gbc_lblWordgap.weightx = 0.1;
+			gbc_lblWordgap.insets = new Insets(0, 0, 5, 5);
+			gbc_lblWordgap.gridx = 0;
+			gbc_lblWordgap.gridy = 2;
+			contentPanel.add(lblWordgap, gbc_lblWordgap);
+		}
+		{
+			lblWordGapValue = new JLabel(Integer.toString(Animation.getWordGapValue()));
+			lblWordGapValue.setForeground(Color.ORANGE);
+			lblWordGapValue.setFont(new Font("Tahoma", Font.PLAIN, 18));
+			GridBagConstraints gbc_lblWordGapValue = new GridBagConstraints();
+			gbc_lblWordGapValue.weightx = 0.1;
+			gbc_lblWordGapValue.insets = new Insets(0, 0, 5, 5);
+			gbc_lblWordGapValue.gridx = 1;
+			gbc_lblWordGapValue.gridy = 2;
+			contentPanel.add(lblWordGapValue, gbc_lblWordGapValue);
+		}
+		{
+			btnIncreasewordgap = new JButton("+");
+			btnIncreasewordgap.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(Animation.changeWordGapValue(true)){
+						lblWordGapValue.setText(Integer.toString(Animation.getWordGapValue()));
+					}
+				}
+			});
+			btnIncreasewordgap.setFont(new Font("Tahoma", Font.PLAIN, 18));
+			GridBagConstraints gbc_btnIncreasewordgap = new GridBagConstraints();
+			gbc_btnIncreasewordgap.insets = new Insets(0, 0, 5, 5);
+			gbc_btnIncreasewordgap.gridx = 2;
+			gbc_btnIncreasewordgap.gridy = 2;
+			contentPanel.add(btnIncreasewordgap, gbc_btnIncreasewordgap);
+		}
+		{
+			btnDecreasewordgap = new JButton("-");
+			btnDecreasewordgap.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(Animation.changeWordGapValue(false)){
+						lblWordGapValue.setText(Integer.toString(Animation.getWordGapValue()));
+					}
+				}
+			});
+			btnDecreasewordgap.setFont(new Font("Tahoma", Font.PLAIN, 18));
+			GridBagConstraints gbc_btnDecreasewordgap = new GridBagConstraints();
+			gbc_btnDecreasewordgap.insets = new Insets(0, 0, 5, 5);
+			gbc_btnDecreasewordgap.gridx = 3;
+			gbc_btnDecreasewordgap.gridy = 2;
+			contentPanel.add(btnDecreasewordgap, gbc_btnDecreasewordgap);
 		}
 		{
 			JLabel lblHidepartialword = new JLabel("Hide Partial Word :");
@@ -179,7 +239,7 @@ public class AdvancedSettingsDialog extends JDialog {
 			gbc_lblHidepartialword.weightx = 0.1;
 			gbc_lblHidepartialword.insets = new Insets(0, 0, 0, 5);
 			gbc_lblHidepartialword.gridx = 0;
-			gbc_lblHidepartialword.gridy = 2;
+			gbc_lblHidepartialword.gridy = 3;
 			contentPanel.add(lblHidepartialword, gbc_lblHidepartialword);
 		}
 		{
@@ -193,9 +253,9 @@ public class AdvancedSettingsDialog extends JDialog {
 			lblHidePWOnOff.setFont(new Font("Tahoma", Font.PLAIN, 18));
 			GridBagConstraints gbc_lblHidePWOnOff = new GridBagConstraints();
 			gbc_lblHidePWOnOff.weightx=0.1;
-			gbc_lblHidePWOnOff.insets = new Insets(0, 0, 0, 5);
+			gbc_lblHidePWOnOff.insets = new Insets(0, 0, 5, 5);
 			gbc_lblHidePWOnOff.gridx = 1;
-			gbc_lblHidePWOnOff.gridy = 2;
+			gbc_lblHidePWOnOff.gridy = 3;
 			contentPanel.add(lblHidePWOnOff, gbc_lblHidePWOnOff);
 		}
 		{
@@ -214,9 +274,8 @@ public class AdvancedSettingsDialog extends JDialog {
 			btnToggler.setFont(new Font("Tahoma", Font.PLAIN, 18));
 			GridBagConstraints gbc_btnToggler = new GridBagConstraints();
 			gbc_btnToggler.gridwidth = 0;
-			gbc_btnToggler.insets = new Insets(0, 0, 0, 5);
 			gbc_btnToggler.gridx = 2;
-			gbc_btnToggler.gridy = 2;
+			gbc_btnToggler.gridy = 3;
 			contentPanel.add(btnToggler, gbc_btnToggler);
 		}
 		{

@@ -335,6 +335,11 @@ public class AnimationPanel extends Animation {
 					userInputListener.pauseStateChanged(paused);
 				}*/
 				//scroll up
+				else if(keyCode==KeyEvent.VK_SHIFT){
+					animationRunning=paused;
+					paused=!paused;
+					userInputListener.pauseStateChanged(paused);
+				}
 				else if(keyCode==KeyEvent.VK_UP && (scrollY-scrollDelta)>=0)
 				{
 					scrollY-=scrollDelta;
@@ -512,7 +517,7 @@ public class AnimationPanel extends Animation {
 		TranslationPanel.setTranslationText(ayah);
 		//TafsirPanel.setTafsirText(ayah);
 		
-		resetDisplay();
+		resetDisplay();//invoke to update screen with new ayah
 		
 		if(paused)
 		{

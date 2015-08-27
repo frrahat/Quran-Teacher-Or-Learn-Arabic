@@ -25,6 +25,7 @@ import java.util.List;
 import javax.swing.Timer;
 
 import QuranTeacher.Dialogs.PreferencesDialog;
+import QuranTeacher.Preferences.AdvancedAnimPref;
 import QuranTeacher.Preferences.AnimationPreferences;
 import QuranTeacher.Preferences.WordByWordFontPref;
 import QuranTeacher.WordInformation.SegmentColors;
@@ -42,23 +43,20 @@ public abstract class Animation extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	private final int maxSentences=30;
 	
 	protected Point currentDisplayPoint, startPoint;
 	protected AnimationPreferences animPreferences;//protected : to know from animPanel if download image is enabled
 	private WordByWordFontPref wordByWordFontPref;
 	protected int deltaPixel=deltaPixelProperty.initialDeltaPixel;
 	
-	protected int sentenceWidth;//sentence width
+	protected int lineStringWidth;//sentence width
 	protected int height;
 	
-	private String ExtraSpaceString="    ";//initial extra spacing is 4 spaces
-	private String spaceBetweenWords="    ";//minimum spaces between the words
+	//private String ExtraSpaceString="    ";//initial extra spacing is 4 spaces
+	private static String spaceBetweenWords="    ";//minimum spaces between the words
 	
 	private int distanceCovered;
-	private int wordIndexToDisplay;
-	private int totalLinesDisplayed;
-	private int currentLine;//current displaying line
+	private int wordsDisplayedSoFar;
 	public static int mouseFocusedOn;//focused by mouse
 	
 	private static int lineHeight;//difference between lines
@@ -75,7 +73,7 @@ public abstract class Animation extends JPanel {
 	private Color bgColor,fgColor;
 	
 	private String[] words;//main text slits to multiple words
-	private String[] sentences;//main text splits to multiple sentences tracking word width
+	private ArrayList<CoordinatedWord> coordinatedWords;
 	
 	private Font animFont;
 
@@ -87,9 +85,6 @@ public abstract class Animation extends JPanel {
 	
 	protected int timeGapElapsed;//time total slept after one ayah display finished
 	int restingTimeGap;
-	
-	//private boolean isWaqf=false;
-	private int totalWaqfFound;
 	
 	private boolean showPopUpInfoBox;
 	/*String bismillah="\u0628\u0650\u0633\u0652\u0645\u0650 "
@@ -115,6 +110,10 @@ public abstract class Animation extends JPanel {
 	
 	protected Animation_type animationType;
 
+	private AdvancedAnimPref advancedAnimPref;
+
+	private final int LineHeightFactor=2;
+
 	
 	public Animation() {
 		
@@ -123,14 +122,24 @@ public abstract class Animation extends JPanel {
 		
 		words=displayText.split(" ");
 		
-		sentences=new String[maxSentences];
-		sentences[currentLine]=ExtraSpaceString+words[0];
+		coordinatedWords=new ArrayList<>();
 		
 		animationRunning=false;
 		ayahDisplayFinished=false;
 		
 		animPreferences=PreferencesDialog.getAnimPreferences();
 		wordByWordFontPref=PreferencesDialog.getWbWFontPref();
+		
+		animatePartialWord=true;
+		advancedAnimPref=new AdvancedAnimPref("advancedAnim.preferences");
+		if(advancedAnimPref.setPrefFromFile()){
+			animatePartialWord=advancedAnimPref.isHidePartial();
+			int wordGap=advancedAnimPref.getWordGap();
+			//initially spaceBetweenWords.length()=4
+			for(int i=spaceBetweenWords.length();i<wordGap;i++){
+				spaceBetweenWords+=" ";
+			}
+		}
 		
 		updatAnimPreferences();
 		updateWbWFontPref();
@@ -153,13 +162,16 @@ public abstract class Animation extends JPanel {
 		});
 		//timer.start();
 		//timer is started from mainFrame()
-		animatePartialWord=true;
 	}
 	
 	protected void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
 		setBackground(bgColor);
+		
+		g.setColor(fgColor.darker());
+		drawFullSentence(g);
+		
 		g.setColor(fgColor);
 		//g.setFont(font);
 		if(animationRunning)
@@ -182,7 +194,7 @@ public abstract class Animation extends JPanel {
 			return;
 		}else if(ayahDisplayFinished){//animation running but ayah display finished
 			
-			if(distanceCovered<sentenceWidth+50)//pass times to last red boundary disappears
+			if(distanceCovered<lineStringWidth+50)//pass times to last red boundary disappears
 				distanceCovered+=deltaPixel;//others wise last red boundary can't be seen
 			else
 			{
@@ -194,7 +206,7 @@ public abstract class Animation extends JPanel {
 			return;
 		}
 		
-		if(distanceCovered<sentenceWidth)
+		if(distanceCovered<lineStringWidth)
 		{
 			distanceCovered+=deltaPixel;
 		}
@@ -212,15 +224,27 @@ public abstract class Animation extends JPanel {
 		if (ayahDisplayFinished) {
 			return;
 		}
+		/*
 		// if(!isWaqf)//waqf will not occur
 
 		if (wordIndexToDisplay < words.length)// more words to display
 		{
 			// System.out.println(wordIndexToDisplay);
 			String wordNextToDisplay = words[wordIndexToDisplay];
-			calculateExtraSpace();// sets extraspace string
+			
 			int wordWidth=fontMetrics.stringWidth(wordNextToDisplay);
 			int waqfWidth=0;
+			
+			int extraStringWidth=getExtraStringWidth(wordIndexToDisplay);
+			String extraSpaceString="";
+			int k=0;
+			while(k<extraStringWidth)
+			{
+				extraSpaceString+=" ";
+				k+=spaceWidth;
+			}
+			//distanceCovered+=k;
+			
 			// check if newt word to wordNextToDisplay ia a waqf
 			while (wordIndexToDisplay < words.length - 1
 					&& (isWaqf(words[wordIndexToDisplay + 1]))) {
@@ -230,15 +254,15 @@ public abstract class Animation extends JPanel {
 				wordNextToDisplay += spaceBetweenWords + words[wordIndexToDisplay];
 				waqfWidth+=fontMetrics.stringWidth(spaceBetweenWords+words[wordIndexToDisplay]);
 
-				totalWaqfFound++;
+				totalWaqfFoundSoFar++;
 				// System.out.println(wordNextToDisplay);
 			}
-
+			
 			int checkWidth = fontMetrics.stringWidth(spaceBetweenWords
-					+ ExtraSpaceString + wordNextToDisplay);
+					+ extraSpaceString + wordNextToDisplay);
 
 			// word may cross display area bound
-			if (sentenceWidth + checkWidth >= getBounds().width - 30)
+			if (lineStringWidth + checkWidth >= getBounds().width - 30)
 			{
 				totalLinesDisplayed++;// lines to avoid animating
 
@@ -248,41 +272,52 @@ public abstract class Animation extends JPanel {
 				// distanceCovered=
 				// (spaceBetweenWords.length()-1+ExtraSpaceString.length())*spaceWidth;
 
-				currentDisplayPoint.y += lineHeight * 2;// go to next line
+				currentDisplayPoint.y += lineHeight * LineHeightFactor;// go to next line
 
 				currentLine = totalLinesDisplayed;// new sentence index
 
-				sentences[currentLine] = spaceBetweenWords + ExtraSpaceString
+				runningStringAtLine[currentLine] = spaceBetweenWords + extraSpaceString
 						+ wordNextToDisplay;// new sentence at next line
 			}
 
 			else// word can be printed simply in display area
 			{
-				sentences[currentLine] += spaceBetweenWords + ExtraSpaceString
+				runningStringAtLine[currentLine] += spaceBetweenWords + extraSpaceString
 						+ wordNextToDisplay;// in the same line, next word
 				// distanceCovered+=(spaceBetweenWords.length()-1)*spaceWidth;
 			}
 
-			sentenceWidth = fontMetrics.stringWidth(sentences[currentLine]);
+			lineStringWidth = fontMetrics.stringWidth(runningStringAtLine[currentLine]);
 
 			// System.out.println("width= "+width);
-			rectangles.add(new Rectangle(startPoint.x - sentenceWidth + waqfWidth,
+			rectangles.add(new Rectangle(startPoint.x - lineStringWidth + waqfWidth,
 					currentDisplayPoint.y - height, wordWidth,
 					height + 15));
 			// System.out.println("Rectangles added for"+
 			// words[wordIndexToDisplay]);
 
-			distanceCovered = sentenceWidth - wordWidth;
+			distanceCovered = lineStringWidth - wordWidth;
 			// word that has just been added
 			wordIndexToDisplay++;
+		}*/
+		int wordsSize=coordinatedWords.size();
+		wordsDisplayedSoFar++;
+		CoordinatedWord word=coordinatedWords.get(wordsDisplayedSoFar-1);
+		int y=startPoint.y+ lineHeight * LineHeightFactor * word.getLineIndex();
+		if(y>currentDisplayPoint.y){//words displayed in new line
+			currentDisplayPoint.y=y;
+			lineStringWidth=distanceCovered=0;
 		}
-
-		if (wordIndexToDisplay == words.length) {
-			// System.out.println("Ayah display finished");
-			ayahDisplayFinished = true;// all words has been displayed
-			// animationRunning=false;
+		lineStringWidth+=word.getWordWidth();
+		distanceCovered+=word.getExtraWidth();
+		
+		
+		if (wordsDisplayedSoFar == wordsSize) {
+				// System.out.println("Ayah display finished");
+				ayahDisplayFinished = true;// all words has been displayed
+				// animationRunning=false;
 		}
-
+		
 	}
 
 	private boolean isWaqf(String word) {
@@ -294,21 +329,29 @@ public abstract class Animation extends JPanel {
 		
 	protected abstract void goToNextStep();
 
-	private void drawAnimation(Graphics g)
-	{
+	private void drawFullSentence(Graphics g){
+		if(ayahDisplayFinished)
+			return;
+		
 		updateWordStartPoint();
 		g.setFont(animFont);
 		
-		sentenceWidth=fontMetrics.stringWidth(sentences[currentLine]);
-				
-		for(int i=0;i<totalLinesDisplayed;i++)
-		{
-			g.drawString(sentences[i],startPoint.x-fontMetrics.stringWidth(sentences[i]), 
-					startPoint.y+2*lineHeight*i-scrollY);
+		for(int wordIndex=0;wordIndex < coordinatedWords.size();wordIndex++){
+			CoordinatedWord word=coordinatedWords.get(wordIndex);
+			g.drawString(word.getWord(), word.getStartX(),startPoint.y+LineHeightFactor*lineHeight*word.getLineIndex()-scrollY);
 		}
-		g.drawString(sentences[currentLine],
-				startPoint.x-sentenceWidth,currentDisplayPoint.y-scrollY);
+		drawMeaningOfWord(g,true);
+	}
+	
+	private void drawAnimation(Graphics g)
+	{	//TODO need to be changed
+		//updateWordStartPoint();
+		g.setFont(animFont);
 		
+		for(int wordIndex=0;wordIndex < wordsDisplayedSoFar;wordIndex++){
+			CoordinatedWord word=coordinatedWords.get(wordIndex);
+			g.drawString(word.getWord(), word.getStartX(),startPoint.y+LineHeightFactor*lineHeight*word.getLineIndex()-scrollY);
+		}
 		//draw scrollbar in right position
 		scrollbarPosY=(int) ((getBounds().getHeight()*scrollY)/currentDisplayPoint.y);
 			
@@ -318,17 +361,17 @@ public abstract class Animation extends JPanel {
 		if(animatePartialWord)
 			HidePartial(g);
 		
-		drawMeaningOfWord(g);
+		drawMeaningOfWord(g,false);
 		
 		g.setColor(Color.RED);
-		if(!rectangles.isEmpty())
+		if(wordsDisplayedSoFar>0)
 		{
 			//System.out.println("total rectangles :"+rectangles.size());
 			Rectangle rect;
 			
 			if(showPopUpInfoBox)
 			{
-				rect=rectangles.get(rectangles.size()-1);
+				rect=rectangles.get(wordsDisplayedSoFar-1);
 				g.drawRect(rect.x,rect.y-scrollY,rect.width,rect.height);
 				drawInfoBox(g, false);
 			}
@@ -355,27 +398,27 @@ public abstract class Animation extends JPanel {
 	
 	
 	private void HidePartial(Graphics g) {
+		if(distanceCovered>=lineStringWidth)
+			return;
+		
 		g.setColor(bgColor);
 		//g.setColor(new Color(240, 240, 200));
 		//startX -5 and width +5 added for TWA effect--> displaying of the letter TWA
 		//height+=extraHeight for displaying ZER
 		//all is the fontmetrics problem, unsolved
-		g.fillRect(startPoint.x-sentenceWidth-10, 
+		g.fillRect(startPoint.x-lineStringWidth-10, 
 				currentDisplayPoint.y-height-scrollY, 
-				sentenceWidth-distanceCovered+10, height+extraHeight);
+				lineStringWidth-distanceCovered+10, height+extraHeight);
 	}
 
 	private void drawFixedDisplay(Graphics g) 
 	{
 		g.setFont(animFont);
 		//drawAyah
-		for(int i=0;i<totalLinesDisplayed;i++)
-		{
-			g.drawString(sentences[i],startPoint.x-fontMetrics.stringWidth(sentences[i]),
-					startPoint.y+2*lineHeight*i-scrollY);
+		for(int wordIndex=0;wordIndex < wordsDisplayedSoFar;wordIndex++){
+			CoordinatedWord word=coordinatedWords.get(wordIndex);
+			g.drawString(word.getWord(), word.getStartX(),startPoint.y+LineHeightFactor*lineHeight*word.getLineIndex()-scrollY);
 		}
-		g.drawString(sentences[currentLine],
-				startPoint.x-sentenceWidth,currentDisplayPoint.y-scrollY);
 		
 		//draw scrollbar
 
@@ -387,7 +430,7 @@ public abstract class Animation extends JPanel {
 		if(animatePartialWord)
 			HidePartial(g);
 		
-		drawMeaningOfWord(g);
+		drawMeaningOfWord(g,false);
 		
 		if(mouseFocusedOn!=-1)
 		{
@@ -413,7 +456,7 @@ public abstract class Animation extends JPanel {
 		if(fromMouseFocus)//user invoked
 			index=mouseFocusedOn;
 		else
-			index=rectangles.size()-1;
+			index=wordsDisplayedSoFar-1;
 		
 		rect=rectangles.get(index);
 		x=rect.x+rect.width/2-boxWidth/2;
@@ -526,10 +569,10 @@ public abstract class Animation extends JPanel {
 	}
 	
 	
-	private void drawMeaningOfWord(Graphics g)
+	private void drawMeaningOfWord(Graphics g, boolean isFullSentence)
 	{
-		if(rectangles.size()==0)
-			return;
+		/*if(rectangles.size()==0)
+			return;*/
 		
 		if(infoOfWord==null)
 			return;
@@ -539,7 +582,7 @@ public abstract class Animation extends JPanel {
 		int writeX,writeY;
 		Rectangle rect;
 		
-		for(int i=0;i<rectangles.size();i++)
+		for(int i=0;i<wordsDisplayedSoFar;i++)
 		{
 			rect=rectangles.get(i);
 			
@@ -558,84 +601,143 @@ public abstract class Animation extends JPanel {
 				problemOccured(i);
 			}
 		}
+		
+		if(isFullSentence){
+			for(int i=wordsDisplayedSoFar;i<coordinatedWords.size();i++)
+			{
+				rect=rectangles.get(i);
+				
+				if(infoOfWord.size()>i)
+				{
+					writeX=rect.x;
+					writeY=rect.y+rect.height+extraHeight;
+					
+					g.setColor(wbwTrnslitrtionColor.darker());
+					g.drawString("{"+infoOfWord.get(i).transLiteration+"}", writeX, writeY-scrollY);
+					g.setColor(wbwMeaningColor.darker());
+					g.drawString(infoOfWord.get(i).meaning, writeX, writeY+22-scrollY);
+				}
+				else
+				{
+					problemOccured(i);
+				}
+			}
+		}
 	}
 
 	protected void resetDisplay()
 	{
 		distanceCovered=0;
-		sentenceWidth=0;
+		lineStringWidth=0;
 		
-		wordIndexToDisplay=0;
-		
-		totalLinesDisplayed=0;
-		currentLine=0;
-		
-		totalWaqfFound=0;
+		wordsDisplayedSoFar=0;
 		
 		currentDisplayPoint.y=startPoint.y;
 		
-		words=displayText.split(" ");
-		
-		fontMetrics=getFontMetrics(animFont);
-		
-		sentences[currentLine]="";
-		
 		//lineHeight=getFontMetrics(animFont).getHeight()+20;
 		scrollY=0;
-		
-		rectangles.clear();
 		mouseFocusedOn=-1;
 		
 		animationRunning=true;
 		ayahDisplayFinished=false;
 		
 		//mouseFocusedOn=-1;//unimportant
+		
+		setNewAyahFixedDisplay();
 	}
 	
-	private void calculateExtraSpace() 
-	{
-		if(infoOfWord.size()>(wordIndexToDisplay-totalWaqfFound))
-		{
-			int stringWidth1=wbwFontMetrics.stringWidth
-					(infoOfWord.get(wordIndexToDisplay-totalWaqfFound).transLiteration);
-			int stringWidth2=wbwFontMetrics.stringWidth
-					(infoOfWord.get(wordIndexToDisplay-totalWaqfFound).meaning);
+	private void setNewAyahFixedDisplay(){
+		//TODO update
+		coordinatedWords.clear();
+		rectangles.clear();
+		fontMetrics=getFontMetrics(animFont);
+		
+		words=displayText.split(" ");
+		
+		Point displayPoint=new Point(0,startPoint.y);
+		int wordsLength=words.length;
+		String pickedWordToDisplay;//word+ waqfs
+
+		//String workingLineString="";
+		int lineStringWidth=0;
+		int validWordsSoFar=0;//word+waqfs
+		int currentLineIndex=0;
+		
+		for(int wordIndex=0;wordIndex<wordsLength;wordIndex++){
+			pickedWordToDisplay = words[wordIndex];
+			int wordWidth=fontMetrics.stringWidth(pickedWordToDisplay);
+			int waqfWidth=0;
 			
-			int extraStringWidth=0;
-			if(stringWidth1>stringWidth2)
-			{
-				extraStringWidth=stringWidth1-fontMetrics.stringWidth
-					(words[wordIndexToDisplay]);
+			while(wordIndex<wordsLength-1 && isWaqf(words[wordIndex+1])){
+				wordIndex++;
+				pickedWordToDisplay += spaceBetweenWords + words[wordIndex];
+				waqfWidth+=fontMetrics.stringWidth(spaceBetweenWords+words[wordIndex]);
 			}
-			else
-				extraStringWidth=stringWidth2-fontMetrics.stringWidth
-				(words[wordIndexToDisplay]);
-				
-			ExtraSpaceString="";
-			//System.out.println(words[wordIndexToDisplay]);
+			
+			int extraStringWidth=getExtraStringWidth(validWordsSoFar,pickedWordToDisplay);
+			String extraSpaceString="";
 			int k=0;
 			while(k<extraStringWidth)
 			{
-				ExtraSpaceString+=" ";
+				extraSpaceString+=" ";
 				k+=spaceWidth;
 			}
-			distanceCovered+=k;
+			
+			pickedWordToDisplay = spaceBetweenWords + extraSpaceString
+					+ pickedWordToDisplay;
+			
+			int wordStringWidth = fontMetrics.stringWidth(pickedWordToDisplay);
+			
+			if (lineStringWidth + wordStringWidth >= getBounds().width - 30)
+			{
+				lineStringWidth=0;
+				displayPoint.y += lineHeight * LineHeightFactor;// go to next line
+				currentLineIndex++;
+			}
+			lineStringWidth += wordStringWidth;
+			//TODO delete rectangle adding in other places
+			int x=startPoint.x - lineStringWidth + waqfWidth;
+			int y=displayPoint.y - height;
+			coordinatedWords.add(new CoordinatedWord(pickedWordToDisplay,
+					validWordsSoFar,wordStringWidth,
+					fontMetrics.stringWidth(spaceBetweenWords)+extraStringWidth));
+			validWordsSoFar++;
+			//experimental calculation, x = (x - width) for coordinated word
+			coordinatedWords.get(validWordsSoFar-1).setCoordinate(x-waqfWidth, currentLineIndex);
+			rectangles.add(new Rectangle(x,y, wordWidth,height + 15));
 		}
-		else
+	}
+	/*
+	 * to display the meanings appearing under each arabic word
+	 */
+	private int getExtraStringWidth(int wordId, String pickedWord) 
+	{
+		if(infoOfWord.size()>(wordId))
 		{
-			problemOccured(wordIndexToDisplay);
+			int stringWidth1=wbwFontMetrics.stringWidth
+					(infoOfWord.get(wordId).transLiteration);
+			int stringWidth2=wbwFontMetrics.stringWidth
+					(infoOfWord.get(wordId).meaning);
+			
+			int extraStringWidth = 
+					Math.max(stringWidth1,stringWidth2) - fontMetrics.stringWidth(pickedWord);				
+			return extraStringWidth;
+			//System.out.println(words[wordIndexToDisplay]);
+			/**/
 		}
+		return -1;
 	}
 
 	protected void setFirstSentence(String sentence)
 	{//reset display is called before calling this function
-		totalLinesDisplayed=1;
+		/*totalLinesDisplayed=1;
 		currentLine=1;
-		sentences[1]=sentences[0];//what has been initialized in resetDisplay()
+		runningStringAtLine[1]=runningStringAtLine[0];//what has been initialized in resetDisplay()
 
-		sentences[0]=sentence;//=bismillah
-		
-		currentDisplayPoint.y+=lineHeight*2;
+		runningStringAtLine[0]=sentence;//=bismillah
+		 */	
+		//TODO find alternatives
+		//currentDisplayPoint.y+=lineHeight* LineHeightFactor;
 	}
 	
 	public void updatAnimPreferences()
@@ -650,10 +752,11 @@ public abstract class Animation extends JPanel {
 		downloadImagesEnabled=animPreferences.isDownloadImageEnabled();
 		
 		fontMetrics=getFontMetrics(animFont);
-		lineHeight=fontMetrics.getHeight()+20;
-		height=fontMetrics.getHeight();
-		extraHeight=fontMetrics.getDescent()+20;
 		spaceWidth=fontMetrics.stringWidth(" ");
+		height=fontMetrics.getHeight();
+		
+		lineHeight=Math.max(fontMetrics.getHeight()+20,advancedAnimPref.getLineGap());
+		extraHeight=Math.max(fontMetrics.getDescent()+20,advancedAnimPref.getExtraHeight());
 		
 	}
 	
@@ -680,6 +783,10 @@ public abstract class Animation extends JPanel {
 				"wbwFont.preferences",wbwTrnslitrtionColor,wbwMeaningColor,wbwFont);
 	}
 	
+	public AdvancedAnimPref getAdvancedAnimPref(){
+		return new AdvancedAnimPref("advancedAnim.preferences",lineHeight,
+				extraHeight,spaceBetweenWords.length(),animatePartialWord);
+	}
 	
 	public static void setHidePartialWord(boolean value){
 		animatePartialWord=value;
@@ -720,11 +827,32 @@ public abstract class Animation extends JPanel {
 		return false;
 	}
 	
+
+	public static boolean changeWordGapValue(boolean increase) {
+		if(increase){
+			if(spaceBetweenWords.length()<40){
+				spaceBetweenWords+=" ";
+				return true;
+			}
+		}
+		else{
+			if(spaceBetweenWords.length()>4){
+				spaceBetweenWords=spaceBetweenWords.substring(0, spaceBetweenWords.length()-1);
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public static int getExtraHeight(){
 		return extraHeight;
 	}
 	public static int getLineHeight(){
 		return lineHeight;
+	}
+	
+	public static int getWordGapValue() {
+		return spaceBetweenWords.length();
 	}
 	
 	private void problemOccured(int i) {

@@ -63,7 +63,7 @@ public class HelpDialog extends JDialog {
 			+"\nKey LEFT -- Speed Up"
 			+"\nKey UP   -- Scroll Up"
 			+"\nKey DOWN -- Scroll Down"
-			+"\nMouse Right Click-- Pause/Resume Display"
+			+"\nKey SHIFT or Mouse Click-- Pause/Resume Display"
 			+ ""
 			+ ""
 			+ "\r\n\r\nAudios and Images"

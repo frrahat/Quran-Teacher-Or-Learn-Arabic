@@ -31,6 +31,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 
+
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -53,6 +54,7 @@ import javax.swing.JLabel;
 import javax.swing.ListSelectionModel;
 
 import QuranTeacher.FilePaths;
+import QuranTeacher.Basics.Ayah;
 import QuranTeacher.Basics.TimedAyah;
 import QuranTeacher.MainWindow.MainDisplayPart.AnimationPanel;
 import QuranTeacher.WordInformation.WordInfoLoader;
@@ -87,6 +89,7 @@ public class HitFileEditorDialog extends JDialog {
 	 * Create the dialog.
 	 */
 	public HitFileEditorDialog() {
+		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		setAlwaysOnTop(true);
 		setTitle("Hit File Editor Dialog");
 		setBounds(20, 200, 400, 400);
@@ -228,7 +231,7 @@ public class HitFileEditorDialog extends JDialog {
 					
 					if(index!=-1){
 						String text=JOptionPane.showInputDialog(getParent(),
-								"Enter time :",0);
+								"Enter time :",timedAyahs.get(ayahComboBox.getSelectedIndex()).getWordHitTime(index));
 						if(text==null)//cancelled
 							return;
 						int time=0;
@@ -309,6 +312,7 @@ public class HitFileEditorDialog extends JDialog {
 			}
 		});
 		JButton btnNew = new JButton("New");
+		btnNew.setBackground(Color.PINK);
 		buttonPane.add(btnNew);
 		btnNew.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -361,11 +365,11 @@ public class HitFileEditorDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				if(fileChanged){
 					int k=JOptionPane.showConfirmDialog(getParent(), 
-							"Changes have been made. Do you want to save those, otherwise they will be lost?","Confirm Exit", 
+							"Changes have been made and not saved yet. Do you want to Exit?","Confirm Exit", 
 							JOptionPane.WARNING_MESSAGE);
 					
 					if(k==JOptionPane.OK_OPTION){
-						saveHitFile();
+						//saveHitFile();
 						setVisible(false);
 					}
 					else{
@@ -392,17 +396,27 @@ public class HitFileEditorDialog extends JDialog {
 	}
 	
 	private void saveHitFile() {
-		String prevFileName="";
+		String fileNameHint="";
 		if(hitFile!=null){
-			prevFileName=hitFile.getName();
+			fileNameHint=hitFile.getName();
 		
-			int k=prevFileName.lastIndexOf('.');
+			int k=fileNameHint.lastIndexOf('.');
 			if(k!=-1){
-				prevFileName=prevFileName.substring(0, k);
+				fileNameHint=fileNameHint.substring(0, k);
 			}
+		}else{
+			Ayah startAyah=timedAyahs.get(0).getAyah();
+			Ayah endAyah=timedAyahs.get(timedAyahs.size()-1).getAyah();
+			
+			fileNameHint="surah-"+Integer.toString(startAyah.suraIndex+1)+","+
+					"ayah-"+Integer.toString(startAyah.ayahIndex+1)+" to ";
+			if(startAyah.suraIndex!=endAyah.suraIndex){
+				fileNameHint+="surah-"+Integer.toString(endAyah.suraIndex+1)+",";
+			}
+			fileNameHint+="ayah-"+Integer.toString(endAyah.ayahIndex+1);
 		}
 		
-		String text=JOptionPane.showInputDialog(getParent(), "Enter File Name",prevFileName+".txt");
+		String text=JOptionPane.showInputDialog(getParent(), "Enter File Name",fileNameHint+".txt");
 		if(text==null)//cancelled
 			return;
 		

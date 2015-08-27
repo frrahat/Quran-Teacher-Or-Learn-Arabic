@@ -85,7 +85,7 @@ public class MainFrame extends JFrame {
 	 * Creates the full application frame
 	 */
 	public static final String AppName="Quran Teacher or Learn Arabic";
-	public static final String version="1.2.0";
+	public static final String version="1.2.1";
 	private String[] args={"QT",version};
 	private static final long serialVersionUID = 1L;
 
@@ -560,6 +560,7 @@ public class MainFrame extends JFrame {
 		
 		animPanel.getAnimationPref().savePrefToFile();
 		animPanel.getWbWFontPref().savePrefToFile();
+		animPanel.getAdvancedAnimPref().savePrefToFile();
 		animPanel.getAudioPref().savePrefToFile();
 		
 		translationPanel.getTranslationPref().savePrefToFile();
