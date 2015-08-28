@@ -51,7 +51,7 @@ public class Updater {
 						line++;
 					}
 				} catch (IOException e ) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 				
 				if(line!=0){
@@ -94,7 +94,7 @@ public class Updater {
 		} 
 		catch (IOException e) 
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
 			return false;
 		}
 		return true;

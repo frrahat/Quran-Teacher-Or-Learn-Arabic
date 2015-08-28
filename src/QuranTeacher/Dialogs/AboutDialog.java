@@ -159,8 +159,10 @@ public class AboutDialog extends JDialog {
 						+ "\r\nhttps://github.com/frrahat/Quran-Teacher-Or-Learn-Arabic/\r\n"
 						+ "\r\nFor more information you can contact this email address:\r\n"
 						+ "fr.rahat@gmail.com"
-						+ "\r\nOr you may visit our facebook page:"
-						+ "\r\nhttps://www.facebook.com/QuranTeacherOrLearnArabic");
+						+ "\r\n\r\nOr you may visit our facebook page:"
+						+ "\r\nhttps://www.facebook.com/QuranTeacherOrLearnArabic"
+						+ "\r\n\r\nOr our website:"
+						+ "\r\nhttps://sites.google.com/site/quranteacherorlearnarabic/");
 				txtrAboutText.setCaretPosition(0);
 				scrollPane.setViewportView(txtrAboutText);
 			}

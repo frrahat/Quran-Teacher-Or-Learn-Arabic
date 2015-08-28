@@ -224,82 +224,7 @@ public abstract class Animation extends JPanel {
 		if (ayahDisplayFinished) {
 			return;
 		}
-		/*
-		// if(!isWaqf)//waqf will not occur
-
-		if (wordIndexToDisplay < words.length)// more words to display
-		{
-			// System.out.println(wordIndexToDisplay);
-			String wordNextToDisplay = words[wordIndexToDisplay];
-			
-			int wordWidth=fontMetrics.stringWidth(wordNextToDisplay);
-			int waqfWidth=0;
-			
-			int extraStringWidth=getExtraStringWidth(wordIndexToDisplay);
-			String extraSpaceString="";
-			int k=0;
-			while(k<extraStringWidth)
-			{
-				extraSpaceString+=" ";
-				k+=spaceWidth;
-			}
-			//distanceCovered+=k;
-			
-			// check if newt word to wordNextToDisplay ia a waqf
-			while (wordIndexToDisplay < words.length - 1
-					&& (isWaqf(words[wordIndexToDisplay + 1]))) {
-
-				// add this waqf to the next word to display
-				wordIndexToDisplay++;
-				wordNextToDisplay += spaceBetweenWords + words[wordIndexToDisplay];
-				waqfWidth+=fontMetrics.stringWidth(spaceBetweenWords+words[wordIndexToDisplay]);
-
-				totalWaqfFoundSoFar++;
-				// System.out.println(wordNextToDisplay);
-			}
-			
-			int checkWidth = fontMetrics.stringWidth(spaceBetweenWords
-					+ extraSpaceString + wordNextToDisplay);
-
-			// word may cross display area bound
-			if (lineStringWidth + checkWidth >= getBounds().width - 30)
-			{
-				totalLinesDisplayed++;// lines to avoid animating
-
-				// new line
-
-				// the extraspace + a space been covered
-				// distanceCovered=
-				// (spaceBetweenWords.length()-1+ExtraSpaceString.length())*spaceWidth;
-
-				currentDisplayPoint.y += lineHeight * LineHeightFactor;// go to next line
-
-				currentLine = totalLinesDisplayed;// new sentence index
-
-				runningStringAtLine[currentLine] = spaceBetweenWords + extraSpaceString
-						+ wordNextToDisplay;// new sentence at next line
-			}
-
-			else// word can be printed simply in display area
-			{
-				runningStringAtLine[currentLine] += spaceBetweenWords + extraSpaceString
-						+ wordNextToDisplay;// in the same line, next word
-				// distanceCovered+=(spaceBetweenWords.length()-1)*spaceWidth;
-			}
-
-			lineStringWidth = fontMetrics.stringWidth(runningStringAtLine[currentLine]);
-
-			// System.out.println("width= "+width);
-			rectangles.add(new Rectangle(startPoint.x - lineStringWidth + waqfWidth,
-					currentDisplayPoint.y - height, wordWidth,
-					height + 15));
-			// System.out.println("Rectangles added for"+
-			// words[wordIndexToDisplay]);
-
-			distanceCovered = lineStringWidth - wordWidth;
-			// word that has just been added
-			wordIndexToDisplay++;
-		}*/
+		
 		int wordsSize=coordinatedWords.size();
 		wordsDisplayedSoFar++;
 		CoordinatedWord word=coordinatedWords.get(wordsDisplayedSoFar-1);
@@ -344,7 +269,7 @@ public abstract class Animation extends JPanel {
 	}
 	
 	private void drawAnimation(Graphics g)
-	{	//TODO need to be changed
+	{
 		//updateWordStartPoint();
 		g.setFont(animFont);
 		
@@ -695,7 +620,7 @@ public abstract class Animation extends JPanel {
 				currentLineIndex++;
 			}
 			lineStringWidth += wordStringWidth;
-			//TODO delete rectangle adding in other places
+			
 			int x=startPoint.x - lineStringWidth + waqfWidth;
 			int y=displayPoint.y - height;
 			coordinatedWords.add(new CoordinatedWord(pickedWordToDisplay,

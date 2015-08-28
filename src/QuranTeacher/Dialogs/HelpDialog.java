@@ -111,8 +111,10 @@ public class HelpDialog extends JDialog {
 			+ ""
 			+ "\n\n\nFor any specific problem or bug or help you can contact this email address:\r\n"
 			+ "fr.rahat@gmail.com"
-			+ "\r\nOr you may visit our facebook page:"
-			+ "\r\nhttps://www.facebook.com/QuranTeacherOrLearnArabic");
+			+ "\r\n\r\nOr you may visit our facebook page:"
+			+ "\r\nhttps://www.facebook.com/QuranTeacherOrLearnArabic"
+			+ "\r\n\r\nOr our website:"
+			+ "\r\nhttps://sites.google.com/site/quranteacherorlearnarabic/");
 				
 				txtrHelpShortcut.setCaretPosition(0);
 				scrollPane.setViewportView(txtrHelpShortcut);

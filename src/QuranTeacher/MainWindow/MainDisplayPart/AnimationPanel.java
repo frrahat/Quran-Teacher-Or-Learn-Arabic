@@ -57,10 +57,10 @@ public class AnimationPanel extends Animation {
 	 * Create the panel.
 	 */
 	private Ayah runningAyah=new Ayah(0, 0);
-	private String bismillah="\u0628\u0650\u0633\u0652\u0645\u0650 "
+	/*private String bismillah="\u0628\u0650\u0633\u0652\u0645\u0650 "
 			+ "\u0627\u0644\u0644\u0651\u064e\u0647\u0650 \u0627\u0644"
 			+ "\u0631\u0651\u064e\u062d\u0652\u0645\u064e\u0670\u0646"
-			+ "\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0650\u064a\u0645\u0650";
+			+ "\u0650 \u0627\u0644\u0631\u0651\u064e\u062d\u0650\u064a\u0645\u0650";*/
 	//private String displayText;
 	
 	//private Reciter reciter;
@@ -121,10 +121,54 @@ public class AnimationPanel extends Animation {
 					animationType=Animation_type.Timed_Animation;
 					resetHitTimesToNewTimedAyah(index);
 				}
+				else if("next".equals(actionCommand)){
+					if(animationType==Animation_type.Edit_Timed_Ayah){
+						
+						editTimedAyahIndex=index;
+						editWordIndexOfTimedAyah=0;
+						
+						if(timedAyahs.size()==editTimedAyahIndex){
+							Ayah ayah=timedAyahs.get(editTimedAyahIndex-1).getAyah().getNextAyah();
+							if(ayah!=null){
+								timedAyahs.add(new TimedAyah(ayah));
+							}else{
+								JOptionPane.showMessageDialog(getParent(), "Ayah is Null","ERROR",
+										JOptionPane.ERROR_MESSAGE);
+								return;
+							}
+						}
+						
+						
+						JOptionPane.showMessageDialog(hitFileEditorDialog.getParent(), "Press Enter Key"
+								+ " To Start The Timing For NEXT ayah");
+						hitFileEditorDialog.updateComboBox();
+						hitFileEditorDialog.setComboBoxSelectedIndex(editTimedAyahIndex);
+						hitFileEditorDialog.updateList();
+						SelectionPanel.setSelectionIndex(timedAyahs.get(index).getAyah());
+						
+						requestFocus();
+						
+					}else{
+						if(index==hitFileEditorDialog.getAyahComboboxItemCount()){
+							JOptionPane.showMessageDialog(hitFileEditorDialog.getParent(), "Reached To Last.");
+							return;
+						}
+						else{
+							hitFileEditorDialog.setComboBoxSelectedIndex(index);
+						}
+						resetHitTimesToNewTimedAyah(index);
+					}
+				}
 				else if("playContinuous".equals(actionCommand)){
-					animationType=Animation_type.Timed_Animation_Continuous;
-					resetHitTimesToNewTimedAyah(index);
-				}else if("edit".equals(actionCommand)){
+					if(animationType==Animation_type.Timed_Animation_Continuous){
+						//toggling
+						animationType=Animation_type.Timed_Animation;
+					}else{
+						animationType=Animation_type.Timed_Animation_Continuous;
+						resetHitTimesToNewTimedAyah(index);
+					}
+				}
+				else if("edit".equals(actionCommand)){
 					animationType=Animation_type.Edit_Timed_Ayah;
 					
 					editTimedAyahIndex=index;
@@ -404,7 +448,7 @@ public class AnimationPanel extends Animation {
 		}
 		//else simple animation, as autoTimer is off in edit
 		//time type this func is not called then
-		else if(AnimationPreferences.continuous){
+		else if(animationType!=Animation_type.Edit_Timed_Ayah && AnimationPreferences.continuous){
 		//System.out.println(runningAyah.toDetailedString());
 			Ayah nextAyah=runningAyah.getNextAyah();
 			
@@ -525,10 +569,11 @@ public class AnimationPanel extends Animation {
 			userInputListener.pauseStateChanged(paused);
 		}
 		
-		if(ayah.ayahIndex==0 && !(ayah.suraIndex==0 || ayah.suraIndex==8)){
+		//TODO need to be fixed and uncommented
+		/*if(ayah.ayahIndex==0 && !(ayah.suraIndex==0 || ayah.suraIndex==8)){
 			//not sura fatiha and sura atTawba
 			setFirstSentence(bismillah);
-		}
+		}*/
 		
 		if(fstreamLoader!=null){
 			//freeze but don't lag
