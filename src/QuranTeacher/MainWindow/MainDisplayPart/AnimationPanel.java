@@ -184,8 +184,8 @@ public class AnimationPanel extends Animation {
 					editWordIndexOfTimedAyah=0;
 					
 					animationType=Animation_type.Edit_Timed_Ayah;
-					int surahIndex=index/1000;
-					int ayahIndex=index%1000;
+					int surahIndex=index/1000 - 1;
+					int ayahIndex=index%1000 - 1;
 					Ayah ayah=new Ayah(surahIndex,ayahIndex);
 					
 					timedAyahs.clear();
@@ -323,7 +323,7 @@ public class AnimationPanel extends Animation {
 				if(keyCode==KeyEvent.VK_ENTER && 
 						animationType==Animation_type.Edit_Timed_Ayah)
 				{//TODO
-					if(timedAyahs.size()==editTimedAyahIndex){
+					if(timedAyahs.size()==editTimedAyahIndex){//go to new ayah
 						Ayah ayah=timedAyahs.get(editTimedAyahIndex-1).getAyah().getNextAyah();
 						if(ayah!=null){
 							timedAyahs.add(new TimedAyah(ayah));
@@ -553,13 +553,12 @@ public class AnimationPanel extends Animation {
 		
 		runningAyah=ayah;
 		SelectionPanel.setSelectionIndex(ayah);
-		
+		//System.out.println("to display : "+ayah.toDetailedString());
 		displayText=AllTextsContainer.arabicText.getQuranText(ayah);
-
 		//System.out.println(displayText.length());
 		setInfoOfWords(ayah);
 		TranslationPanel.setTranslationText(ayah);
-		//TafsirPanel.setTafsirText(ayah);
+		//TafsirPanel.setTafsirText(ayah);	
 		
 		resetDisplay();//invoke to update screen with new ayah
 		
@@ -616,6 +615,8 @@ public class AnimationPanel extends Animation {
 		int indexOfFirstAyah=SurahInformationContainer.totalAyahsUpto[ayah.suraIndex];
 		int indexOfSelectedAyah=indexOfFirstAyah+ayah.ayahIndex;
 		//address in the info list of that selected ayah
+		if(ayah.ayahIndex==-1)
+			indexOfSelectedAyah=0;
 		//index of the first word of this ayah
 		int indxOfFirstWord=WordInfoLoader.getStartIndexOfAyahRTWholeText(indexOfSelectedAyah);
 		//index of the first word of the next ayah

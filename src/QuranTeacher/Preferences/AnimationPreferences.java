@@ -20,9 +20,11 @@ public class AnimationPreferences extends Preferences
 	private boolean showPopUpBox=true;
 	
 	private boolean downloadImagesEnabled=false;
+	private boolean autoScrollEnabled=true;
 	
 	private static final String[] prefStrings={
-		"BgColor=","FgColor=","Font=","RestingTime=","ShowPopUpBox=","DwnldImgsEnbld="};
+		"BgColor=","FgColor=","Font=","RestingTime=","ShowPopUpBox=","DwnldImgsEnbld=",
+		"AutoScroll="};
 	
 	public AnimationPreferences(String id) 
 	{
@@ -38,7 +40,7 @@ public class AnimationPreferences extends Preferences
 	
 	public AnimationPreferences(String id, Color bgColor, Color fgColor,
 			Font animFont, int restingTimeGap, boolean showPopUpInfoBox,
-			boolean dwnldImagesEnbld) {
+			boolean dwnldImagesEnbld, boolean autoScroll) {
 		super(id);
 		backGroundColor=bgColor;
 		foreGroundColor=fgColor;
@@ -46,6 +48,7 @@ public class AnimationPreferences extends Preferences
 		restingTime=restingTimeGap;
 		showPopUpBox=showPopUpInfoBox;
 		downloadImagesEnabled=dwnldImagesEnbld;
+		autoScrollEnabled=autoScroll;
 	}
 
 	public int getRestingTime()
@@ -76,6 +79,14 @@ public class AnimationPreferences extends Preferences
 		return downloadImagesEnabled;
 	}
 	
+	public void setAutoScrollEnabled(boolean b) {
+		this.autoScrollEnabled=b;
+	}
+	
+	public boolean isAutoScrollEnabled(){
+		return autoScrollEnabled;
+	}
+	
 	private int getIntValue(boolean b){
 		return b?1:0;
 	}
@@ -95,7 +106,8 @@ public class AnimationPreferences extends Preferences
 				+ fontPartsSeparator+getFont().getSize()
 				+ "\n"+prefStrings[3]+getRestingTime()
 				+ "\n"+prefStrings[4]+Integer.toString(getIntValue(isShowPopUpBox()))
-				+ "\n"+prefStrings[5]+Integer.toString(getIntValue(isDownloadImageEnabled()));
+				+ "\n"+prefStrings[5]+Integer.toString(getIntValue(isDownloadImageEnabled()))
+				+ "\n"+prefStrings[6]+Integer.toString(getIntValue(isAutoScrollEnabled()));
 	}
 
 	@Override
@@ -120,6 +132,9 @@ public class AnimationPreferences extends Preferences
 		
 		else if(text.startsWith(prefStrings[5]))
 			setDownloadImageEnabled(getBoolValue(Integer.parseInt(text.substring(text.indexOf("=")+1))));
+		
+		else if(text.startsWith(prefStrings[6]))
+			setAutoScrollEnabled(getBoolValue(Integer.parseInt(text.substring(text.indexOf("=")+1))));
 	}
 
 	@Override
@@ -131,6 +146,7 @@ public class AnimationPreferences extends Preferences
 		restingTime=0;
 		showPopUpBox=true;
 		downloadImagesEnabled=false;
+		autoScrollEnabled=true;
 	}
 	
 }

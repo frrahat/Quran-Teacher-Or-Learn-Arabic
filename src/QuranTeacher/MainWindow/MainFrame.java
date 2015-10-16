@@ -85,7 +85,7 @@ public class MainFrame extends JFrame {
 	 * Creates the full application frame
 	 */
 	public static final String AppName="Quran Teacher or Learn Arabic";
-	public static final String version="1.3.0";
+	public static final String version="1.3.1";
 	private String[] args={"QT",version};
 	private static final long serialVersionUID = 1L;
 
@@ -518,7 +518,7 @@ public class MainFrame extends JFrame {
 		//System.out.println("In main:"+ayah.suraIndex+" "+ayah.ayahIndex);
 		//animPanel.setAction("Showing Ayah no :"+(ayah.ayahIndex+1)+" from Sura "+
 		//SuraInformation.suraInformations[ayah.suraIndex].title);
-		
+		//System.out.println("Start Animation called for :"+ayah.toDetailedString());
 		if(displayPanel.getDisplayPage()!=DisplayPage.AnimationPage)
 		{
 			displayPanel.setDisplayPage(DisplayPage.AnimationPage);

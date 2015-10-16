@@ -36,6 +36,8 @@ public class SidePanel extends JPanel {
 	private AudioButtonListener audioButtonListener;
 	private SelectionPanel selectionPanel;
 	
+	public static final int SuraBoxChangeCode=-100;
+	
 	public SidePanel() {
 		setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		setPreferredSize(new Dimension(300, 300));
@@ -64,7 +66,7 @@ public class SidePanel extends JPanel {
 			@Override
 			public void ayahSelected(Ayah ayah) {
 				//System.out.println("In sidepanel :"+ayah.suraIndex+" "+ayah.ayahIndex);
-				if(ayah.ayahIndex==-1)//sura combobox changed
+				if(ayah.ayahIndex==SuraBoxChangeCode)//sura combobox changed
 					informationPanel.setInfo(ayah.suraIndex);
 				else if(ayahSelectionListener!=null)//go button clicked
 					ayahSelectionListener.ayahSelected(ayah);//going to main

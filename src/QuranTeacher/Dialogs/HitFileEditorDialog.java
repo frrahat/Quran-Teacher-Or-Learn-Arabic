@@ -340,13 +340,13 @@ public class HitFileEditorDialog extends JDialog {
 				String ayahNoText=JOptionPane.showInputDialog(getParent(),"Enter Ayah No. for New hit file","1");
 				if(ayahNoText==null)//cancelled
 					return;
-				int surahIndex=-1;
-				int ayahIndex=-1;
+				int surahNo=-1;
+				int ayahNo=-1;
 				try{
-					surahIndex=Integer.parseInt(suraNoText)-1;
-					ayahIndex=Integer.parseInt(ayahNoText)-1;
+					surahNo=Integer.parseInt(suraNoText);
+					ayahNo=Integer.parseInt(ayahNoText);
 					
-					buttonActionListener.buttonClicked("new", surahIndex*1000+ayahIndex);
+					buttonActionListener.buttonClicked("new", surahNo*1000+ayahNo);
 					
 					fileChanged=true;
 					hitFile=null;

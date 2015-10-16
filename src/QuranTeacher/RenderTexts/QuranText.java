@@ -100,6 +100,8 @@ public class QuranText {
 	 * @return the quranText
 	 */
 	public String getQuranText(Ayah ayah) {
+		if(ayah.ayahIndex==-1)
+			return quranText[0][0];//return bismillah
 		return quranText[ayah.suraIndex][ayah.ayahIndex];
 	}
 	

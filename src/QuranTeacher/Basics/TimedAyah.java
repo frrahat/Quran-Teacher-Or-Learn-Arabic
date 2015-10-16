@@ -14,6 +14,8 @@ public class TimedAyah{
 		int indexOfFirstAyah=SurahInformationContainer.totalAyahsUpto[ayah.suraIndex];
 		int indexOfSelectedAyah=indexOfFirstAyah+ayah.ayahIndex;
 		startIndexOfAyah=WordInfoLoader.getStartIndexOfAyahRTWholeText(indexOfSelectedAyah);
+		if(ayah.ayahIndex==-1)
+			startIndexOfAyah=0;
 
 		wordHitTimes=new ArrayList<>();
 	}

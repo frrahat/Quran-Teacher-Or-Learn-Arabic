@@ -34,15 +34,19 @@ public class Ayah{
 		if(ayahIndex+1<SurahInformationContainer.totalAyahs[suraIndex])
 			return new Ayah(suraIndex,ayahIndex+1);
 		
-		else if(suraIndex<113)
-			return new Ayah(suraIndex+1,0);
+		else if(suraIndex<113){
+			if(suraIndex!=7)
+				return new Ayah(suraIndex+1,-1);//bismillah
+			else
+				return new Ayah(suraIndex+1,0);
+		}
 		
 		return null;
 	}
 	
 	public Ayah getPrevAyah()
 	{
-		if(ayahIndex>0)
+		if(ayahIndex>0 || (suraIndex!=8 && ayahIndex==0))
 			return new Ayah(suraIndex,ayahIndex-1);
 		
 		else if(suraIndex>0)

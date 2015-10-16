@@ -104,6 +104,7 @@ public abstract class Animation extends JPanel {
 	private FontMetrics wbwFontMetrics;//for word meaning font
 
 	private boolean downloadImagesEnabled;
+	private boolean enableAutoScroll;
 	private static boolean animatePartialWord;
 	public enum Animation_type{Simple_Animation,Timed_Animation, Timed_Animation_Continuous,
 		Edit_Timed_Ayah};
@@ -311,7 +312,8 @@ public abstract class Animation extends JPanel {
 			}
 		}
 		
-		if(currentDisplayPoint.y-scrollY+lineHeight+150>getBounds().height)
+		if(enableAutoScroll && 
+				currentDisplayPoint.y-scrollY+lineHeight+150>getBounds().height)
 		{
 			scrollY+=scrollDelta;
 		}
@@ -675,6 +677,7 @@ public abstract class Animation extends JPanel {
 		restingTimeGap=animPreferences.getRestingTime();
 		showPopUpInfoBox=animPreferences.isShowPopUpBox();
 		downloadImagesEnabled=animPreferences.isDownloadImageEnabled();
+		enableAutoScroll=animPreferences.isAutoScrollEnabled();
 		
 		fontMetrics=getFontMetrics(animFont);
 		spaceWidth=fontMetrics.stringWidth(" ");
@@ -699,7 +702,7 @@ public abstract class Animation extends JPanel {
 	{
 		return new AnimationPreferences(
 				"animation.preferences",bgColor,fgColor,animFont,restingTimeGap,showPopUpInfoBox,
-				downloadImagesEnabled);
+				downloadImagesEnabled, enableAutoScroll);
 	}
 	
 	public WordByWordFontPref getWbWFontPref()

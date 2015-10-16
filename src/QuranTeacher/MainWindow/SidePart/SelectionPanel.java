@@ -230,8 +230,7 @@ public class SelectionPanel extends JPanel {
 				
 				Ayah ayah=new Ayah(i, j);
 				ayahSelectionListener.ayahSelected(ayah);
-				
-				//System.out.println("Going to "+suraNameList[i]+" Ayah "+(j+1));
+				//System.out.println("Go clicked for :"+ayah.toDetailedString());
 			}
 		});
 		
@@ -242,8 +241,9 @@ public class SelectionPanel extends JPanel {
 				//System.out.println("Sura box responded");
 				int i=suraBox.getSelectedIndex();
 				ayahBox.setModel(models[i]);
-				Ayah ayah=new Ayah(i, -1);
-				ayahSelectionListener.ayahSelected(ayah);//going to sidePanel
+				Ayah ayah=new Ayah(i, SidePanel.SuraBoxChangeCode);
+				ayahSelectionListener.ayahSelected(ayah);//going to sidePanel to inform the change
+				//so that sidePanel changes infoPanel
 			}
 		});
 		

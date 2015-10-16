@@ -74,9 +74,9 @@ public class TranslationPanel extends JPanel {
 	{
 		String text;
 		String detailedSurahName="["+ayah.toDetailedString()+"]";
-		if((ayah.suraIndex | ayah.ayahIndex)==0){
+		/*if((ayah.suraIndex | ayah.ayahIndex)==0){
 			detailedSurahName="";
-		}
+		}*/
 		text=detailedSurahName+"\n\t"+
 					AllTextsContainer.translationtexts.get(primaryTextIndex).getQuranText(ayah);
 		

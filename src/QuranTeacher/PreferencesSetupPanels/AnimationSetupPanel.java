@@ -119,9 +119,9 @@ public class AnimationSetupPanel extends PreferencesSetupPanel {
 		gbc_chckbxShowInfoBox.gridy = 8;
 		add(chckbxShowInfoBox, gbc_chckbxShowInfoBox);
 		
-		
+		//download image control
 		JLabel lblImageDownloading = new JLabel("Image Download :");
-		lblImageDownloading.setToolTipText("If ticken on, word images will be downloaded "
+		lblImageDownloading.setToolTipText("If ticked on, word images will be downloaded "
 				+ "automatically before animating an ayah.");
 		lblImageDownloading.setForeground(Color.ORANGE);
 		lblImageDownloading.setFont(new Font("Tahoma", Font.PLAIN, 18));
@@ -159,6 +159,48 @@ public class AnimationSetupPanel extends PreferencesSetupPanel {
 		gbc_chckbxEnableDownloadImages.gridx = 1;
 		gbc_chckbxEnableDownloadImages.gridy = 9;
 		add(chckbxEnableDownloadImages, gbc_chckbxEnableDownloadImages);
+		
+		//auto scroll control
+		JLabel lblAutoScroll = new JLabel("Scrolling Control :");
+		lblAutoScroll.setToolTipText("Controlling Automatic Scrolling while animation is running.");
+		lblAutoScroll.setForeground(Color.ORANGE);
+		lblAutoScroll.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		GridBagConstraints gbc_lblAutoScroll = new GridBagConstraints();
+		gbc_lblAutoScroll.anchor = GridBagConstraints.WEST;
+		gbc_lblAutoScroll.insets = new Insets(0, 0, 5, 5);
+		gbc_lblAutoScroll.gridx = 0;
+		gbc_lblAutoScroll.gridy = 10;
+		add(lblAutoScroll, gbc_lblAutoScroll);
+		
+		
+		JCheckBox chckbxAutoScroll = new JCheckBox("Enable Auto Scroll");
+		chckbxAutoScroll.setBackground(Color.DARK_GRAY);
+		chckbxAutoScroll.setForeground(Color.GREEN);
+		chckbxAutoScroll.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		chckbxAutoScroll.setSelected(preferences.isAutoScrollEnabled());
+		chckbxAutoScroll.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange()==ItemEvent.SELECTED)
+				{
+					preferences.setAutoScrollEnabled(true);
+				}
+				else
+				{
+					preferences.setAutoScrollEnabled(false);
+				}
+			}
+		});
+		
+		GridBagConstraints gbc_chckbxAutoScroll = new GridBagConstraints();
+		gbc_chckbxAutoScroll.insets = new Insets(0, 0, 5, 0);
+		gbc_chckbxAutoScroll.gridwidth = 3;
+		gbc_chckbxAutoScroll.weightx = 0.5;
+		gbc_chckbxAutoScroll.gridx = 1;
+		gbc_chckbxAutoScroll.gridy = 10;
+		add(chckbxAutoScroll, gbc_chckbxAutoScroll);
 	}
+	
 
 }
