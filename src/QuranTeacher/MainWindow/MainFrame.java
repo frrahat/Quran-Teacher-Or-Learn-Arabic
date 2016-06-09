@@ -85,7 +85,7 @@ public class MainFrame extends JFrame {
 	 * Creates the full application frame
 	 */
 	public static final String AppName="Quran Teacher or Learn Arabic";
-	public static final String version="1.3.1";
+	public static final String version="1.3.2";
 	private String[] args={"QT",version};
 	private static final long serialVersionUID = 1L;
 

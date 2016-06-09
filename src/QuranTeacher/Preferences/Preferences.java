@@ -48,10 +48,10 @@ public abstract class Preferences {
 	}
 
 	private void loadNecessaryFonts() {
-		MyFonts.addFont(FilePaths.tahomaFontPath);
-		MyFonts.addFont(FilePaths.me_quranFontPath);
-		MyFonts.addFont(FilePaths.solaimanLipiFontPath);
-		MyFonts.refresh();
+		MyFontsContainer.addFont(FilePaths.tahomaFontPath);
+		MyFontsContainer.addFont(FilePaths.me_quranFontPath);
+		MyFontsContainer.addFont(FilePaths.solaimanLipiFontPath);
+		MyFontsContainer.refresh();
 	}
 	
 	public Font getFont() {

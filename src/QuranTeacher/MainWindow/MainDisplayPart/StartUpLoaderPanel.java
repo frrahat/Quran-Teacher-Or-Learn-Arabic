@@ -22,7 +22,6 @@ import QuranTeacher.Basics.SurahInformationContainer;
 import QuranTeacher.Dialogs.AboutDialog;
 import QuranTeacher.Dialogs.HelpDialog;
 import QuranTeacher.MainWindow.MainFrame;
-import QuranTeacher.Preferences.MyFonts;
 import QuranTeacher.PreferencesSetupPanels.TranslationSetupPanel;
 import QuranTeacher.RenderAudio.Reciter;
 import QuranTeacher.RenderImages.ImageLoader;
@@ -220,7 +219,7 @@ public class StartUpLoaderPanel extends JPanel {
             
             int totalQuranFiles=TranslationTextInfoContainer.getSize()+1;
             //each file assumed to be of size 1.5MB in average
-            double step=90.0/(33+totalQuranFiles*1.5);
+            double step=90.0/(10+totalQuranFiles*1.5);
             //load arabic QuranText
             InputStream in=StartUpLoaderPanel.class.getResourceAsStream(FilePaths.ArabicTextFilePath);
             AllTextsContainer.arabicText=new QuranText(in, true);
@@ -253,11 +252,15 @@ public class StartUpLoaderPanel extends JPanel {
             
             //load wordInfoFile
             new WordInfoLoader().load();
-            setProgress(83);
-            
+            /*setProgress(83);
+            //update: loading additional font task moved to MyFontsContainer.init()
             //loadAdditional fonts
-            MyFonts.loadAdditionalFonts();
-            setProgress(90);
+            int addedFiles=MyFontsContainer.loadAdditionalFonts();
+            if(addedFiles!=0){
+				MyFontsContainer.refresh();
+				System.out.println(addedFiles+" file(s) added. Updated fonts list.");
+			}*/
+            setProgress(Math.max(progress, 90));
             
             manageDirForStorage();
             setProgress(100);
@@ -272,6 +275,7 @@ public class StartUpLoaderPanel extends JPanel {
         	//for showing exception
         	try {
 				get();
+				System.out.println("Starup loading task completed.");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (ExecutionException e) {

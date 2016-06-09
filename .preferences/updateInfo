@@ -1,13 +1,10 @@
-1.3.0
-28-08-2015, 03:37 pm
-https://github.com/frrahat/Quran-Teacher-Or-Learn-Arabic/releases/download/1.3.0/QuranTeacherOrLearnArabic_v1.3.0.zip
+1.3.1
+16-10-2015, 09:48pm
+https://github.com/frrahat/Quran-Teacher-Or-Learn-Arabic/releases/download/1.3.1/QuranTeacherOrLearnArabic_v1.3.1.zip
 Changes
-===========================
-One significant change has been made.
-Full Ayah is displayed at the start with darker color. Animation with brighter color overwrites the previous. This will enable reading the text more comfortably.
-Other Changes: 
-Advanced settings are saved while closing, enabling comfortable control for the advanced users. Also, there is a new inclusion. Gaps between two consequtive words can be increased or decreased through the advanced setting.
-Also there are some changes of functioning in the Hit File Editor Dialog.
+============
+Two significant changes have been made:
+1) All surahs except surah At Tawba will start with Bismillah while the animation is in Continuous Ayah mode
+2) Scrolling control has been added. Auto scrolling of the display can be disabled.
 
-This update is optional for the user of version 1.2.0 and older.
-Thank You for using this application.
+Thank You for using this application. May Allah accept our works and efforts.

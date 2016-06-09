@@ -15,6 +15,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -22,8 +23,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import QuranTeacher.Preferences.MyColors;
-import QuranTeacher.Preferences.MyFonts;
+import QuranTeacher.Preferences.MyColorsContainer;
+import QuranTeacher.Preferences.MyFontsContainer;
 import QuranTeacher.Preferences.Preferences;
 
 
@@ -38,12 +39,10 @@ public class PreferencesSetupPanel extends JPanel {
 	protected JLabel lblForegroundColor;
 	protected FontPreviewPanel fontPreviewPanel;
 	
-	private static Color[] colors=MyColors.getColors();
-	private static String[] colorNames=MyColors.getColorNames();
-	private static Font[] fonts=MyFonts.getFonts();
-	private static String[] fontNames=MyFonts.getFontNames();
-	private static int[] fontStyles=MyFonts.getFontStyles();
-	private static String[] fontStyleNames=MyFonts.getFontStyleNames();
+	private static Color[] colors=MyColorsContainer.getColors();
+	private static String[] colorNames=MyColorsContainer.getColorNames();
+	private static int[] fontStyles=MyFontsContainer.getFontStyles();
+	private static String[] fontStyleNames=MyFontsContainer.getFontStyleNames();
 	
 	private String panelText;
 	private JComboBox<String> FStyleComboBox;
@@ -156,12 +155,15 @@ public class PreferencesSetupPanel extends JPanel {
 			add(lblFont, gbc_lblFont);
 		}
 		{//Font Names
-			FcomboBox = new JComboBox<String>(fontNames);
+			FcomboBox = new JComboBox<String>();
+			
+			setFontComboboxItems();
+			
 			FcomboBox.setBackground(Color.LIGHT_GRAY);
 			FcomboBox.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					Font prev=panelPreferences.getFont();
-					Font f=fonts[FcomboBox.getSelectedIndex()];
+					Font f=MyFontsContainer.getMyFont(FcomboBox.getSelectedIndex());
 					f=f.deriveFont(prev.getStyle(), prev.getSize());
 					panelPreferences.setFont(f);
 					fontPreviewPanel.updateFontPreview();
@@ -254,6 +256,15 @@ public class PreferencesSetupPanel extends JPanel {
 		
 		updateSetUpPanel();
 	}
+
+	public void setFontComboboxItems() {
+		DefaultComboBoxModel<String> model=new DefaultComboBoxModel<>();
+		ArrayList<Font> fontList=MyFontsContainer.getMyFontList();
+		for(int i=0;i<fontList.size();i++){
+			model.addElement(fontList.get(i).getName());
+		}
+		FcomboBox.setModel(model);
+	}
 	
 	public PreferencesSetupPanel(String name, Preferences preferences,
 			Preferences pref2) {
@@ -264,13 +275,13 @@ public class PreferencesSetupPanel extends JPanel {
 	public void updateSetUpPanel()
 	{
 		BCcomboBox.setSelectedItem
-		(MyColors.getColorName(panelPreferences.getBackGroundColor()));
+		(MyColorsContainer.getColorName(panelPreferences.getBackGroundColor()));
 		FCcomboBox.setSelectedItem
-		(MyColors.getColorName(panelPreferences.getForeGroundColor()));
+		(MyColorsContainer.getColorName(panelPreferences.getForeGroundColor()));
 		FcomboBox.setSelectedIndex
-		(MyFonts.getFontIndex(panelPreferences.getFont().getName()));
+		(MyFontsContainer.getFontIndex(panelPreferences.getFont().getName()));
 		FStyleComboBox.setSelectedIndex(
-				MyFonts.getFontStyleIndex((panelPreferences.getFont().getStyle())));
+				MyFontsContainer.getFontStyleIndex((panelPreferences.getFont().getStyle())));
 		FSizeComboBox.setSelectedItem(panelPreferences.getFont().getSize());
 
 		fontPreviewPanel.updateFontPreview();

@@ -1,7 +1,7 @@
 BgColor=-16777216
-FgColor=-20561
-Font=me_quran|0|40
+FgColor=-16711681
+Font=noorehuda|0|40
 RestingTime=0
-ShowPopUpBox=1
-DwnldImgsEnbld=1
-AutoScroll=0
+ShowPopUpBox=0
+DwnldImgsEnbld=0
+AutoScroll=1

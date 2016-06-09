@@ -14,14 +14,14 @@ import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import QuranTeacher.FilePaths;
 
-public class MyFonts {
+public class MyFontsContainer {
 	
 	private static GraphicsEnvironment env;
-	private static Font[] fonts;
-	private static String[] fontNames;
+	private static ArrayList<Font> myFontList;
 	private static int[] fontStyles={
 			Font.PLAIN,
 			Font.BOLD,
@@ -37,20 +37,39 @@ public class MyFonts {
 	private static void init()
 	{
 		env=GraphicsEnvironment.getLocalGraphicsEnvironment();
-		fonts=env.getAllFonts();
+		Font[] fonts=env.getAllFonts();
 		initialized=true;
-		
-		fontNames=getFontNames();
+		myFontList=new ArrayList<>();
+		for(int i=0;i<fonts.length;i++){
+			myFontList.add(fonts[i]);
+		}
+		int addedFiles=MyFontsContainer.loadAdditionalFonts();
+        if(addedFiles!=0){
+			System.out.println(addedFiles+" font file(s) added.");
+        }
 	}
 	
 	public static void refresh()
 	{
-		fonts=env.getAllFonts();
-		fontNames=null;
-		fontNames=getFontNames();
+		Font[] fonts=env.getAllFonts();
+		myFontList=new ArrayList<>();
+		for(int i=0;i<fonts.length;i++){
+			myFontList.add(fonts[i]);
+		}
 	}
 
-	public static Font[] getFonts() {
+	public static ArrayList<Font> getMyFontList(){
+		if(!initialized)
+			init();
+		return myFontList;
+	}
+	
+	public static Font getMyFont(int index){
+		if(!initialized)
+			init();
+		return myFontList.get(index);
+	}
+	/*public static Font[] getFonts() {
 		if(!initialized)
 			init();
 		return fonts;
@@ -68,7 +87,7 @@ public class MyFonts {
 		}
 
 		return fontNames;
-	}
+	}*/
 
 	public static int[] getFontStyles() {
 		return fontStyles;
@@ -84,8 +103,8 @@ public class MyFonts {
 		if(!initialized)
 			init();
 		//System.out.println(fontName);
-		for(int i=0;i<fontNames.length;i++)
-			if(fontName.equals(fontNames[i]))
+		for(int i=0;i<myFontList.size();i++)
+			if(fontName.equals(myFontList.get(i).getName()))
 				return i;
 		return 0;
 	}
@@ -103,7 +122,7 @@ public class MyFonts {
 		//int k=Integer.parseInt("foo");
 		if(!initialized)
 			init();
-		InputStream is=MyFonts.class.getResourceAsStream(internalPath);
+		InputStream is=MyFontsContainer.class.getResourceAsStream(internalPath);
 		try {
 			Font font = Font.createFont(Font.TRUETYPE_FONT, is);
 			env.registerFont(font);
@@ -114,18 +133,21 @@ public class MyFonts {
 		}
 	}
 	
-	private static void addFontFile(File fontFile){
+	private static boolean addFontFile(File fontFile){
 		try {
 			Font font = Font.createFont(Font.TRUETYPE_FONT, fontFile);
 			env.registerFont(font);
 			System.out.println("Font created :"+font.getName());
+			return true;
 			
 		} catch (FontFormatException | IOException e) {
 			e.printStackTrace();
 		}
+		return false;
 	}
 	
-	public static void loadAdditionalFonts(){
+	public static int loadAdditionalFonts(){
+		int addedFiles=0;
 		if(!initialized)
 			init();
 		File storageFolder=new File(FilePaths.additionalFontsDir);
@@ -136,9 +158,14 @@ public class MyFonts {
 			File[] files=storageFolder.listFiles();
 			for(int i=0;i<files.length;i++){
 				if(files[i].getName().endsWith(".ttf")){
-					addFontFile(files[i]);
+					if(addFontFile(files[i])){
+						addedFiles++;
+					}
 				}
 			}
 		}
+		return addedFiles;
 	}
+	
+	
 }

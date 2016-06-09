@@ -170,7 +170,7 @@ public abstract class Animation extends JPanel {
 		super.paintComponent(g);
 		setBackground(bgColor);
 		
-		g.setColor(fgColor.darker());
+		g.setColor(fgColor.darker().darker());
 		drawFullSentence(g);
 		
 		g.setColor(fgColor);
@@ -334,7 +334,7 @@ public abstract class Animation extends JPanel {
 		//height+=extraHeight for displaying ZER
 		//all is the fontmetrics problem, unsolved
 		g.fillRect(startPoint.x-lineStringWidth-10, 
-				currentDisplayPoint.y-height-scrollY, 
+				currentDisplayPoint.y-height-scrollY-extraHeight/4, 
 				lineStringWidth-distanceCovered+10, height+extraHeight);
 	}
 

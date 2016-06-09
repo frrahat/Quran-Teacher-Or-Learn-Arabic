@@ -10,7 +10,7 @@ package QuranTeacher.Preferences;
 
 import java.awt.Color;
 
-public class MyColors {
+public class MyColorsContainer {
 	private static Color[] colors={
 			Color.BLACK,
 			Color.WHITE,
@@ -40,7 +40,7 @@ public class MyColors {
 			"Yellow",
 			"Red"};
 	
-	public MyColors()
+	public MyColorsContainer()
 	{
 		
 	}

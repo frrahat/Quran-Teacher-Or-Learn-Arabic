@@ -13,7 +13,7 @@ public class deltaPixelProperty {
 	/*
 	 * For the speed of appearance of the words
 	 */
-	public static int initialDeltaPixel=7;
+	public static int initialDeltaPixel=13;
 	public static int minDeltaPixel=2;
 	public static int maxDeltaPixel=20;
 	public static int delta=2;

@@ -378,12 +378,13 @@ public class AnimationPanel extends Animation {
 					paused=!paused;
 					userInputListener.pauseStateChanged(paused);
 				}*/
-				//scroll up
+				//pause ,unpause
 				else if(keyCode==KeyEvent.VK_SHIFT){
 					animationRunning=paused;
 					paused=!paused;
 					userInputListener.pauseStateChanged(paused);
 				}
+				//scroll up
 				else if(keyCode==KeyEvent.VK_UP && (scrollY-scrollDelta)>=0)
 				{
 					scrollY-=scrollDelta;
