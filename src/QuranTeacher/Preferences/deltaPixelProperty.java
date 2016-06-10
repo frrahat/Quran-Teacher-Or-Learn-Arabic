@@ -15,6 +15,6 @@ public class deltaPixelProperty {
 	 */
 	public static int initialDeltaPixel=13;
 	public static int minDeltaPixel=2;
-	public static int maxDeltaPixel=40;
+	public static int maxDeltaPixel=30;
 	public static int delta=2;
 }

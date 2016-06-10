@@ -13,7 +13,7 @@ public class FilePaths {
 	
 	
 	public static final String surahInfoFilePath="/QuranTeacher/files/texts/sura-information.txt";
-	public static final String wordByWordFilePath="/QuranTeacher/files/texts/WbWInfoShort.txt";
+	public static final String wordByWordFilePath="/QuranTeacher/files/texts/WbWInfo.txt";
 	public static final String audioLinksFile="/QuranTeacher/files/texts/AudioLinks";
 	public static final String tahomaFontPath = "/QuranTeacher/files/fonts/Tahoma.ttf";
 	public static final String me_quranFontPath = "/QuranTeacher/files/fonts/me_quran_volt_mark2.ttf";

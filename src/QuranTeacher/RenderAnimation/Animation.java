@@ -170,17 +170,14 @@ public abstract class Animation extends JPanel {
 		super.paintComponent(g);
 		setBackground(bgColor);
 		
-		g.setColor(fgColor);
+		if(!ayahDisplayFinished){
+			drawDarkerStrings(g);
+		}
 		//g.setFont(font);
 		if(animationRunning)
 			drawAnimatedHighlightedStrings(g);
 		else
 			drawFixedHighlightedStrings(g);
-		
-		if(!ayahDisplayFinished){
-			g.setColor(fgColor.darker().darker());
-			drawDarkerStrings(g);
-		}
 	}
 
 	//############################################################################
@@ -258,25 +255,21 @@ public abstract class Animation extends JPanel {
 	protected abstract void goToNextStep();
 
 	private void drawDarkerStrings(Graphics g){	
+		g.setColor(fgColor.darker().darker());
 		updateWordStartPoint();
 		g.setFont(animFont);
 		
-		for(int wordIndex=wordsDisplayedSoFar;wordIndex < coordinatedWords.size();wordIndex++){
-			CoordinatedWord word=coordinatedWords.get(wordIndex);
-			g.drawString(word.getWord(), word.getStartX(),startPoint.y+LineHeightFactor*lineHeight*word.getLineIndex()-scrollY);
-		}
+		drawCoordinatedWords(g, wordsDisplayedSoFar, coordinatedWords.size());
 		//drawMeaningOfWord(g);
 	}
 	
 	private void drawAnimatedHighlightedStrings(Graphics g)
 	{
+		g.setColor(fgColor);
 		//updateWordStartPoint();
 		g.setFont(animFont);
 		
-		for(int wordIndex=0;wordIndex < wordsDisplayedSoFar;wordIndex++){
-			CoordinatedWord word=coordinatedWords.get(wordIndex);
-			g.drawString(word.getWord(), word.getStartX(),startPoint.y+LineHeightFactor*lineHeight*word.getLineIndex()-scrollY);
-		}
+		drawCoordinatedWords(g, 0, wordsDisplayedSoFar);
 		//draw scrollbar in right position
 		scrollbarPosY=(int) ((getBounds().getHeight()*scrollY)/currentDisplayPoint.y);
 			
@@ -291,12 +284,10 @@ public abstract class Animation extends JPanel {
 		g.setColor(Color.RED);
 		if(wordsDisplayedSoFar>0)
 		{
-			//System.out.println("total rectangles :"+rectangles.size());
-			Rectangle rect;
-			
+			//System.out.println("total rectangles :"+rectangles.size());			
 			if(showPopUpInfoBox)
 			{
-				rect=rectangles.get(wordsDisplayedSoFar-1);
+				Rectangle rect=rectangles.get(wordsDisplayedSoFar-1);
 				g.drawRect(rect.x,rect.y-scrollY,rect.width,rect.height);
 				drawInfoBox(g, false);
 			}
@@ -304,7 +295,7 @@ public abstract class Animation extends JPanel {
 			if(mouseFocusedOn!=-1)
 			{
 				g.setColor(Color.GREEN);
-				rect=rectangles.get(mouseFocusedOn);
+				Rectangle rect=rectangles.get(mouseFocusedOn);
 				g.drawRect(rect.x,rect.y-scrollY,rect.width,rect.height);
 				
 				drawInfoBox(g, true);
@@ -339,12 +330,10 @@ public abstract class Animation extends JPanel {
 
 	private void drawFixedHighlightedStrings(Graphics g) 
 	{
+		g.setColor(fgColor);
 		g.setFont(animFont);
 		//drawAyah
-		for(int wordIndex=0;wordIndex < wordsDisplayedSoFar;wordIndex++){
-			CoordinatedWord word=coordinatedWords.get(wordIndex);
-			g.drawString(word.getWord(), word.getStartX(),startPoint.y+LineHeightFactor*lineHeight*word.getLineIndex()-scrollY);
-		}
+		drawCoordinatedWords(g, 0, wordsDisplayedSoFar);
 		
 		//draw scrollbar
 
@@ -366,6 +355,15 @@ public abstract class Animation extends JPanel {
 			g.drawRect(rect.x,rect.y-scrollY,rect.width,rect.height);
 			
 			drawInfoBox(g, true);
+		}
+	}
+
+	private void drawCoordinatedWords(Graphics g, int start, int end) {
+		int z=LineHeightFactor*lineHeight;
+		CoordinatedWord coordinatedWord;
+		for(int wordIndex=start;wordIndex < end;wordIndex++){
+			coordinatedWord=coordinatedWords.get(wordIndex);
+			g.drawString(coordinatedWord.getWord(), coordinatedWord.getStartX(),startPoint.y+z*coordinatedWord.getLineIndex()-scrollY);
 		}
 	}
 	
@@ -527,8 +525,8 @@ public abstract class Animation extends JPanel {
 				problemOccured(i);
 			}
 		}
-		
-		for(int i=wordsDisplayedSoFar;i<coordinatedWords.size();i++)//not highlighted
+		int size=coordinatedWords.size();
+		for(int i=wordsDisplayedSoFar;i<size;i++)//not highlighted
 		{
 			rect=rectangles.get(i);
 			

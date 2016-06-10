@@ -55,9 +55,9 @@ public class WordInformation{
 			String meaning, String[] partsOfSpeeches,
 			String[] segmentColors, String[] partsOfSpeechDetails) {
 		
-		partsOfSpeeches=new String[maxPartsOfSpeech];
-		segmentColors=new String[maxPartsOfSpeech];
-		partsOfSpeechDetails=new String[maxPartsOfSpeech];
+		//partsOfSpeeches=new String[maxPartsOfSpeech];
+		//segmentColors=new String[maxPartsOfSpeech];
+		//partsOfSpeechDetails=new String[maxPartsOfSpeech];
 		
 		this.index = index;
 		this.wordId = wordId;

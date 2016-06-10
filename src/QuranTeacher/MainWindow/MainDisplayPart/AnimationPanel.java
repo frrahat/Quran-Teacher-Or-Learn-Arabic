@@ -213,10 +213,10 @@ public class AnimationPanel extends Animation {
 				addNextWordToSentence();
 				//System.out.println(new word added);
 				//TODO trigger the command string
-				String hitString=hitStrings.get(displayedHitWords);
+				/*String hitString=hitStrings.get(displayedHitWords);
 				if(hitString.length()>0){
 					System.out.println("hitString : "+hitString);
-				}
+				}*/
 				
 				hitFileEditorDialog.setListItemSelectedIndex(displayedHitWords);
 				displayedHitWords++;
