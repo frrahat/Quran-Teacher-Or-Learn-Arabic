@@ -716,7 +716,7 @@ public class AnimationPanel extends Animation {
     					int k=Integer.parseInt(parts[0].trim());
 						timedAyahs.get(totalAyahs-1).addWordHitTime(k);
     				}
-    				catch(NumberFormatException ne){
+    				catch(NumberFormatException | IndexOutOfBoundsException nie){
         				return false;
         			}
     				

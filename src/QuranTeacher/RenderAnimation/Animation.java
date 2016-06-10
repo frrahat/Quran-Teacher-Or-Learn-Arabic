@@ -170,15 +170,17 @@ public abstract class Animation extends JPanel {
 		super.paintComponent(g);
 		setBackground(bgColor);
 		
-		g.setColor(fgColor.darker().darker());
-		drawFullSentence(g);
-		
 		g.setColor(fgColor);
 		//g.setFont(font);
 		if(animationRunning)
-			drawAnimation(g);
+			drawAnimatedHighlightedStrings(g);
 		else
-			drawFixedDisplay(g);
+			drawFixedHighlightedStrings(g);
+		
+		if(!ayahDisplayFinished){
+			g.setColor(fgColor.darker().darker());
+			drawDarkerStrings(g);
+		}
 	}
 
 	//############################################################################
@@ -255,21 +257,18 @@ public abstract class Animation extends JPanel {
 		
 	protected abstract void goToNextStep();
 
-	private void drawFullSentence(Graphics g){
-		if(ayahDisplayFinished)
-			return;
-		
+	private void drawDarkerStrings(Graphics g){	
 		updateWordStartPoint();
 		g.setFont(animFont);
 		
-		for(int wordIndex=0;wordIndex < coordinatedWords.size();wordIndex++){
+		for(int wordIndex=wordsDisplayedSoFar;wordIndex < coordinatedWords.size();wordIndex++){
 			CoordinatedWord word=coordinatedWords.get(wordIndex);
 			g.drawString(word.getWord(), word.getStartX(),startPoint.y+LineHeightFactor*lineHeight*word.getLineIndex()-scrollY);
 		}
-		drawMeaningOfWord(g,true);
+		//drawMeaningOfWord(g);
 	}
 	
-	private void drawAnimation(Graphics g)
+	private void drawAnimatedHighlightedStrings(Graphics g)
 	{
 		//updateWordStartPoint();
 		g.setFont(animFont);
@@ -287,7 +286,7 @@ public abstract class Animation extends JPanel {
 		if(animatePartialWord)
 			HidePartial(g);
 		
-		drawMeaningOfWord(g,false);
+		drawMeaningOfWord(g);
 		
 		g.setColor(Color.RED);
 		if(wordsDisplayedSoFar>0)
@@ -338,7 +337,7 @@ public abstract class Animation extends JPanel {
 				lineStringWidth-distanceCovered+10, height+extraHeight);
 	}
 
-	private void drawFixedDisplay(Graphics g) 
+	private void drawFixedHighlightedStrings(Graphics g) 
 	{
 		g.setFont(animFont);
 		//drawAyah
@@ -357,7 +356,7 @@ public abstract class Animation extends JPanel {
 		if(animatePartialWord)
 			HidePartial(g);
 		
-		drawMeaningOfWord(g,false);
+		drawMeaningOfWord(g);
 		
 		if(mouseFocusedOn!=-1)
 		{
@@ -496,7 +495,7 @@ public abstract class Animation extends JPanel {
 	}
 	
 	
-	private void drawMeaningOfWord(Graphics g, boolean isFullSentence)
+	private void drawMeaningOfWord(Graphics g)
 	{
 		/*if(rectangles.size()==0)
 			return;*/
@@ -509,7 +508,7 @@ public abstract class Animation extends JPanel {
 		int writeX,writeY;
 		Rectangle rect;
 		
-		for(int i=0;i<wordsDisplayedSoFar;i++)
+		for(int i=0;i<wordsDisplayedSoFar;i++)//highlighted
 		{
 			rect=rectangles.get(i);
 			
@@ -529,25 +528,23 @@ public abstract class Animation extends JPanel {
 			}
 		}
 		
-		if(isFullSentence){
-			for(int i=wordsDisplayedSoFar;i<coordinatedWords.size();i++)
+		for(int i=wordsDisplayedSoFar;i<coordinatedWords.size();i++)//not highlighted
+		{
+			rect=rectangles.get(i);
+			
+			if(infoOfWord.size()>i)
 			{
-				rect=rectangles.get(i);
+				writeX=rect.x;
+				writeY=rect.y+rect.height+extraHeight;
 				
-				if(infoOfWord.size()>i)
-				{
-					writeX=rect.x;
-					writeY=rect.y+rect.height+extraHeight;
-					
-					g.setColor(wbwTrnslitrtionColor.darker());
-					g.drawString("{"+infoOfWord.get(i).transLiteration+"}", writeX, writeY-scrollY);
-					g.setColor(wbwMeaningColor.darker());
-					g.drawString(infoOfWord.get(i).meaning, writeX, writeY+22-scrollY);
-				}
-				else
-				{
-					problemOccured(i);
-				}
+				g.setColor(wbwTrnslitrtionColor.darker());
+				g.drawString("{"+infoOfWord.get(i).transLiteration+"}", writeX, writeY-scrollY);
+				g.setColor(wbwMeaningColor.darker());
+				g.drawString(infoOfWord.get(i).meaning, writeX, writeY+22-scrollY);
+			}
+			else
+			{
+				problemOccured(i);
 			}
 		}
 	}
