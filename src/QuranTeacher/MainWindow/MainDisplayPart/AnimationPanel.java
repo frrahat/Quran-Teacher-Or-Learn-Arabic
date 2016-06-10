@@ -29,6 +29,7 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 import QuranTeacher.Basics.Ayah;
+import QuranTeacher.Basics.HitString;
 import QuranTeacher.Basics.SurahInformationContainer;
 import QuranTeacher.Basics.TimedAyah;
 import QuranTeacher.Dialogs.HitFileEditorDialog;
@@ -87,7 +88,7 @@ public class AnimationPanel extends Animation {
 	private Timer autoDisplayTimer;
 	
 	private static ArrayList<Integer>wordHitTimes;
-
+	private static ArrayList<String>hitStrings;
 	
 	public AnimationPanel() {
 		//System.out.println("DisplayPanel() called");
@@ -203,13 +204,21 @@ public class AnimationPanel extends Animation {
 
 	private void autoRun() {
 		if(wordHitTimes.size()>displayedHitWords)
+			//for animationType=Simple_Animation 
+			//wordHitTimes.size()=0, displayed word=0
 		{
 			long time=System.currentTimeMillis()-startTime;
 			if(wordHitTimes.get(displayedHitWords)<=time)
 			{
 				addNextWordToSentence();
+				//System.out.println(new word added);
+				//TODO trigger the command string
+				String hitString=hitStrings.get(displayedHitWords);
+				if(hitString.length()>0){
+					System.out.println("hitString : "+hitString);
+				}
+				
 				hitFileEditorDialog.setListItemSelectedIndex(displayedHitWords);
-				//System.out.println(displayed);
 				displayedHitWords++;
 			}
 			hitFileEditorDialog.setTimeLabel(time);
@@ -224,6 +233,7 @@ public class AnimationPanel extends Animation {
 	private void resetHitTimesToNewTimedAyah(int index) {
 
 		wordHitTimes=timedAyahs.get(index).getWordHitTimes();
+		hitStrings=timedAyahs.get(index).getHitStrings();
 		setAyah(timedAyahs.get(index).getAyah());
 
 		displayedHitWords=0;
@@ -322,7 +332,7 @@ public class AnimationPanel extends Animation {
 				//animate next word and store time for the word appearance : <Enter>
 				if(keyCode==KeyEvent.VK_ENTER && 
 						animationType==Animation_type.Edit_Timed_Ayah)
-				{//TODO
+				{
 					if(timedAyahs.size()==editTimedAyahIndex){//go to new ayah
 						Ayah ayah=timedAyahs.get(editTimedAyahIndex-1).getAyah().getNextAyah();
 						if(ayah!=null){
@@ -424,8 +434,11 @@ public class AnimationPanel extends Animation {
 		});
 	}
 
+	/*
+	 * Called when an ayaah printing finished
+	 */
 	@Override
-	protected void goToNextStep()//TODO
+	protected void goToNextStep()
 	{
 		//System.out.println("goToNextStep()");
 		if(Reciter.isAlive() || paused){
@@ -458,6 +471,7 @@ public class AnimationPanel extends Animation {
 				setAyah(nextAyah);
 			}
 		}
+		//else do nothing
 		
 	}
 	
@@ -675,24 +689,41 @@ public class AnimationPanel extends Animation {
     		while((text=reader.readLine())!=null)
     		{
     			//System.out.println(text);
-    			try{
-					if(text.charAt(0)=='#'){
-						int surahIndex=Integer.parseInt(text.substring(1));
-						if((text=reader.readLine())!=null){
-							int ayahIndex=Integer.parseInt(text);
-		
-							timedAyahs.add(new TimedAyah(new Ayah(surahIndex,ayahIndex)));
-							totalAyahs++;
-						}else{
-							return false;
-						}
-					
-					}else{
-						int k=Integer.parseInt(text);
+    			if(text.length()==0)
+    				continue;
+    			
+    			if(text.charAt(0)==HitString.COMMENT_START)
+    				continue;
+    			
+    			if(text.charAt(0)==HitString.AyaahNum_START){
+    				String parts[]=text.substring(1).split(":");
+    				try{
+    					int surahNum=Integer.parseInt(parts[0].trim());
+    					int ayaahNum=Integer.parseInt(parts[1].trim());
+    					
+    					timedAyahs.add(new TimedAyah(new Ayah(surahNum-1,ayaahNum-1)));
+						totalAyahs++;
+    				}
+    				catch(NumberFormatException | ArrayIndexOutOfBoundsException nae){
+        				return false;
+        			}
+    			}
+    			
+    			else{
+    				String parts[]=text.split(" ");
+    				
+    				try{
+    					int k=Integer.parseInt(parts[0].trim());
 						timedAyahs.get(totalAyahs-1).addWordHitTime(k);
-					}
-    			}catch(NumberFormatException | ArrayIndexOutOfBoundsException ne){
-    				return false;
+    				}
+    				catch(NumberFormatException ne){
+        				return false;
+        			}
+    				
+    				if(parts.length>1 && parts[1].length()>0){
+    					int index=timedAyahs.get(totalAyahs-1).getTotalAddedWords()-1;
+    					timedAyahs.get(totalAyahs-1).setHitString(index, text.substring(parts[0].length()+1));
+    				}
     			}
     		}
     	    

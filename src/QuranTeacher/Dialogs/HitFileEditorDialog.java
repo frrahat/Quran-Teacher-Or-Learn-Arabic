@@ -32,6 +32,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 
+
+
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -55,7 +57,9 @@ import javax.swing.ListSelectionModel;
 
 import QuranTeacher.FilePaths;
 import QuranTeacher.Basics.Ayah;
+import QuranTeacher.Basics.HitString;
 import QuranTeacher.Basics.TimedAyah;
+import QuranTeacher.MainWindow.MainFrame;
 import QuranTeacher.MainWindow.MainDisplayPart.AnimationPanel;
 import QuranTeacher.WordInformation.WordInfoLoader;
 import QuranTeacher.WordInformation.WordInformation;
@@ -233,14 +237,17 @@ public class HitFileEditorDialog extends JDialog {
 				if (r != null && r.contains(e.getPoint())) {
 					int index = list.locationToIndex(e.getPoint());
 					
+					int selectedIndex=ayahComboBox.getSelectedIndex();
+					
 					if(index!=-1){
 						String text=JOptionPane.showInputDialog(getParent(),
-								"Enter time :",timedAyahs.get(ayahComboBox.getSelectedIndex()).getWordHitTime(index));
+								"Enter time/hitString :",timedAyahs.get(selectedIndex).getEntry(index));
 						if(text==null)//cancelled
 							return;
 						int time=0;
+						String parts[]=text.split(" ");
 						try{
-							time=Integer.parseInt(text);
+							time=Integer.parseInt(parts[0].trim());
 						}catch(NumberFormatException ne){
 							JOptionPane.showMessageDialog(getParent(), 
 									"NumberFormat Exception Occured","Invalid time",
@@ -248,8 +255,13 @@ public class HitFileEditorDialog extends JDialog {
 							return;
 						}
 						
-						timedAyahs.get(ayahComboBox.getSelectedIndex()).
+						timedAyahs.get(selectedIndex).
 							setWordTime(index, time);
+						
+						if(parts.length>1 && parts[1].length()>1){
+							timedAyahs.get(selectedIndex).
+								setHitString(index, text.substring(parts[0].length()+1));
+						}
 						
 						updateList();
 						fileChanged=true;
@@ -343,8 +355,8 @@ public class HitFileEditorDialog extends JDialog {
 				int surahNo=-1;
 				int ayahNo=-1;
 				try{
-					surahNo=Integer.parseInt(suraNoText);
-					ayahNo=Integer.parseInt(ayahNoText);
+					surahNo=Integer.parseInt(suraNoText.trim());
+					ayahNo=Integer.parseInt(ayahNoText.trim());
 					
 					buttonActionListener.buttonClicked("new", surahNo*1000+ayahNo);
 					
@@ -443,14 +455,15 @@ public class HitFileEditorDialog extends JDialog {
 		
 		try{
 			PrintWriter writer=new PrintWriter(outputFile);
+			writer.write("#Edited with version "+MainFrame.version+"\n");
 			for(int i=0;i<timedAyahs.size();i++){
 				TimedAyah t=timedAyahs.get(i);
-				writer.write("#"+Integer.toString(t.getAyah().suraIndex)+"\n");
-				writer.write(Integer.toString(t.getAyah().ayahIndex)+"\n");
+				writer.write("@"+Integer.toString(t.getAyah().suraIndex+1)+":"
+						+Integer.toString(t.getAyah().ayahIndex+1)+"\n");
 				
-				ArrayList<Integer>hitTimes=t.getWordHitTimes();
-				for(int j=0;j<hitTimes.size();j++){
-					writer.write(Integer.toString(hitTimes.get(j))+"\n");
+				int size=t.getTotalAddedWords();
+				for(int j=0;j<size;j++){
+					writer.write(t.getEntry(j)+"\n");
 				}
 			}
 			
@@ -522,12 +535,19 @@ public class HitFileEditorDialog extends JDialog {
 		if(selectedIndex==-1)
 			return;
 		DefaultListModel<String> listModel=new DefaultListModel<>();
-		ArrayList<Integer> WordTimes=timedAyahs.get(selectedIndex).getWordHitTimes();
-		for(int i=0;i<WordTimes.size();i++){
-			String text=Integer.toString(WordTimes.get(i))+">>";
+		TimedAyah t=timedAyahs.get(selectedIndex);	
+		int size=t.getTotalAddedWords();
+
+		for(int i=0;i<size;i++){
+			String text=Integer.toString(t.getWordHitTime(i))+">>";
 			
 			WordInformation w=WordInfoLoader.getWordInfo(timedAyahs.get(selectedIndex).getBigIndexOfWord(i));
 			text+=w.transLiteration+">>("+w.meaning+")";
+			
+			String hitString=t.getHitString(i);
+			if(hitString.length()>0){
+				text+=" ["+hitString+"]";
+			}
 			
 			listModel.addElement(text);
 		}

@@ -50,6 +50,25 @@ public class WordInformation{
 		partsOfSpeechDetails=new String[maxPartsOfSpeech];
 	}
 	
+	
+	public WordInformation(int index, String wordId, String transLiteration,
+			String meaning, String[] partsOfSpeeches,
+			String[] segmentColors, String[] partsOfSpeechDetails) {
+		
+		partsOfSpeeches=new String[maxPartsOfSpeech];
+		segmentColors=new String[maxPartsOfSpeech];
+		partsOfSpeechDetails=new String[maxPartsOfSpeech];
+		
+		this.index = index;
+		this.wordId = wordId;
+		this.transLiteration = transLiteration;
+		this.meaning = meaning;
+		this.imageId = index+1;
+		this.partsOfSpeeches = partsOfSpeeches;
+		this.segmentColors = segmentColors;
+		this.partsOfSpeechDetails = partsOfSpeechDetails;
+	}
+
 	public String getElements(String[] array)
 	{
 		String s;

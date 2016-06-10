@@ -48,55 +48,31 @@ public class WordInfoLoader {
 			reader=new BufferedReader(new InputStreamReader(inStream,"utf-8"));
 			String text;
 			WordInformation tempInfo=null;
-			
+			int fieldsCovered=0;
+			final int totalFields=7; 
+			String fields[]=new String[7];
 			while((text=reader.readLine())!=null)
 			{
-				if(text.startsWith("cell"))
+				if(text.startsWith("#"))
 					continue;
 				
-				if(text.startsWith("index"))
-				{
-					tempInfo=new WordInformation();
-					tempInfo.index=
-							Integer.parseInt(text.substring(text.indexOf('=')+1));
+				else{
+					fields[fieldsCovered]=text;
+					fieldsCovered++;
+					if(fieldsCovered==7){
+						infoWords[totalWbWInfos]=
+								new WordInformation(Integer.parseInt(fields[0]),//index
+										fields[1],//wordId
+										fields[2],//transliteration
+										fields[3],//meaning
+										fields[4].split(","),//parts of speeches
+										fields[5].split(","),//segmentColors
+										fields[6].split(","));//partsOfSpeechDetails
+						totalWbWInfos++;
+						
+						fieldsCovered=0;
+					}
 				}
-				
-				else if(text.startsWith("wordId"))
-				{
-					tempInfo.wordId=text.substring(text.indexOf('=')+1);
-				}
-				else if(text.startsWith("transLiteration"))
-				{
-					tempInfo.transLiteration=text.substring(text.indexOf('=')+1);
-				}
-				else if(text.startsWith("meaning"))
-				{
-					tempInfo.meaning=text.substring(text.indexOf('=')+1);
-				}
-				else if(text.startsWith("imageId"))
-				{
-					tempInfo.imageId=
-							Integer.parseInt(text.substring(text.indexOf('=')+1));
-				}
-				else if(text.startsWith("partsOfSpeeches"))
-				{
-					tempInfo.partsOfSpeeches=
-							text.substring(text.indexOf('=')+1).split(",");
-				}
-				else if(text.startsWith("segmentColors"))
-				{
-					tempInfo.segmentColors=
-							text.substring(text.indexOf('=')+1).split(",");
-				}
-				else if(text.startsWith("partsOfSpeechDetails"))
-				{
-					tempInfo.partsOfSpeechDetails=
-							text.substring(text.indexOf('=')+1).split(",");
-					
-					infoWords[totalWbWInfos]=tempInfo;
-					totalWbWInfos++;
-				}
-				
 			}
 			isLoaded=true;
 			reader.close();

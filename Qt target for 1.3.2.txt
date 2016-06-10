@@ -1,0 +1,12 @@
+qt target for 1.3.2
+
+update wbwinfo
+
+add command string field to timed ayahs
+	TimedAyahs.java, new arrayList<String>, new constructor, initialization in old constructor 
+	HitFileEditorDialog.java mouseOnListItem->edit commandString, save with new format, save with command string
+	Animationpanel.java trigger action of commandString in autoRun, load with new parsing method
+
+try solve file/font adding
+
+partition wbwinfo file
