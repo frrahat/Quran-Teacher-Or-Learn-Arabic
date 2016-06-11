@@ -48,8 +48,7 @@ public class WordInfoLoader {
 			reader=new BufferedReader(new InputStreamReader(inStream,"utf-8"));
 			String text;
 			WordInformation tempInfo=null;
-			int fieldsCovered=0;
-			final int totalFields=7; 
+			int fieldsCovered=0; 
 			String fields[]=new String[7];
 			while((text=reader.readLine())!=null)
 			{
