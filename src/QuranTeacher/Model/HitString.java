@@ -1,4 +1,4 @@
-package QuranTeacher.Basics;
+package QuranTeacher.Model;
 
 /**
  * @author Rahat

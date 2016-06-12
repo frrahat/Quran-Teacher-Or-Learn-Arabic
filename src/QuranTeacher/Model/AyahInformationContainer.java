@@ -1,4 +1,4 @@
-package QuranTeacher.Basics;
+package QuranTeacher.Model;
 
 public class AyahInformationContainer {
 	public static String aayatESajdahString="***(Aayat e Sajdah)***";

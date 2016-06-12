@@ -30,7 +30,7 @@ import QuranTeacher.Preferences.AnimationPreferences;
 import QuranTeacher.Preferences.WordByWordFontPref;
 import QuranTeacher.WordInformation.SegmentColors;
 import QuranTeacher.WordInformation.WordInformation;
-import QuranTeacher.Preferences.deltaPixelProperty;
+import QuranTeacher.Preferences.DeltaPixelProperty;
 
 
 public abstract class Animation extends JPanel {
@@ -47,7 +47,7 @@ public abstract class Animation extends JPanel {
 	protected Point currentDisplayPoint, startPoint;
 	protected AnimationPreferences animPreferences;//protected : to know from animPanel if download image is enabled
 	private WordByWordFontPref wordByWordFontPref;
-	protected int deltaPixel=deltaPixelProperty.initialDeltaPixel;
+	protected int deltaPixel=DeltaPixelProperty.initialDeltaPixel;
 	
 	protected int lineStringWidth;//sentence width
 	protected int height;
@@ -114,7 +114,7 @@ public abstract class Animation extends JPanel {
 	private AdvancedAnimPref advancedAnimPref;
 
 	private final int LineHeightFactor=2;
-
+	
 	
 	public Animation() {
 		
@@ -132,6 +132,7 @@ public abstract class Animation extends JPanel {
 		wordByWordFontPref=PreferencesDialog.getWbWFontPref();
 		
 		animatePartialWord=true;
+		//load from advanced.animpref file
 		advancedAnimPref=new AdvancedAnimPref("advancedAnim.preferences");
 		if(advancedAnimPref.setPrefFromFile()){
 			animatePartialWord=advancedAnimPref.isHidePartial();
@@ -140,6 +141,7 @@ public abstract class Animation extends JPanel {
 			for(int i=spaceBetweenWords.length();i<wordGap;i++){
 				spaceBetweenWords+=" ";
 			}
+			deltaPixel=advancedAnimPref.getDeltaPixel();
 		}
 		
 		updatAnimPreferences();
@@ -178,6 +180,7 @@ public abstract class Animation extends JPanel {
 			drawAnimatedHighlightedStrings(g);
 		else
 			drawFixedHighlightedStrings(g);
+		
 	}
 
 	//############################################################################
@@ -708,7 +711,7 @@ public abstract class Animation extends JPanel {
 	
 	public AdvancedAnimPref getAdvancedAnimPref(){
 		return new AdvancedAnimPref("advancedAnim.preferences",lineHeight,
-				extraHeight,spaceBetweenWords.length(),animatePartialWord);
+				extraHeight,spaceBetweenWords.length(),animatePartialWord, deltaPixel);
 	}
 	
 	public static void setHidePartialWord(boolean value){
@@ -785,4 +788,5 @@ public abstract class Animation extends JPanel {
 		System.out.println("------------------");
 		//System.exit(0);
 	}
+	
 }

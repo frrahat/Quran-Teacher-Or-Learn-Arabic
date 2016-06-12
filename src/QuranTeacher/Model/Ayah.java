@@ -1,8 +1,8 @@
-package QuranTeacher.Basics;
+package QuranTeacher.Model;
 
-import QuranTeacher.Basics.Ayah;
-import QuranTeacher.Basics.AyahInformationContainer;
-import QuranTeacher.Basics.SurahInformationContainer;
+import QuranTeacher.Model.Ayah;
+import QuranTeacher.Model.AyahInformationContainer;
+import QuranTeacher.Model.SurahInformationContainer;
 
 /**
  * @author Rahat

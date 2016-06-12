@@ -18,19 +18,22 @@ public class AdvancedAnimPref extends Preferences{
 	private int extraHeight;
 	private int wordGap;
 	private boolean hidePartial;
+	private int deltaPixel=DeltaPixelProperty.minDeltaPixel;
 	
 	private static final String[] prefStrings={
-		"lineGap=","extraHeight=","wordGap=","hidePartial="};
+		"lineGap=","extraHeight=","wordGap=","hidePartial=","deltaPixel="};
 	
 	public AdvancedAnimPref(String id) {
 		super(id);
 	}
-	public AdvancedAnimPref(String id,int lineGap,int extraHeight,int wordGap,boolean hidePartial) {
+	public AdvancedAnimPref(String id,int lineGap,int extraHeight,int wordGap,boolean hidePartial,
+			int deltaPixel) {
 		super(id);
 		this.lineGap=lineGap;
 		this.extraHeight=extraHeight;
 		this.wordGap=wordGap;
 		this.hidePartial=hidePartial;
+		this.deltaPixel=deltaPixel;
 	}
 	
 	@Override
@@ -53,6 +56,9 @@ public class AdvancedAnimPref extends Preferences{
 
 		else if(text.startsWith(prefStrings[3]))
 			hidePartial=value==0?false:true;
+		
+		else if(text.startsWith(prefStrings[4]))
+			deltaPixel=value;
 	}
 	
 	@Override
@@ -63,7 +69,8 @@ public class AdvancedAnimPref extends Preferences{
 		return prefStrings[0]+Integer.toString(lineGap)
 				+"\n"+prefStrings[1]+Integer.toString(extraHeight)
 				+"\n"+prefStrings[2]+Integer.toString(wordGap)
-				+"\n"+prefStrings[3]+Integer.toString(k);
+				+"\n"+prefStrings[3]+Integer.toString(k)
+				+"\n"+prefStrings[4]+Integer.toString(deltaPixel);
 	}
 
 	public int getLineGap() {
@@ -82,4 +89,7 @@ public class AdvancedAnimPref extends Preferences{
 		return hidePartial;
 	}
 	
+	public int getDeltaPixel(){
+		return deltaPixel;
+	}
 }

@@ -46,8 +46,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 
+
 import QuranTeacher.FilePaths;
-import QuranTeacher.Basics.SurahInformationContainer;
+import QuranTeacher.Model.SurahInformationContainer;
 import QuranTeacher.Preferences.TranslationPreferences;
 import QuranTeacher.RenderTexts.TranslationTextInfoContainer;
 

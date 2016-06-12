@@ -21,10 +21,11 @@ import java.nio.channels.ReadableByteChannel;
 
 
 
+
 import javazoom.jl.decoder.JavaLayerException;
 import QuranTeacher.FilePaths;
-import QuranTeacher.Basics.Ayah;
 import QuranTeacher.MainWindow.SidePart.AudioNavigationPanel;
+import QuranTeacher.Model.Ayah;
 
 public class Reciter{
 

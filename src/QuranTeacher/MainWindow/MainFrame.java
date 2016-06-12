@@ -53,7 +53,7 @@ import javax.swing.JSplitPane;
 
 
 
-import QuranTeacher.Basics.Ayah;
+
 import QuranTeacher.Dialogs.AboutDialog;
 import QuranTeacher.Dialogs.AdvancedSettingsDialog;
 import QuranTeacher.Dialogs.HelpDialog;
@@ -73,8 +73,8 @@ import QuranTeacher.MainWindow.MainDisplayPart.TranslationPanel;
 import QuranTeacher.MainWindow.MainDisplayPart.DisplayPanel.DisplayPage;
 import QuranTeacher.MainWindow.SidePart.SelectionPanel;
 import QuranTeacher.MainWindow.SidePart.SidePanel;
-import QuranTeacher.Preferences.deltaPixelProperty;
-
+import QuranTeacher.Model.Ayah;
+import QuranTeacher.Preferences.DeltaPixelProperty;
 import QuranTeacher.Utils.Updater;
 import QuranTeacher.Utils.VersionInfo;
 import QuranTeacher.WordInformation.WordInfoLoader;
@@ -85,7 +85,7 @@ public class MainFrame extends JFrame {
 	 * Creates the full application frame
 	 */
 	public static final String AppName="Quran Teacher or Learn Arabic";
-	public static final String version="1.3.2";
+	public static final String version="1.3.2*";
 	private String[] args={"QT",version};
 	private static final long serialVersionUID = 1L;
 
@@ -536,20 +536,20 @@ public class MainFrame extends JFrame {
 		int deltaPixel=animPanel.getDeltaPixel();
 		if(upCalled)
 		{
-			if(deltaPixel==deltaPixelProperty.maxDeltaPixel)
+			if(deltaPixel==DeltaPixelProperty.maxDeltaPixel)
 			{
 				btnSpeedUp.setEnabled(false);
 			}
-			if(btnSpeedDown.isEnabled()==false && deltaPixel>deltaPixelProperty.minDeltaPixel)
+			if(btnSpeedDown.isEnabled()==false && deltaPixel>DeltaPixelProperty.minDeltaPixel)
 				btnSpeedDown.setEnabled(true);
 		}
 		else
 		{
-			if(deltaPixel==deltaPixelProperty.minDeltaPixel)
+			if(deltaPixel==DeltaPixelProperty.minDeltaPixel)
 			{
 				btnSpeedDown.setEnabled(false);
 			}
-			if(btnSpeedUp.isEnabled()==false && deltaPixel>deltaPixelProperty.minDeltaPixel)
+			if(btnSpeedUp.isEnabled()==false && deltaPixel>DeltaPixelProperty.minDeltaPixel)
 				btnSpeedUp.setEnabled(true);
 		}
 	}
@@ -587,9 +587,9 @@ public class MainFrame extends JFrame {
 			
 			int deltaPixel=animPanel.getDeltaPixel();
 			
-			if(deltaPixel<deltaPixelProperty.maxDeltaPixel)
+			if(deltaPixel<DeltaPixelProperty.maxDeltaPixel)
 				btnSpeedUp.setEnabled(true);//increase deltaPixel
-			if(deltaPixel>deltaPixelProperty.minDeltaPixel)
+			if(deltaPixel>DeltaPixelProperty.minDeltaPixel)
 				btnSpeedDown.setEnabled(true);//decrease deltaPixel
 			
 			isActionButtonEnabled=true;

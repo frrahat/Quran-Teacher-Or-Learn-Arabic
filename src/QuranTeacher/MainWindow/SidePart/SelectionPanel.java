@@ -34,9 +34,9 @@ import java.awt.Color;
 import javax.swing.UIManager;
 import javax.swing.JRadioButton;
 
-import QuranTeacher.Basics.Ayah;
-import QuranTeacher.Basics.SurahInformationContainer;
 import QuranTeacher.Interfaces.AyahSelectionListener;
+import QuranTeacher.Model.Ayah;
+import QuranTeacher.Model.SurahInformationContainer;
 import QuranTeacher.Preferences.AnimationPreferences;
 
 import java.awt.event.ItemListener;

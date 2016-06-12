@@ -8,7 +8,7 @@
  */
 package QuranTeacher.Preferences;
 
-import QuranTeacher.Basics.Ayah;
+import QuranTeacher.Model.Ayah;
 
 public class AudioPreferences extends Preferences{
 		

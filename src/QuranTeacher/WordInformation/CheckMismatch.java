@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import QuranTeacher.FilePaths;
-import QuranTeacher.Basics.Ayah;
-import QuranTeacher.Basics.SurahInformationContainer;
+import QuranTeacher.Model.Ayah;
+import QuranTeacher.Model.SurahInformationContainer;
 import QuranTeacher.RenderTexts.QuranText;
 
 public class CheckMismatch {

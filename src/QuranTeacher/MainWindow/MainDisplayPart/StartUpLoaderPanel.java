@@ -18,10 +18,10 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingWorker;
 
 import QuranTeacher.FilePaths;
-import QuranTeacher.Basics.SurahInformationContainer;
 import QuranTeacher.Dialogs.AboutDialog;
 import QuranTeacher.Dialogs.HelpDialog;
 import QuranTeacher.MainWindow.MainFrame;
+import QuranTeacher.Model.SurahInformationContainer;
 import QuranTeacher.PreferencesSetupPanels.TranslationSetupPanel;
 import QuranTeacher.RenderAudio.Reciter;
 import QuranTeacher.RenderImages.ImageLoader;

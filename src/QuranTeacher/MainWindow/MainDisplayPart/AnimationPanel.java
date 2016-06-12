@@ -28,17 +28,18 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
-import QuranTeacher.Basics.Ayah;
-import QuranTeacher.Basics.HitString;
-import QuranTeacher.Basics.SurahInformationContainer;
-import QuranTeacher.Basics.TimedAyah;
 import QuranTeacher.Dialogs.HitFileEditorDialog;
 import QuranTeacher.Dialogs.PreferencesDialog;
 import QuranTeacher.Interfaces.UserInputListener;
 import QuranTeacher.MainWindow.SidePart.SelectionPanel;
+import QuranTeacher.Model.Ayah;
+import QuranTeacher.Model.HitCommand;
+import QuranTeacher.Model.HitString;
+import QuranTeacher.Model.SurahInformationContainer;
+import QuranTeacher.Model.TimedAyah;
 import QuranTeacher.Preferences.AnimationPreferences;
 import QuranTeacher.Preferences.AudioPreferences;
-import QuranTeacher.Preferences.deltaPixelProperty;
+import QuranTeacher.Preferences.DeltaPixelProperty;
 import QuranTeacher.PreferencesSetupPanels.AudioPreferencesPanel;
 import QuranTeacher.RenderAnimation.Animation;
 import QuranTeacher.RenderAnimation.FocusCheckRunnable;
@@ -90,6 +91,12 @@ public class AnimationPanel extends Animation {
 	private static ArrayList<Integer>wordHitTimes;
 	private static ArrayList<String>hitStrings;
 	
+	private boolean showSubText=false;
+	
+	private boolean isHitPlayPaused;
+	private long hitPlayPausedTime;
+	private long hitPlayResumedTime;
+	
 	public AnimationPanel() {
 		//System.out.println("DisplayPanel() called");
 		
@@ -121,6 +128,17 @@ public class AnimationPanel extends Animation {
 				if("play".equals(actionCommand)){
 					animationType=Animation_type.Timed_Animation;
 					resetHitTimesToNewTimedAyah(index);
+				}
+				else if("psrsm".equals(actionCommand)){
+					if(startTime==0)
+						return;
+					if(isHitPlayPaused){
+						isHitPlayPaused=false;
+						hitPlayResumedTime=System.currentTimeMillis();
+					}else{
+						isHitPlayPaused=true;
+						hitPlayPausedTime=System.currentTimeMillis();
+					}
 				}
 				else if("next".equals(actionCommand)){
 					if(animationType==Animation_type.Edit_Timed_Ayah){
@@ -200,23 +218,39 @@ public class AnimationPanel extends Animation {
 			}
 		});
 		
+		isHitPlayPaused=false;
+		hitPlayPausedTime=hitPlayResumedTime=0;
 	}
 
 	private void autoRun() {
 		if(wordHitTimes.size()>displayedHitWords)
 			//for animationType=Simple_Animation 
 			//wordHitTimes.size()=0, displayed word=0
-		{
+		{	
+			if(isHitPlayPaused)
+				return;
+			
 			long time=System.currentTimeMillis()-startTime;
+			time-=(hitPlayResumedTime-hitPlayPausedTime);
+			
 			if(wordHitTimes.get(displayedHitWords)<=time)
 			{
 				addNextWordToSentence();
 				//System.out.println(new word added);
 				//TODO trigger the command string
-				/*String hitString=hitStrings.get(displayedHitWords);
-				if(hitString.length()>0){
-					System.out.println("hitString : "+hitString);
-				}*/
+				String hitString=hitStrings.get(displayedHitWords);
+				if(hitString.length()>0 && hitString.charAt(0)=='%'){
+					//HitCommand hitCommand=HitCommand.parseHitString(hitString.substring(1));
+					String subtext=hitString.substring(1).replace('%', '\n');
+					TranslationPanel.setText(subtext);
+					
+					if(subtext.length()>0){//subTextOff
+						showSubText=true;
+					}else{
+						showSubText=false;
+					}
+					
+				}
 				
 				hitFileEditorDialog.setListItemSelectedIndex(displayedHitWords);
 				displayedHitWords++;
@@ -238,6 +272,8 @@ public class AnimationPanel extends Animation {
 
 		displayedHitWords=0;
 		//injuryTime=0;
+		hitPlayPausedTime=hitPlayResumedTime=0;
+		
 		startTime=System.currentTimeMillis();
 		if(!autoDisplayTimer.isRunning()){
 			autoDisplayTimer.start();
@@ -516,17 +552,17 @@ public class AnimationPanel extends Animation {
 		else if(action.equals("speedUp"))
 		{
 			//decrease deltaPixel
-			deltaPixel+=deltaPixelProperty.delta;
-			if(deltaPixel>deltaPixelProperty.maxDeltaPixel)
-				deltaPixel=deltaPixelProperty.maxDeltaPixel;
+			deltaPixel+=DeltaPixelProperty.delta;
+			if(deltaPixel>DeltaPixelProperty.maxDeltaPixel)
+				deltaPixel=DeltaPixelProperty.maxDeltaPixel;
 			
 		}
 		else if(action.equals("speedDown"))
 		{
 			//increase deltaPixel
-			deltaPixel-=deltaPixelProperty.delta;
-			if(deltaPixel<deltaPixelProperty.minDeltaPixel)
-				deltaPixel=deltaPixelProperty.minDeltaPixel;
+			deltaPixel-=DeltaPixelProperty.delta;
+			if(deltaPixel<DeltaPixelProperty.minDeltaPixel)
+				deltaPixel=DeltaPixelProperty.minDeltaPixel;
 			
 		}
 	}
@@ -572,7 +608,9 @@ public class AnimationPanel extends Animation {
 		displayText=AllTextsContainer.arabicText.getQuranText(ayah);
 		//System.out.println(displayText.length());
 		setInfoOfWords(ayah);
-		TranslationPanel.setTranslationText(ayah);
+		if(!showSubText){
+			TranslationPanel.setTranslationText(ayah);
+		}
 		//TafsirPanel.setTafsirText(ayah);	
 		
 		resetDisplay();//invoke to update screen with new ayah

@@ -14,9 +14,13 @@ import java.awt.BorderLayout;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
-import QuranTeacher.Basics.Ayah;
 import QuranTeacher.Dialogs.PreferencesDialog;
+import QuranTeacher.Model.Ayah;
 import QuranTeacher.Preferences.TranslationPreferences;
 import QuranTeacher.RenderTexts.AllTextsContainer;
 
@@ -32,7 +36,7 @@ public class TranslationPanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	private static JTextArea txtrTranslationtext;
+	private static JTextPane txtPaneTranslationtext;
 	
 	private TranslationPreferences preferences;
 	
@@ -51,23 +55,28 @@ public class TranslationPanel extends JPanel {
 		
 		preferences=PreferencesDialog.getTransPref();
 		
-		txtrTranslationtext = new JTextArea();
-		txtrTranslationtext.setEditable(false);
-		txtrTranslationtext.setLineWrap(true);
-		txtrTranslationtext.setWrapStyleWord(true);
+		txtPaneTranslationtext = new JTextPane();
+		txtPaneTranslationtext.setEditable(false);
+		//txtrTranslationtext.setLineWrap(true);
+		//txtrTranslationtext.setWrapStyleWord(true);
+		
+		StyledDocument doc = txtPaneTranslationtext.getStyledDocument();
+		SimpleAttributeSet center = new SimpleAttributeSet();
+		StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+		doc.setParagraphAttributes(0, doc.getLength(), center, false);
 		
 		updateTransPref();
 		
-		txtrTranslationtext.setText("");
-		scrollPane.setViewportView(txtrTranslationtext);
+		txtPaneTranslationtext.setText("");
+		scrollPane.setViewportView(txtPaneTranslationtext);
 
 	}
 	
 	private void setDesign() {
 		
-		txtrTranslationtext.setBackground(bgColor);
-		txtrTranslationtext.setForeground(fgColor);
-		txtrTranslationtext.setFont(transFont);	
+		txtPaneTranslationtext.setBackground(bgColor);
+		txtPaneTranslationtext.setForeground(fgColor);
+		txtPaneTranslationtext.setFont(transFont);	
 	}
 
 	public static void setTranslationText(Ayah ayah)
@@ -85,9 +94,13 @@ public class TranslationPanel extends JPanel {
 					AllTextsContainer.translationtexts.get(secondaryTextIndex).getQuranText(ayah);
 		}
 		
-		txtrTranslationtext.setText(text);
-		txtrTranslationtext.setCaretPosition(0);
+		txtPaneTranslationtext.setText(text);
+		txtPaneTranslationtext.setCaretPosition(0);
 		
+	}
+	
+	public static void setText(String text){
+		txtPaneTranslationtext.setText(text);
 	}
 	
 	public void updateTransPref()

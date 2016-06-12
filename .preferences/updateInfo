@@ -1,10 +1,12 @@
-1.3.1
-16-10-2015, 09:48pm
-https://github.com/frrahat/Quran-Teacher-Or-Learn-Arabic/releases/download/1.3.1/QuranTeacherOrLearnArabic_v1.3.1.zip
+1.3.2
+10-06-2016, 07:45pm
+https://github.com/frrahat/Quran-Teacher-Or-Learn-Arabic/releases/download/1.3.2/QuranTeacherOrLearnArabic_v1.3.2.zip
+Highly Recommended to download this new version  
 Changes
 ============
-Two significant changes have been made:
-1) All surahs except surah At Tawba will start with Bismillah while the animation is in Continuous Ayah mode
-2) Scrolling control has been added. Auto scrolling of the display can be disabled.
+1)10 significant mistakes have been resolved.
+2)Hit file entry format has been changed. (See the sample files if you want to grasp the format.)
+3)Redundand data reduced, the app size is now smaller.
+4)Some lagging problems have been resolved.
 
 Thank You for using this application. May Allah accept our works and efforts.

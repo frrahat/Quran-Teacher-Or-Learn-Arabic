@@ -34,6 +34,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 
+
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -56,11 +57,11 @@ import javax.swing.JLabel;
 import javax.swing.ListSelectionModel;
 
 import QuranTeacher.FilePaths;
-import QuranTeacher.Basics.Ayah;
-import QuranTeacher.Basics.HitString;
-import QuranTeacher.Basics.TimedAyah;
 import QuranTeacher.MainWindow.MainFrame;
 import QuranTeacher.MainWindow.MainDisplayPart.AnimationPanel;
+import QuranTeacher.Model.Ayah;
+import QuranTeacher.Model.HitString;
+import QuranTeacher.Model.TimedAyah;
 import QuranTeacher.WordInformation.WordInfoLoader;
 import QuranTeacher.WordInformation.WordInformation;
 
@@ -94,7 +95,7 @@ public class HitFileEditorDialog extends JDialog {
 	 * Create the dialog.
 	 */
 	public HitFileEditorDialog() {
-		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		setAlwaysOnTop(true);
 		setTitle("Hit File Editor Dialog");
 		setBounds(20, 200, 400, 400);
@@ -125,7 +126,7 @@ public class HitFileEditorDialog extends JDialog {
 		navigationPanel.setLayout(gbl_navigationPanel);
 		
 		JButton btnEdit = new JButton("Edit");
-		btnEdit.setToolTipText("Edit Current Ayah Hit Timing");
+		//btnEdit.setToolTipText("Edit Current Ayah Hit Timing");
 		btnEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int k=ayahComboBox.getSelectedIndex();
@@ -147,7 +148,7 @@ public class HitFileEditorDialog extends JDialog {
 		navigationPanel.add(btnEdit, gbc_btnEdit);
 	
 		JButton btnPlay = new JButton("Play");
-		btnPlay.setToolTipText("Play Current Ayah");
+		//btnPlay.setToolTipText("Play Current Ayah");
 		btnPlay.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int k=ayahComboBox.getSelectedIndex();
@@ -166,7 +167,7 @@ public class HitFileEditorDialog extends JDialog {
 		navigationPanel.add(btnPlay, gbc_btnPlay);
 	
 		JButton btnPlayNext = new JButton("Next Ayah");
-		btnPlayNext.setToolTipText("Next Ayah To Edit Or Play");
+		//btnPlayNext.setToolTipText("Next Ayah To Edit Or Play");
 		btnPlayNext.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				buttonActionListener.buttonClicked("next", ayahComboBox.getSelectedIndex()+1);	
@@ -179,7 +180,7 @@ public class HitFileEditorDialog extends JDialog {
 		navigationPanel.add(btnPlayNext, gbc_btnPlayNext);
 	
 		btnPlayContinuous = new JButton("Play Continuous");
-		btnPlayContinuous.setToolTipText("Continuously Play All Hit Ayahs");
+		//btnPlayContinuous.setToolTipText("Continuously Play All Hit Ayahs");
 		btnPlayContinuous.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int k=ayahComboBox.getSelectedIndex();
@@ -192,13 +193,13 @@ public class HitFileEditorDialog extends JDialog {
 			}
 		});
 		GridBagConstraints gbc_btnPlayContinuous = new GridBagConstraints();
-		gbc_btnPlayContinuous.insets = new Insets(0, 0, 5, 5);
+		gbc_btnPlayContinuous.insets = new Insets(0, 0, 5, 0);
 		gbc_btnPlayContinuous.gridx = 3;
 		gbc_btnPlayContinuous.gridy = 0;
 		navigationPanel.add(btnPlayContinuous, gbc_btnPlayContinuous);
 	
 		JLabel lblTimeLabel = new JLabel("Time :");
-		lblTimeLabel.setToolTipText("Hit Time");
+		//lblTimeLabel.setToolTipText("Hit Time");
 		lblTimeLabel.setForeground(Color.ORANGE);
 		lblTimeLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		GridBagConstraints gbc_lblTimeLabel = new GridBagConstraints();
@@ -208,15 +209,28 @@ public class HitFileEditorDialog extends JDialog {
 		navigationPanel.add(lblTimeLabel, gbc_lblTimeLabel);
 	
 		lblTime = new JLabel("0");
-		lblTime.setToolTipText("Hit Time");
+		//lblTime.setToolTipText("Hit Time");
 		lblTime.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		lblTime.setForeground(Color.CYAN);
 		GridBagConstraints gbc_lblTime = new GridBagConstraints();
+		gbc_lblTime.insets = new Insets(0, 0, 0, 5);
 		gbc_lblTime.anchor = GridBagConstraints.WEST;
-		gbc_lblTime.gridwidth = 0;
+		gbc_lblTime.gridwidth = 2;
 		gbc_lblTime.gridx = 1;
 		gbc_lblTime.gridy = 1;
 		navigationPanel.add(lblTime, gbc_lblTime);
+		
+		JButton btnPause = new JButton("Pause/Resume");
+		btnPause.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				buttonActionListener.buttonClicked("psrsm", 0);
+			}
+		});
+		GridBagConstraints gbc_btnPause = new GridBagConstraints();
+		gbc_btnPause.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnPause.gridx = 3;
+		gbc_btnPause.gridy = 1;
+		navigationPanel.add(btnPause, gbc_btnPause);
 	
 	
 		JScrollPane scrollPane = new JScrollPane();
@@ -227,7 +241,7 @@ public class HitFileEditorDialog extends JDialog {
 		contentPanel.add(scrollPane, gbc_scrollPane);
 		
 		list = new JList<String>();
-		list.setToolTipText("Hit Time Tracking. Double Click To Edit A Hit Time.");
+		//list.setToolTipText("Hit Time Tracking. Double Click To Edit A Hit Time.");
 		list.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -276,7 +290,7 @@ public class HitFileEditorDialog extends JDialog {
 		scrollPane.setViewportView(list);
 	
 		ayahComboBox = new JComboBox<String>();
-		ayahComboBox.setToolTipText("Ayah No");
+		//ayahComboBox.setToolTipText("Ayah No");
 		scrollPane.setColumnHeaderView(ayahComboBox);
 		
 		ayahComboBox.addItemListener(new ItemListener() {
@@ -295,7 +309,7 @@ public class HitFileEditorDialog extends JDialog {
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 		
 		JButton saveButton = new JButton("Save");
-		saveButton.setToolTipText("Save As Hit File");
+		//saveButton.setToolTipText("Save As Hit File");
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(!fileChanged){
@@ -308,7 +322,7 @@ public class HitFileEditorDialog extends JDialog {
 		});
 	
 		JButton btnLoad = new JButton("Load");
-		btnLoad.setToolTipText("Load An Existing Hit File");
+		//btnLoad.setToolTipText("Load An Existing Hit File");
 		btnLoad.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(fileChooser==null){
@@ -331,7 +345,7 @@ public class HitFileEditorDialog extends JDialog {
 			}
 		});
 		JButton btnNew = new JButton("New");
-		btnNew.setToolTipText("Make A New Hit File");
+		btnNew.setToolTipText("Create A New Hit File");
 		btnNew.setBackground(Color.PINK);
 		buttonPane.add(btnNew);
 		btnNew.addActionListener(new ActionListener() {
@@ -381,7 +395,7 @@ public class HitFileEditorDialog extends JDialog {
 	
 	
 		JButton exitButton = new JButton("Exit");
-		exitButton.setToolTipText("Exit The Dialog");
+		//exitButton.setToolTipText("Exit The Dialog");
 		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(fileChanged){
@@ -576,7 +590,7 @@ public class HitFileEditorDialog extends JDialog {
 	private void toggleTextPlayContinuous(){
 		if(btnPlayContinuous.getText().equals("Play Continuous")){
 			btnPlayContinuous.setText("Play Single");
-			btnPlayContinuous.setToolTipText("Stop Continuous Playing");
+			//btnPlayContinuous.setToolTipText("Stop Continuous Playing");
 		}else{
 			setTextButtonContinuous();
 		}
@@ -585,6 +599,6 @@ public class HitFileEditorDialog extends JDialog {
 	
 	private void setTextButtonContinuous() {
 		btnPlayContinuous.setText("Play Continuous");
-		btnPlayContinuous.setToolTipText("Continuously Play All Hit Ayahs");
+		//btnPlayContinuous.setToolTipText("Continuously Play All Hit Ayahs");
 	}
 }

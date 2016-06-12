@@ -7,7 +7,7 @@
  * 
  */
 
-package QuranTeacher.Basics;
+package QuranTeacher.Model;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

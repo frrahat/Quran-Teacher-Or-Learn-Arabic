@@ -11,9 +11,9 @@ package QuranTeacher.MainWindow.SidePart;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
-import QuranTeacher.Basics.Ayah;
 import QuranTeacher.Interfaces.AudioButtonListener;
 import QuranTeacher.Interfaces.AyahSelectionListener;
+import QuranTeacher.Model.Ayah;
 
 import java.awt.Dimension;
 import java.awt.Color;

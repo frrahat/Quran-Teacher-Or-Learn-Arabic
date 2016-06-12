@@ -60,7 +60,10 @@ public class DisplayPanel extends JPanel {
 		animationPanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		splitPane.setTopComponent(animationPanel);
 		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		
+		translationPanel = new TranslationPanel();
+		splitPane.setBottomComponent(translationPanel);
+		/*JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.RED, null, null, null));
 		tabbedPane.setBackground(Color.LIGHT_GRAY);
 		tabbedPane.setFont(new Font("Tahoma", Font.PLAIN, 13));
@@ -68,7 +71,7 @@ public class DisplayPanel extends JPanel {
 		splitPane.setBottomComponent(tabbedPane);
 		
 		translationPanel=new TranslationPanel();
-		tabbedPane.addTab("Translation", null, translationPanel, null);
+		tabbedPane.addTab("Translation", null, translationPanel, null);*/
 		
 		//tafsirPanel=new TafsirPanel();
 		//tabbedPane.addTab("Tafsir", null, tafsirPanel, null);

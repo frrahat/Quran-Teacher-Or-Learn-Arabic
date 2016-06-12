@@ -8,7 +8,7 @@
  */
 package QuranTeacher.Interfaces;
 
-import QuranTeacher.Basics.Ayah;
+import QuranTeacher.Model.Ayah;
 
 public interface AyahSelectionListener {
 	public void ayahSelected(Ayah ayah);

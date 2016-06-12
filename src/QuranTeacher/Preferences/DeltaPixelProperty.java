@@ -8,7 +8,7 @@
  */
 package QuranTeacher.Preferences;
 
-public class deltaPixelProperty {
+public class DeltaPixelProperty {
 	
 	/*
 	 * For the speed of appearance of the words

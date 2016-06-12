@@ -15,7 +15,7 @@ import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import QuranTeacher.Basics.Ayah;
+import QuranTeacher.Model.Ayah;
 
 import java.awt.Font;
 import java.awt.Color;

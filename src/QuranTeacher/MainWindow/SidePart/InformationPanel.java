@@ -15,6 +15,7 @@ import javax.swing.border.TitledBorder;
 
 
 
+
 import java.awt.GridLayout;
 
 import javax.swing.JTable;
@@ -32,8 +33,8 @@ import java.awt.Color;
 
 import javax.swing.UIManager;
 
-import QuranTeacher.Basics.SurahInformation;
-import QuranTeacher.Basics.SurahInformationContainer;
+import QuranTeacher.Model.SurahInformation;
+import QuranTeacher.Model.SurahInformationContainer;
 
 public class InformationPanel extends JPanel {
 	/**

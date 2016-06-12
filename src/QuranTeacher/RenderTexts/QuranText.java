@@ -20,8 +20,8 @@ import java.util.ArrayList;
 
 import javax.swing.JTextArea;
 
-import QuranTeacher.Basics.Ayah;
-import QuranTeacher.Basics.SurahInformationContainer;
+import QuranTeacher.Model.Ayah;
+import QuranTeacher.Model.SurahInformationContainer;
 
 public class QuranText {
 	/*
