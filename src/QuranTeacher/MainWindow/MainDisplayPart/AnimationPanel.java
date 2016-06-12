@@ -8,7 +8,10 @@
  */
 package QuranTeacher.MainWindow.MainDisplayPart;
 
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -30,6 +33,7 @@ import javax.swing.Timer;
 
 import QuranTeacher.Dialogs.HitFileEditorDialog;
 import QuranTeacher.Dialogs.PreferencesDialog;
+import QuranTeacher.Dialogs.SubTextDialog;
 import QuranTeacher.Interfaces.UserInputListener;
 import QuranTeacher.MainWindow.SidePart.SelectionPanel;
 import QuranTeacher.Model.Ayah;
@@ -40,6 +44,8 @@ import QuranTeacher.Model.TimedAyah;
 import QuranTeacher.Preferences.AnimationPreferences;
 import QuranTeacher.Preferences.AudioPreferences;
 import QuranTeacher.Preferences.DeltaPixelProperty;
+import QuranTeacher.Preferences.Preferences;
+import QuranTeacher.Preferences.SubtextPreferences;
 import QuranTeacher.PreferencesSetupPanels.AudioPreferencesPanel;
 import QuranTeacher.RenderAnimation.Animation;
 import QuranTeacher.RenderAnimation.FocusCheckRunnable;
@@ -90,12 +96,13 @@ public class AnimationPanel extends Animation {
 	
 	private static ArrayList<Integer>wordHitTimes;
 	private static ArrayList<String>hitStrings;
-	
-	private boolean showSubText=false;
-	
+		
 	private boolean isHitPlayPaused;
 	private long hitPlayPausedTime;
 	private long hitPlayResumedTime;
+	
+	private SubTextDialog subTextDialog;
+	private int backspacePressedCount; // on a timed ayah word
 	
 	public AnimationPanel() {
 		//System.out.println("DisplayPanel() called");
@@ -220,6 +227,7 @@ public class AnimationPanel extends Animation {
 		
 		isHitPlayPaused=false;
 		hitPlayPausedTime=hitPlayResumedTime=0;
+		//subTextDialog=new SubTextDialog(300,200,500,100);
 	}
 
 	private void autoRun() {
@@ -235,22 +243,44 @@ public class AnimationPanel extends Animation {
 			
 			if(wordHitTimes.get(displayedHitWords)<=time)
 			{
-				addNextWordToSentence();
-				//System.out.println(new word added);
-				//TODO trigger the command string
 				String hitString=hitStrings.get(displayedHitWords);
 				if(hitString.length()>0 && hitString.charAt(0)=='%'){
-					//HitCommand hitCommand=HitCommand.parseHitString(hitString.substring(1));
-					String subtext=hitString.substring(1).replace('%', '\n');
-					TranslationPanel.setText(subtext);
+					//TODO
+					String commStrings[]=hitString.split("%");
 					
-					if(subtext.length()>0){//subTextOff
-						showSubText=true;
-					}else{
-						showSubText=false;
+					for(int i=1;i<commStrings.length;i++){
+						String commandString=commStrings[i];
+						//remove command catching
+						if(commandString.startsWith(HitString.COMMAND_STRNG_REMOVE_LAST_WORDS)){
+							int value=Integer.parseInt(
+									commandString.substring(commandString.indexOf('=')+1).trim());
+							removeLastAddedWordsFromSentence(value);
+						}
+						//subtext command catching
+						else if(commandString.startsWith(HitString.COMMAND_STRNG_SUBTEXT)){//subTextOn
+							String subtext=commandString.substring(commandString.indexOf('=')+1);
+							if(subtext.length()>0){
+								if(subTextDialog==null){
+									Rectangle rectDisplayPanel=this.getParent().getParent().getBounds();
+									
+									subTextDialog=new SubTextDialog
+										(rectDisplayPanel.x, getSize().height, rectDisplayPanel.width,100);
+									
+								}
+								if(!subTextDialog.isVisible()){
+									subTextDialog.setVisible(true);
+								}
+								subTextDialog.setText(subtext);
+							}else if(subTextDialog.isVisible()){
+								subTextDialog.setVisible(false);
+								subTextDialog=null;
+							}
+						}
 					}
 					
 				}
+				
+				addNextWordToSentence();
 				
 				hitFileEditorDialog.setListItemSelectedIndex(displayedHitWords);
 				displayedHitWords++;
@@ -369,6 +399,9 @@ public class AnimationPanel extends Animation {
 				if(keyCode==KeyEvent.VK_ENTER && 
 						animationType==Animation_type.Edit_Timed_Ayah)
 				{
+					
+					backspacePressedCount=0;
+					
 					if(timedAyahs.size()==editTimedAyahIndex){//go to new ayah
 						Ayah ayah=timedAyahs.get(editTimedAyahIndex-1).getAyah().getNextAyah();
 						if(ayah!=null){
@@ -418,6 +451,18 @@ public class AnimationPanel extends Animation {
 					}
 				}
 				
+				else if(keyCode==KeyEvent.VK_BACK_SPACE
+						&& animationType==Animation_type.Edit_Timed_Ayah){
+					backspacePressedCount++;
+					
+					timedAyahs.get(editTimedAyahIndex).addWordHitTime(-1);
+					timedAyahs.get(editTimedAyahIndex).setHitString(editWordIndexOfTimedAyah, 
+							"%"+HitString.COMMAND_STRNG_REMOVE_LAST_WORDS+"="+Integer.toString(backspacePressedCount));
+					
+					hitFileEditorDialog.updateList();
+					
+					removeLastAddedWordsFromSentence(1);
+				}
 				/*if(keyCode==KeyEvent.VK_ENTER)
 				{
 					animationRunning=paused;
@@ -608,9 +653,7 @@ public class AnimationPanel extends Animation {
 		displayText=AllTextsContainer.arabicText.getQuranText(ayah);
 		//System.out.println(displayText.length());
 		setInfoOfWords(ayah);
-		if(!showSubText){
-			TranslationPanel.setTranslationText(ayah);
-		}
+		TranslationPanel.setTranslationText(ayah);
 		//TafsirPanel.setTafsirText(ayah);	
 		
 		resetDisplay();//invoke to update screen with new ayah
@@ -783,5 +826,21 @@ public class AnimationPanel extends Animation {
         }
     	
     	return success;
+	}
+
+	/**
+	 * 
+	 */
+	public void updateSubtextPref() {
+		if(subTextDialog!=null){
+			subTextDialog.updateFontFromPref();;
+		}
+	}
+
+	public SubtextPreferences getSubtextPref() {
+		if(subTextDialog!=null){
+			return subTextDialog.getSubtextPref();
+		}
+		return null;
 	}
 }

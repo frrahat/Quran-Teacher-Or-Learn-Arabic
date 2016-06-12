@@ -113,7 +113,10 @@ public abstract class Animation extends JPanel {
 
 	private AdvancedAnimPref advancedAnimPref;
 
-	private final int LineHeightFactor=2;
+	private final int LINE_HEIGHT_FACTOR=2;
+
+	private final int Bottom_Bound_Offset=150;
+
 	
 	
 	public Animation() {
@@ -222,7 +225,7 @@ public abstract class Animation extends JPanel {
 	}
 	//###########################################################################
 		
-	public void addNextWordToSentence()// TODO
+	protected void addNextWordToSentence()// TODO
 	{
 		if (ayahDisplayFinished) {
 			return;
@@ -231,11 +234,13 @@ public abstract class Animation extends JPanel {
 		int wordsSize=coordinatedWords.size();
 		wordsDisplayedSoFar++;
 		CoordinatedWord word=coordinatedWords.get(wordsDisplayedSoFar-1);
-		int y=startPoint.y+ lineHeight * LineHeightFactor * word.getLineIndex();
-		if(y>currentDisplayPoint.y){//words displayed in new line
-			currentDisplayPoint.y=y;
+		if(wordsDisplayedSoFar>1
+				&& coordinatedWords.get(wordsDisplayedSoFar-2).getLineIndex()<word.getLineIndex()){
+			//words displayed in new line
+			currentDisplayPoint.y=startPoint.y+ lineHeight * LINE_HEIGHT_FACTOR * word.getLineIndex();
 			lineStringWidth=distanceCovered=0;
 		}
+		
 		lineStringWidth+=word.getWordWidth();
 		distanceCovered+=word.getExtraWidth();
 		
@@ -246,6 +251,29 @@ public abstract class Animation extends JPanel {
 				// animationRunning=false;
 		}
 		
+	}
+	
+	protected void removeLastAddedWordsFromSentence(int n){//TODO
+		if(n>=wordsDisplayedSoFar)
+			return;
+		
+		CoordinatedWord newLastWord=coordinatedWords.get(wordsDisplayedSoFar-n-1);
+
+		lineStringWidth=newLastWord.getWordWidth();
+		
+		for(int i=wordsDisplayedSoFar-n-2;i>=0;i--){
+			CoordinatedWord word=coordinatedWords.get(i);
+			if(word.getLineIndex()!=newLastWord.getLineIndex())
+				break;
+			
+			lineStringWidth+=word.getWordWidth();
+		}
+		distanceCovered=lineStringWidth;
+		
+		currentDisplayPoint.y=startPoint.y+ lineHeight * LINE_HEIGHT_FACTOR * newLastWord.getLineIndex();
+		//scrollY=currentDisplayPoint.y+lineHeight+Bottom_Bound_Offset-getBounds().height;
+		
+		wordsDisplayedSoFar-=n;
 	}
 
 	private boolean isWaqf(String word) {
@@ -305,10 +333,13 @@ public abstract class Animation extends JPanel {
 			}
 		}
 		
-		if(enableAutoScroll && 
-				currentDisplayPoint.y-scrollY+lineHeight+150>getBounds().height)
-		{
-			scrollY+=scrollDelta;
+		if(enableAutoScroll){ 
+			if(currentDisplayPoint.y-scrollY+lineHeight+Bottom_Bound_Offset>getBounds().height)
+			{
+				scrollY+=scrollDelta;
+			}else if(currentDisplayPoint.y-scrollY<startPoint.y){
+				scrollY-=scrollDelta;
+			}
 		}
 	}
 
@@ -362,7 +393,7 @@ public abstract class Animation extends JPanel {
 	}
 
 	private void drawCoordinatedWords(Graphics g, int start, int end) {
-		int z=LineHeightFactor*lineHeight;
+		int z=LINE_HEIGHT_FACTOR*lineHeight;
 		CoordinatedWord coordinatedWord;
 		for(int wordIndex=start;wordIndex < end;wordIndex++){
 			coordinatedWord=coordinatedWords.get(wordIndex);
@@ -616,7 +647,7 @@ public abstract class Animation extends JPanel {
 			if (lineStringWidth + wordStringWidth >= getBounds().width - 30)
 			{
 				lineStringWidth=0;
-				displayPoint.y += lineHeight * LineHeightFactor;// go to next line
+				displayPoint.y += lineHeight * LINE_HEIGHT_FACTOR;// go to next line
 				currentLineIndex++;
 			}
 			lineStringWidth += wordStringWidth;

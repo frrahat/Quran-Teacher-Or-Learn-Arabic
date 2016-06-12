@@ -31,11 +31,13 @@ import QuranTeacher.Interfaces.PreferencesSaveListener;
 import QuranTeacher.Preferences.AnimationPreferences;
 import QuranTeacher.Preferences.AudioPreferences;
 import QuranTeacher.Preferences.Preferences;
+import QuranTeacher.Preferences.SubtextPreferences;
 import QuranTeacher.Preferences.TranslationPreferences;
 import QuranTeacher.Preferences.WordByWordFontPref;
 import QuranTeacher.PreferencesSetupPanels.AnimationSetupPanel;
 import QuranTeacher.PreferencesSetupPanels.AudioPreferencesPanel;
 import QuranTeacher.PreferencesSetupPanels.PreferencesSetupPanel;
+import QuranTeacher.PreferencesSetupPanels.SubTextFontSetupPanel;
 import QuranTeacher.PreferencesSetupPanels.TranslationSetupPanel;
 import QuranTeacher.PreferencesSetupPanels.WbWFontSetupPanel;
 
@@ -53,14 +55,17 @@ public class PreferencesDialog extends JDialog {
 	private AnimationSetupPanel animationSetupPanel;
 	private TranslationSetupPanel translationSetupPanel;
 	private WbWFontSetupPanel wbWFontSetupPanel;
+	private SubTextFontSetupPanel subTextFontSetupPanel;
 	private AudioPreferencesPanel recitationPanel;
 	
 	private static AnimationPreferences animationPreferences;
 	private static TranslationPreferences translationPreferences;
 	
 	private static WordByWordFontPref wordByWordFontPref;
+	private static SubtextPreferences subtextPreferences;
 	
 	private static AudioPreferences audioPreferences;
+	
 	
 	private static Preferences[] allPreferences;
 	
@@ -72,14 +77,16 @@ public class PreferencesDialog extends JDialog {
 		//all fonts have been initialized
 		translationPreferences = new TranslationPreferences("translation.preferences");
 		wordByWordFontPref = new WordByWordFontPref("wbwFont.preferences");
+		subtextPreferences = new SubtextPreferences("subtext.preferences");
 		audioPreferences = new AudioPreferences("audio.preferences");
 		
-		allPreferences=new Preferences[4];//storing references
+		allPreferences=new Preferences[5];//storing references
 		{
 			allPreferences[0] = animationPreferences;
 			allPreferences[1] = translationPreferences;
 			allPreferences[2] = wordByWordFontPref;
-			allPreferences[3] = audioPreferences;
+			allPreferences[3] = subtextPreferences;
+			allPreferences[4] = audioPreferences;
 		}
 			
 		//very important part
@@ -112,19 +119,24 @@ public class PreferencesDialog extends JDialog {
 			tabbedPane.addTab("Translation", null, translationSetupPanel, null);
 						
 			wbWFontSetupPanel=
-					new WbWFontSetupPanel("Word Translation Font Set Up",
+					new WbWFontSetupPanel("Word Translation Font Setup",
 							wordByWordFontPref,animationPreferences);
 			tabbedPane.addTab("Word Translation",null,wbWFontSetupPanel,null);
+			
+			subTextFontSetupPanel=
+					new SubTextFontSetupPanel("Subtext Font Setup", subtextPreferences);
+			tabbedPane.addTab("Subtext", null, subTextFontSetupPanel, null);
 			
 			recitationPanel = new AudioPreferencesPanel(audioPreferences);
 			tabbedPane.addTab("Recitation", null, recitationPanel, null);
 
 		}
 		
-		allSetupPanels=new PreferencesSetupPanel[3];
+		allSetupPanels=new PreferencesSetupPanel[4];
 		allSetupPanels[0]=animationSetupPanel;
 		allSetupPanels[1]=translationSetupPanel;
 		allSetupPanels[2]=wbWFontSetupPanel;
+		allSetupPanels[3]=subTextFontSetupPanel;
 
 		
 		{
@@ -253,6 +265,11 @@ public class PreferencesDialog extends JDialog {
 	public static WordByWordFontPref getWbWFontPref()
 	{
 		return wordByWordFontPref;
+	}
+	
+	public static SubtextPreferences getSubtextPreferences()
+	{
+		return subtextPreferences;
 	}
 	
 	public static AudioPreferences getAudioPref()

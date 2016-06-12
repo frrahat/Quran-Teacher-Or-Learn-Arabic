@@ -54,6 +54,7 @@ import javax.swing.JSplitPane;
 
 
 
+
 import QuranTeacher.Dialogs.AboutDialog;
 import QuranTeacher.Dialogs.AdvancedSettingsDialog;
 import QuranTeacher.Dialogs.HelpDialog;
@@ -75,6 +76,7 @@ import QuranTeacher.MainWindow.SidePart.SelectionPanel;
 import QuranTeacher.MainWindow.SidePart.SidePanel;
 import QuranTeacher.Model.Ayah;
 import QuranTeacher.Preferences.DeltaPixelProperty;
+import QuranTeacher.Preferences.SubtextPreferences;
 import QuranTeacher.Utils.Updater;
 import QuranTeacher.Utils.VersionInfo;
 import QuranTeacher.WordInformation.WordInfoLoader;
@@ -561,6 +563,11 @@ public class MainFrame extends JFrame {
 		animPanel.getAnimationPref().savePrefToFile();
 		animPanel.getWbWFontPref().savePrefToFile();
 		animPanel.getAdvancedAnimPref().savePrefToFile();
+		
+		SubtextPreferences subtextPreferences=animPanel.getSubtextPref();
+		if(subtextPreferences!=null){
+			subtextPreferences.savePrefToFile();
+		}
 		animPanel.getAudioPref().savePrefToFile();
 		
 		translationPanel.getTranslationPref().savePrefToFile();
@@ -571,6 +578,7 @@ public class MainFrame extends JFrame {
 	private void updateAllPrefs() {
 		animPanel.updatAnimPreferences();
 		animPanel.updateWbWFontPref();
+		animPanel.updateSubtextPref();
 		animPanel.updateAudioPref();//same update flagged for two different panel
 		sidePanel.getAudioNavPanel().updateAudioPref();
 		

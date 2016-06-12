@@ -35,6 +35,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 
+
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -551,14 +552,29 @@ public class HitFileEditorDialog extends JDialog {
 		DefaultListModel<String> listModel=new DefaultListModel<>();
 		TimedAyah t=timedAyahs.get(selectedIndex);	
 		int size=t.getTotalAddedWords();
-
+		
+		int offset=0;
+		
 		for(int i=0;i<size;i++){
 			String text=Integer.toString(t.getWordHitTime(i))+">>";
 			
-			WordInformation w=WordInfoLoader.getWordInfo(timedAyahs.get(selectedIndex).getBigIndexOfWord(i));
+			String hitString=t.getHitString(i);
+			if(hitString.length()>0 && hitString.charAt(0)==HitString.COMMAND_START){
+				String commndStrings[]=hitString.split("%");
+				for(int j=1;j<commndStrings.length;j++){
+					String commandString=commndStrings[j];
+					if(commandString.startsWith(HitString.COMMAND_STRNG_REMOVE_LAST_WORDS)){
+						offset=Integer.parseInt(
+								commandString.substring(commandString.indexOf('=')+1).trim());
+						
+						break;
+					}
+				}
+			}
+			
+			WordInformation w=WordInfoLoader.getWordInfo(timedAyahs.get(selectedIndex).getBigIndexOfWord(i)-offset);
 			text+=w.transLiteration+">>("+w.meaning+")";
 			
-			String hitString=t.getHitString(i);
 			if(hitString.length()>0){
 				text+=" ["+hitString+"]";
 			}

@@ -86,11 +86,11 @@ public class TranslationPanel extends JPanel {
 		/*if((ayah.suraIndex | ayah.ayahIndex)==0){
 			detailedSurahName="";
 		}*/
-		text=detailedSurahName+"\n\t"+
+		text=detailedSurahName+"\n"+
 					AllTextsContainer.translationtexts.get(primaryTextIndex).getQuranText(ayah);
 		
 		if(secondaryTextIndex!=-1){
-			text+="\n\n"+detailedSurahName+"\n\t"+
+			text+="\n\n"+detailedSurahName+"\n"+
 					AllTextsContainer.translationtexts.get(secondaryTextIndex).getQuranText(ayah);
 		}
 		
