@@ -1,6 +1,5 @@
 package QuranTeacher.PreferencesSetupPanels;
 
-import QuranTeacher.Preferences.Preferences;
 import QuranTeacher.Preferences.SubtextPreferences;
 
 /**

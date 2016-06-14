@@ -115,9 +115,10 @@ public abstract class Animation extends JPanel {
 
 	private final int LINE_HEIGHT_FACTOR=2;
 
-	private final int Bottom_Bound_Offset=150;
-
+	protected final int Bottom_Bound_Offset=100;
 	
+	private int subtextTargetWordStartIndex;
+	private int subtextTargetWordEndIndex;
 	
 	public Animation() {
 		
@@ -168,6 +169,8 @@ public abstract class Animation extends JPanel {
 		});
 		//timer.start();
 		//timer is started from mainFrame()
+		subtextTargetWordStartIndex=0;
+		subtextTargetWordEndIndex=-1;
 	}
 	
 	protected void paintComponent(Graphics g)
@@ -175,14 +178,14 @@ public abstract class Animation extends JPanel {
 		super.paintComponent(g);
 		setBackground(bgColor);
 		
-		if(!ayahDisplayFinished){
+		/*if(!ayahDisplayFinished){
 			drawDarkerStrings(g);
-		}
+		}*/
 		//g.setFont(font);
 		if(animationRunning)
-			drawAnimatedHighlightedStrings(g);
+			drawAnimatedStrings(g);
 		else
-			drawFixedHighlightedStrings(g);
+			drawFixedStrings(g);
 		
 	}
 
@@ -274,6 +277,9 @@ public abstract class Animation extends JPanel {
 		//scrollY=currentDisplayPoint.y+lineHeight+Bottom_Bound_Offset-getBounds().height;
 		
 		wordsDisplayedSoFar-=n;
+		if(subtextTargetWordStartIndex-n>=0){
+			subtextTargetWordStartIndex-=n;
+		}
 	}
 
 	private boolean isWaqf(String word) {
@@ -286,21 +292,32 @@ public abstract class Animation extends JPanel {
 	protected abstract void goToNextStep();
 
 	private void drawDarkerStrings(Graphics g){	
-		g.setColor(fgColor.darker().darker());
+		//g.setColor(fgColor.darker().darker());
 		updateWordStartPoint();
-		g.setFont(animFont);
+		//g.setFont(animFont);
 		
-		drawCoordinatedWords(g, wordsDisplayedSoFar, coordinatedWords.size());
+		g.setColor(Color.DARK_GRAY);
+		//draw inactive words
+		drawCoordinatedWords(g, 0, subtextTargetWordStartIndex);
+		drawCoordinatedWords(g, subtextTargetWordEndIndex+1, coordinatedWords.size());
+		
+		//draw targetted words
+		g.setColor(fgColor.darker().darker());
+		//subtextTargetWordStartIndex to wordsDisplayedSoFar-1 is highlighted
+		//subtextTargetWordEndIndex+1>wordsDisplayedSoFar
+		drawCoordinatedWords(g, wordsDisplayedSoFar, subtextTargetWordEndIndex+1);
 		//drawMeaningOfWord(g);
 	}
 	
-	private void drawAnimatedHighlightedStrings(Graphics g)
+	private void drawAnimatedStrings(Graphics g)
 	{
-		g.setColor(fgColor);
 		//updateWordStartPoint();
 		g.setFont(animFont);
 		
-		drawCoordinatedWords(g, 0, wordsDisplayedSoFar);
+		drawDarkerStrings(g);
+		
+		g.setColor(fgColor);
+		drawCoordinatedWords(g, subtextTargetWordStartIndex, wordsDisplayedSoFar);
 		//draw scrollbar in right position
 		scrollbarPosY=(int) ((getBounds().getHeight()*scrollY)/currentDisplayPoint.y);
 			
@@ -334,7 +351,7 @@ public abstract class Animation extends JPanel {
 		}
 		
 		if(enableAutoScroll){ 
-			if(currentDisplayPoint.y-scrollY+lineHeight+Bottom_Bound_Offset>getBounds().height)
+			if(currentDisplayPoint.y-scrollY+lineHeight+Bottom_Bound_Offset+50>getBounds().height)
 			{
 				scrollY+=scrollDelta;
 			}else if(currentDisplayPoint.y-scrollY<startPoint.y){
@@ -362,12 +379,16 @@ public abstract class Animation extends JPanel {
 				lineStringWidth-distanceCovered+10, height+extraHeight);
 	}
 
-	private void drawFixedHighlightedStrings(Graphics g) 
+	private void drawFixedStrings(Graphics g) 
 	{
-		g.setColor(fgColor);
+
 		g.setFont(animFont);
-		//drawAyah
-		drawCoordinatedWords(g, 0, wordsDisplayedSoFar);
+		
+		drawDarkerStrings(g);
+		
+		//drawAyah highlighted
+		g.setColor(fgColor);
+		drawCoordinatedWords(g, subtextTargetWordStartIndex, wordsDisplayedSoFar);
 		
 		//draw scrollbar
 
@@ -540,7 +561,7 @@ public abstract class Animation extends JPanel {
 		int writeX,writeY;
 		Rectangle rect;
 		
-		for(int i=0;i<wordsDisplayedSoFar;i++)//highlighted
+		for(int i=subtextTargetWordStartIndex;i<wordsDisplayedSoFar;i++)//highlighted
 		{
 			rect=rectangles.get(i);
 			
@@ -560,6 +581,26 @@ public abstract class Animation extends JPanel {
 			}
 		}
 		int size=coordinatedWords.size();
+		g.setColor(Color.GRAY);
+		for(int i=0;i<subtextTargetWordStartIndex;i++)//not highlighted
+		{
+			rect=rectangles.get(i);
+			
+			if(infoOfWord.size()>i)
+			{
+				writeX=rect.x;
+				writeY=rect.y+rect.height+extraHeight;
+				
+				//g.setColor(wbwTrnslitrtionColor.darker());
+				g.drawString("{"+infoOfWord.get(i).transLiteration+"}", writeX, writeY-scrollY);
+				//g.setColor(wbwMeaningColor.darker());
+				g.drawString(infoOfWord.get(i).meaning, writeX, writeY+22-scrollY);
+			}
+			else
+			{
+				problemOccured(i);
+			}
+		}
 		for(int i=wordsDisplayedSoFar;i<size;i++)//not highlighted
 		{
 			rect=rectangles.get(i);
@@ -569,9 +610,9 @@ public abstract class Animation extends JPanel {
 				writeX=rect.x;
 				writeY=rect.y+rect.height+extraHeight;
 				
-				g.setColor(wbwTrnslitrtionColor.darker());
+				//g.setColor(wbwTrnslitrtionColor.darker());
 				g.drawString("{"+infoOfWord.get(i).transLiteration+"}", writeX, writeY-scrollY);
-				g.setColor(wbwMeaningColor.darker());
+				//g.setColor(wbwMeaningColor.darker());
 				g.drawString(infoOfWord.get(i).meaning, writeX, writeY+22-scrollY);
 			}
 			else
@@ -662,6 +703,15 @@ public abstract class Animation extends JPanel {
 			coordinatedWords.get(validWordsSoFar-1).setCoordinate(x-waqfWidth, currentLineIndex);
 			rectangles.add(new Rectangle(x,y, wordWidth,height + 15));
 		}
+		
+		//initially the whole ayah is in subtext target
+		subtextTargetWordStartIndex=0;
+		subtextTargetWordEndIndex=coordinatedWords.size()-1;
+	}
+	
+	protected void setSubtextTargetWordEndIndex(int endIndex){
+		subtextTargetWordStartIndex=wordsDisplayedSoFar;
+		subtextTargetWordEndIndex=Math.min(endIndex, coordinatedWords.size()-1);
 	}
 	/*
 	 * to display the meanings appearing under each arabic word

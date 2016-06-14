@@ -8,8 +8,6 @@
  */
 package QuranTeacher.MainWindow.MainDisplayPart;
 
-import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -32,6 +30,7 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 import QuranTeacher.Dialogs.HitFileEditorDialog;
+import QuranTeacher.Dialogs.IntroBoxDialog;
 import QuranTeacher.Dialogs.PreferencesDialog;
 import QuranTeacher.Dialogs.SubTextDialog;
 import QuranTeacher.Interfaces.UserInputListener;
@@ -44,7 +43,6 @@ import QuranTeacher.Model.TimedAyah;
 import QuranTeacher.Preferences.AnimationPreferences;
 import QuranTeacher.Preferences.AudioPreferences;
 import QuranTeacher.Preferences.DeltaPixelProperty;
-import QuranTeacher.Preferences.Preferences;
 import QuranTeacher.Preferences.SubtextPreferences;
 import QuranTeacher.PreferencesSetupPanels.AudioPreferencesPanel;
 import QuranTeacher.RenderAnimation.Animation;
@@ -95,12 +93,13 @@ public class AnimationPanel extends Animation {
 	private Timer autoDisplayTimer;
 	
 	private static ArrayList<Integer>wordHitTimes;
-	private static ArrayList<String>hitStrings;
+	private static ArrayList<HitCommand>hitCommands;
 		
 	private boolean isHitPlayPaused;
 	private long hitPlayPausedTime;
-	private long hitPlayResumedTime;
+	private long injuredTimeOffset;
 	
+	private IntroBoxDialog introBoxDialog;
 	private SubTextDialog subTextDialog;
 	private int backspacePressedCount; // on a timed ayah word
 	
@@ -115,6 +114,7 @@ public class AnimationPanel extends Animation {
 		addListeners();
 		
 		wordHitTimes=new ArrayList<>();
+		hitCommands=new ArrayList<HitCommand>();
 		autoDisplayTimer=new Timer(1000/100, new ActionListener() {
 			
 			@Override
@@ -141,7 +141,7 @@ public class AnimationPanel extends Animation {
 						return;
 					if(isHitPlayPaused){
 						isHitPlayPaused=false;
-						hitPlayResumedTime=System.currentTimeMillis();
+						injuredTimeOffset+=System.currentTimeMillis()-hitPlayPausedTime;
 					}else{
 						isHitPlayPaused=true;
 						hitPlayPausedTime=System.currentTimeMillis();
@@ -226,7 +226,7 @@ public class AnimationPanel extends Animation {
 		});
 		
 		isHitPlayPaused=false;
-		hitPlayPausedTime=hitPlayResumedTime=0;
+		hitPlayPausedTime=injuredTimeOffset=0;
 		//subTextDialog=new SubTextDialog(300,200,500,100);
 	}
 
@@ -239,47 +239,14 @@ public class AnimationPanel extends Animation {
 				return;
 			
 			long time=System.currentTimeMillis()-startTime;
-			time-=(hitPlayResumedTime-hitPlayPausedTime);
+			time-=injuredTimeOffset;
 			
 			if(wordHitTimes.get(displayedHitWords)<=time)
 			{
-				String hitString=hitStrings.get(displayedHitWords);
-				if(hitString.length()>0 && hitString.charAt(0)=='%'){
-					//TODO
-					String commStrings[]=hitString.split("%");
-					
-					for(int i=1;i<commStrings.length;i++){
-						String commandString=commStrings[i];
-						//remove command catching
-						if(commandString.startsWith(HitString.COMMAND_STRNG_REMOVE_LAST_WORDS)){
-							int value=Integer.parseInt(
-									commandString.substring(commandString.indexOf('=')+1).trim());
-							removeLastAddedWordsFromSentence(value);
-						}
-						//subtext command catching
-						else if(commandString.startsWith(HitString.COMMAND_STRNG_SUBTEXT)){//subTextOn
-							String subtext=commandString.substring(commandString.indexOf('=')+1);
-							if(subtext.length()>0){
-								if(subTextDialog==null){
-									Rectangle rectDisplayPanel=this.getParent().getParent().getBounds();
-									
-									subTextDialog=new SubTextDialog
-										(rectDisplayPanel.x, getSize().height, rectDisplayPanel.width,100);
-									
-								}
-								if(!subTextDialog.isVisible()){
-									subTextDialog.setVisible(true);
-								}
-								subTextDialog.setText(subtext);
-							}else if(subTextDialog.isVisible()){
-								subTextDialog.setVisible(false);
-								subTextDialog=null;
-							}
-						}
-					}
-					
+				HitCommand hitCommand=hitCommands.get(displayedHitWords);
+				if(hitCommand.getTotalCommands()>0){
+					actOnHitCommand(hitCommand);
 				}
-				
 				addNextWordToSentence();
 				
 				hitFileEditorDialog.setListItemSelectedIndex(displayedHitWords);
@@ -289,6 +256,57 @@ public class AnimationPanel extends Animation {
 		}
 		
 	}
+
+	private void actOnHitCommand(HitCommand hitCommand) {
+		String subtext=hitCommand.getSubtext();
+		//if subtext command
+		if(subtext!=null){
+			if(subtext.length()>0){
+				if(subTextDialog==null){
+					Rectangle rectDisplayPanel=this.getParent().getParent().getBounds();
+					
+					subTextDialog=new SubTextDialog
+						(rectDisplayPanel.x+50, getSize().height-20, rectDisplayPanel.width-100,200);
+					
+				}
+				if(!subTextDialog.isVisible()){
+					subTextDialog.setVisible(true);
+				}
+				
+				subTextDialog.setText(subtext);
+				setSubtextTargetWordEndIndex(hitCommand.getSubtextTargetWordEndIndex());
+				
+			}else if(subTextDialog!=null && subTextDialog.isVisible()){
+				subTextDialog.setVisible(false);
+				subTextDialog=null;
+			}
+		}
+		
+		//if remove last words command
+		if(hitCommand.getRemLastWordVal()>0){
+			removeLastAddedWordsFromSentence(hitCommand.getRemLastWordVal());
+		}
+		
+		//if intro box show command
+		String boxText=hitCommand.getBoxText();
+		if(boxText!=null){
+			if(boxText.length()>0){
+				if(introBoxDialog==null){
+					Rectangle rectDisplayPanel=this.getParent().getParent().getBounds();
+					introBoxDialog=new IntroBoxDialog
+							(rectDisplayPanel.x, rectDisplayPanel.y+Bottom_Bound_Offset, getBounds().width,getBounds().height);
+					
+				}
+				if(!introBoxDialog.isVisible()){
+					introBoxDialog.setVisible(true);
+				}
+				introBoxDialog.setText(boxText);
+			}else if(introBoxDialog!=null && introBoxDialog.isVisible()){//info text=""
+				introBoxDialog.setVisible(false);
+				introBoxDialog=null;
+			}
+		}
+	}
 	
 	public void showHitFileEditorDialog(){
 		hitFileEditorDialog.setVisible(true);
@@ -296,13 +314,33 @@ public class AnimationPanel extends Animation {
 	
 	private void resetHitTimesToNewTimedAyah(int index) {
 
-		wordHitTimes=timedAyahs.get(index).getWordHitTimes();
-		hitStrings=timedAyahs.get(index).getHitStrings();
+		TimedAyah timedAyah=timedAyahs.get(index);
+		wordHitTimes=timedAyah.getWordHitTimes();
+		int size=wordHitTimes.size();
+		hitCommands.clear();
+		int offset=0;
+		int wordIndexOf[]=new int[size];
+		for(int i=0;i<size;i++){
+			HitCommand hitCommand=new HitCommand(timedAyah.getHitString(i));
+			hitCommands.add(hitCommand);
+			offset+=hitCommand.getRemLastWordVal();
+			wordIndexOf[i]=i-offset;
+		}
+		int subtextTargetWordEndIndex=wordIndexOf[size-1];
+		for(int i=size-1;i>=0;i--){
+			String subtext=hitCommands.get(i).getSubtext();
+			if(subtext!=null && subtext.length()>0){ //&& hitCommands.get(i).getSubtextTargetWordEndIndex()<0){
+				hitCommands.get(i).setSubtextTargetWordEndIndex(subtextTargetWordEndIndex);
+				if(i!=0){
+					subtextTargetWordEndIndex=wordIndexOf[i-1];
+				}
+			}
+		}
 		setAyah(timedAyahs.get(index).getAyah());
 
 		displayedHitWords=0;
 		//injuryTime=0;
-		hitPlayPausedTime=hitPlayResumedTime=0;
+		injuredTimeOffset=0;
 		
 		startTime=System.currentTimeMillis();
 		if(!autoDisplayTimer.isRunning()){

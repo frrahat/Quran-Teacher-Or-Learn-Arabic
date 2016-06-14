@@ -1,56 +1,89 @@
 package QuranTeacher.Model;
 
-import java.awt.Color;
-
 /**
  * @author Rahat
  * @since June 11, 2016
  */
 public class HitCommand {
 	
-	public static final String Attrbt_Indctr_Text="text";
+	/*public static final String Attrbt_Indctr_Text="text";
 	public static final String Attrbt_Indctr_Color="color";
-	public static final String Attrbt_Indctr_FontSize="fontSize";
+	public static final String Attrbt_Indctr_FontSize="fontSize";*/
 	
-	private String text;
-	private Color color;
-	private float fontSize;
-	public static HitCommand parseHitString(String commandString){
-		HitCommand hitCommand=new HitCommand();
-		HitString hitString=new HitString();
-		String attrbtParts[]=commandString.split("&&");
-		for(int i=0;i<attrbtParts.length;i++){
-			String s=attrbtParts[i];
-			String value=s.substring(s.indexOf('=')+1);
-			if(s.startsWith(Attrbt_Indctr_Text)){
-				hitCommand.text=value;
+	private String subtext;
+	private String boxText;
+	private int remLastWordVal;
+	private int subtextTargetWordEndIndex;
+	
+	private int totalCommands;
+	
+	
+	public HitCommand(String hitString) {
+		this.totalCommands=0;
+		this.remLastWordVal=0;
+		this.subtextTargetWordEndIndex=-1;
+		
+		/*if(hitString==null)
+			return;*/
+		if(hitString.length()==0)
+			return;
+		if(hitString.charAt(0)!='%')
+			return;
+
+		String commStrings[]=hitString.split("%");
+		totalCommands=commStrings.length;
+		
+		for(int i=1;i<commStrings.length;i++){
+			String commandString=commStrings[i];
+			
+			//subtext command catching
+			if(commandString.startsWith(HitString.COMMAND_STRNG_SUBTEXT)){//subTextOn
+				String subtext=commandString.substring(commandString.indexOf('=')+1);
+				this.subtext=subtext.replace(HitString.LINE_SEPARATOR, "%").replace('%', '\n');
 			}
-			else if(s.startsWith(Attrbt_Indctr_Color)){
-				try{
-					hitCommand.color=Color.decode(value);
-				}catch(NumberFormatException ne){
-					ne.printStackTrace();
-				}
+			else if(commandString.startsWith(HitString.COMMAND_STRNG_SUBTEXT_END_WORD_INDX)){
+				int value=Integer.parseInt(
+						commandString.substring(commandString.indexOf('=')+1).trim());
+				this.subtextTargetWordEndIndex=value;
 			}
-			else if(s.startsWith(Attrbt_Indctr_FontSize)){
-				try{
-					hitCommand.fontSize=Float.parseFloat(value);
-				}catch(NumberFormatException ne){
-					ne.printStackTrace();
-				}
+			//remove command catching
+			else if(commandString.startsWith(HitString.COMMAND_STRNG_REMOVE_LAST_WORDS)){
+				int value=Integer.parseInt(
+						commandString.substring(commandString.indexOf('=')+1).trim());
+				this.remLastWordVal=value;
+			}
+			else if(commandString.startsWith(HitString.COMMAND_STRNG_INFO_BOX)){
+				String infotext=commandString.substring(commandString.indexOf('=')+1);
+				this.boxText=infotext.replace(HitString.LINE_SEPARATOR, "%").replace('%', '\n');
+			}
+			else{
+				System.out.println("Commandstring parsing failure : "+commandString);
 			}
 		}
-		
-		return hitCommand;
 	}
-	public String getText() {
-		return text;
+
+	public int getTotalCommands(){
+		return totalCommands;
 	}
-	public Color getColor() {
-		return color;
+	
+	public String getSubtext() {
+		return subtext;
 	}
-	public float getFontSize() {
-		return fontSize;
+
+	public String getBoxText() {
+		return boxText;
+	}
+
+	public int getRemLastWordVal() {
+		return remLastWordVal;
+	}
+
+	public int getSubtextTargetWordEndIndex() {
+		return subtextTargetWordEndIndex;
+	}
+
+	public void setSubtextTargetWordEndIndex(int subtextTargetWordEndIndex) {
+		this.subtextTargetWordEndIndex = subtextTargetWordEndIndex;
 	}
 	
 	

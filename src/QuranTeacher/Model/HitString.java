@@ -11,5 +11,7 @@ public class HitString {
 	
 	public static final String COMMAND_STRNG_REMOVE_LAST_WORDS="rem";
 	public static final String COMMAND_STRNG_SUBTEXT="text";
+	public static final String COMMAND_STRNG_SUBTEXT_END_WORD_INDX="snd";
+	public static final String COMMAND_STRNG_INFO_BOX="box";
 	public static final String LINE_SEPARATOR="||";
 }

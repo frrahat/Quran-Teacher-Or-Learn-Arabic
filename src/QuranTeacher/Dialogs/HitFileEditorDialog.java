@@ -273,9 +273,12 @@ public class HitFileEditorDialog extends JDialog {
 						timedAyahs.get(selectedIndex).
 							setWordTime(index, time);
 						
-						if(parts.length>1 && parts[1].length()>1){
+						if(parts.length>1 && parts[1].length()>0){
 							timedAyahs.get(selectedIndex).
 								setHitString(index, text.substring(parts[0].length()+1));
+						}else{
+							timedAyahs.get(selectedIndex).
+								setHitString(index, "");
 						}
 						
 						updateList();
@@ -564,7 +567,7 @@ public class HitFileEditorDialog extends JDialog {
 				for(int j=1;j<commndStrings.length;j++){
 					String commandString=commndStrings[j];
 					if(commandString.startsWith(HitString.COMMAND_STRNG_REMOVE_LAST_WORDS)){
-						offset=Integer.parseInt(
+						offset+=Integer.parseInt(
 								commandString.substring(commandString.indexOf('=')+1).trim());
 						
 						break;
