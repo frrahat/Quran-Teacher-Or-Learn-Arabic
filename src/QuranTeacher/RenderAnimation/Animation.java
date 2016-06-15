@@ -277,9 +277,7 @@ public abstract class Animation extends JPanel {
 		//scrollY=currentDisplayPoint.y+lineHeight+Bottom_Bound_Offset-getBounds().height;
 		
 		wordsDisplayedSoFar-=n;
-		if(subtextTargetWordStartIndex-n>=0){
-			subtextTargetWordStartIndex-=n;
-		}
+		subtextTargetWordStartIndex=wordsDisplayedSoFar;
 	}
 
 	private boolean isWaqf(String word) {
