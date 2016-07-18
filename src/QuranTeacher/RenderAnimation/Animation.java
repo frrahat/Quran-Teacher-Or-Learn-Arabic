@@ -554,6 +554,9 @@ public abstract class Animation extends JPanel {
 		if(infoOfWord==null)
 			return;
 		
+		if(wbwMeaningColor.equals(bgColor))//hiding meaning color
+			return;
+		
 		g.setFont(wbwFont);
 		
 		int writeX,writeY;
