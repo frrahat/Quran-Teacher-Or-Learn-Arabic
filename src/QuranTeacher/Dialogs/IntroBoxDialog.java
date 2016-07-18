@@ -44,7 +44,7 @@ public class IntroBoxDialog extends JDialog {
 		textPane = new JTextPane();
 		textPane.setBackground(Color.BLACK);
 		textPane.setForeground(Color.WHITE);
-		textPane.setFont(new Font("Tahoma", Font.BOLD, 35));
+		updateFontPref();
 		textPane.setFocusable(false);
 		textPane.setEditable(false);
 		getContentPane().add(textPane, BorderLayout.CENTER);
@@ -58,6 +58,11 @@ public class IntroBoxDialog extends JDialog {
 	
 	public void setText(String text){
 		textPane.setText(text);
+	}
+	
+	public void updateFontPref(){
+		//using the font found from subtext pref
+		textPane.setFont(PreferencesDialog.getSubtextPreferences().getFont().deriveFont(Font.BOLD));
 	}
 	
 }

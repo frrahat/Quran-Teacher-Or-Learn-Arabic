@@ -558,29 +558,8 @@ public abstract class Animation extends JPanel {
 		
 		int writeX,writeY;
 		Rectangle rect;
-		
-		for(int i=subtextTargetWordStartIndex;i<wordsDisplayedSoFar;i++)//highlighted
-		{
-			rect=rectangles.get(i);
-			
-			if(infoOfWord.size()>i)
-			{
-				writeX=rect.x;
-				writeY=rect.y+rect.height+extraHeight;
-				
-				g.setColor(wbwTrnslitrtionColor);
-				g.drawString("{"+infoOfWord.get(i).transLiteration+"}", writeX, writeY-scrollY);
-				g.setColor(wbwMeaningColor);
-				g.drawString(infoOfWord.get(i).meaning, writeX, writeY+22-scrollY);
-			}
-			else
-			{
-				problemOccured(i);
-			}
-		}
 		int size=coordinatedWords.size();
-		g.setColor(Color.GRAY);
-		for(int i=0;i<subtextTargetWordStartIndex;i++)//not highlighted
+		for(int i=0;i<size;i++)//highlighted
 		{
 			rect=rectangles.get(i);
 			
@@ -589,28 +568,9 @@ public abstract class Animation extends JPanel {
 				writeX=rect.x;
 				writeY=rect.y+rect.height+extraHeight;
 				
-				//g.setColor(wbwTrnslitrtionColor.darker());
+				setMeaningColor(i, g, wbwTrnslitrtionColor);
 				g.drawString("{"+infoOfWord.get(i).transLiteration+"}", writeX, writeY-scrollY);
-				//g.setColor(wbwMeaningColor.darker());
-				g.drawString(infoOfWord.get(i).meaning, writeX, writeY+22-scrollY);
-			}
-			else
-			{
-				problemOccured(i);
-			}
-		}
-		for(int i=wordsDisplayedSoFar;i<size;i++)//not highlighted
-		{
-			rect=rectangles.get(i);
-			
-			if(infoOfWord.size()>i)
-			{
-				writeX=rect.x;
-				writeY=rect.y+rect.height+extraHeight;
-				
-				//g.setColor(wbwTrnslitrtionColor.darker());
-				g.drawString("{"+infoOfWord.get(i).transLiteration+"}", writeX, writeY-scrollY);
-				//g.setColor(wbwMeaningColor.darker());
+				setMeaningColor(i, g, wbwMeaningColor);
 				g.drawString(infoOfWord.get(i).meaning, writeX, writeY+22-scrollY);
 			}
 			else
@@ -620,6 +580,21 @@ public abstract class Animation extends JPanel {
 		}
 	}
 
+	private void setMeaningColor(int i, Graphics g, Color specialColor) {
+		if(i<subtextTargetWordStartIndex){
+			g.setColor(Color.GRAY);
+		}
+		else if(i<wordsDisplayedSoFar){
+			g.setColor(specialColor);
+		}
+		else if(i<=subtextTargetWordEndIndex){
+			g.setColor(fgColor.darker().darker());
+		}
+		else{
+			g.setColor(Color.GRAY);
+		}
+	}
+	
 	protected void resetDisplay()
 	{
 		distanceCovered=0;

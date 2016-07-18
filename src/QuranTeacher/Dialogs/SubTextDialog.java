@@ -58,6 +58,8 @@ public class SubTextDialog extends JDialog {
 	public void updateFontFromPref(){
 		textPane.setFont(subtextPreferences.getFont());
 		textPane.setForeground(subtextPreferences.getForeGroundColor());
+		
+		System.out.println("Subtext font pref updated from preferences.");
 	}
 	
 	public SubtextPreferences getSubtextPref(){
