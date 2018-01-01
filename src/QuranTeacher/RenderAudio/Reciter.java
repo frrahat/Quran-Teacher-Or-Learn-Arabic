@@ -36,7 +36,6 @@ public class Reciter{
 	private static final int connectionTimeout=5000;
 	private FileInputStream Fstream;
 	
-	
 	public Reciter(FileInputStream Fstream) {		
 		this.Fstream=Fstream;
 	}
@@ -56,17 +55,7 @@ public class Reciter{
 		int suraIndex = ayah.suraIndex + 1;
 		int ayahIndex = ayah.ayahIndex + 1;
 
-		if (suraIndex < 10)
-			a = "00";
-		else if (suraIndex < 100)
-			a = "0";
-		if (ayahIndex < 10)
-			b = "00";
-		else if (ayahIndex < 100)
-			b = "0";
-
-		String mp3Name = a + String.valueOf(suraIndex) + b
-				+ String.valueOf(ayahIndex) + ".mp3";
+		String mp3Name = getPaddedNumString(suraIndex) + getPaddedNumString(ayahIndex) + ".mp3";
 		return mp3Name;
 	}
 
@@ -114,10 +103,8 @@ public class Reciter{
 	
 	public static void createSuraWiseDirectoryFor(int surahIndex, String atDirName)
 	{
-		File directory=new File(atDirName+"/"+
-	Integer.toString(surahIndex+1));
-		if(!directory.exists())
-		{
+		File directory=new File(atDirName+"/"+ getPaddedNumString(surahIndex+1));
+		if(!directory.exists()) {
 			directory.mkdirs();
 		}
 	}
@@ -168,10 +155,9 @@ public class Reciter{
 				if(fileName.endsWith(".mp3")){
 					int id=getSuraNumFromFileName(fileName);
 					if(id>0){
-
 						//moving the file
 						File destFile=new File(FilePaths.audioStorageDir+"/"+
-								Integer.toString(id)+"/"+fileName);
+								getPaddedNumString(id) +"/"+fileName);
 						
 						FilePaths.move(files[i], destFile);
 					}
@@ -186,7 +172,7 @@ public class Reciter{
 
 		String name = getAyatmp3Name(ayah);
 		File playFile = new File(FilePaths.audioStorageDir +"/"+ 
-				Integer.toString(ayah.suraIndex+1)+"/"+name);
+				getPaddedNumString(ayah.suraIndex+1)+"/"+name);
 
 		if (playFile.exists()) 
 		{
@@ -221,4 +207,14 @@ public class Reciter{
 		
 		return Fstream;
     }
+    
+	private static String getPaddedNumString(int num) {
+		String pad = "";
+		if(num < 10)
+			pad = "00";
+		else if(num < 100)
+			pad = "0";
+		
+		return pad + Integer.toString(num);
+	}
 }
